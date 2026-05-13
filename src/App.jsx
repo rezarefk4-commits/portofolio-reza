@@ -11,11 +11,13 @@ import {
   Database, Monitor, Smartphone, Server, Zap, TrendingUp, BarChart3
 } from 'lucide-react';
 
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+
 // ============================================================================
 // INISIALISASI SUPABASE (VITE ENV)
 // ============================================================================
-// BUKA KOMENTAR DI BAWAH INI SAAT DI VS CODE!
-
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -44,52 +46,76 @@ const CountUp = ({ end, duration = 2000, suffix = "" }) => {
   return <span>{count}{suffix}</span>;
 };
 
+// --- EFEK TYPING (LOOPING TEXT) ---
+const TypingText = ({ text }) => {
+  const [displayText, setDisplayText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    let timeout;
+    if (!text) return;
+
+    if (!isDeleting && displayText === text) {
+      timeout = setTimeout(() => setIsDeleting(true), 2500); // Tunggu 2.5 dtk sebelum menghapus
+    } else if (isDeleting && displayText === '') {
+      timeout = setTimeout(() => setIsDeleting(false), 500); // Tunggu 0.5 dtk sebelum mengetik ulang
+    } else {
+      timeout = setTimeout(() => {
+        setDisplayText(text.substring(0, displayText.length + (isDeleting ? -1 : 1)));
+      }, isDeleting ? 40 : 100); // Kecepatan ngetik: 100ms, hapus: 40ms
+    }
+    return () => clearTimeout(timeout);
+  }, [displayText, isDeleting, text]);
+
+ return (
+    <span className="border-r-[3px] border-blue-500 pr-1 animate-[blink_1s_step-end_infinite] inline-block">
+      {displayText || '\u200B'}
+    </span>
+  );
+};
+
 // ============================================================================
-// DATA FALLBACK AWAL (Dipakai HANYA JIKA Supabase benar-benar kosong)
+// DATA FALLBACK AWAL
 // ============================================================================
 const initialProfile = {
   name: 'REZA REFKA KURNIAWAN',
   role: 'AI-Driven Web Developer',
   bio: 'Saya membangun aplikasi web dan seluler modern dengan fokus pada performa dan pengalaman pengguna. Aktif berbagi wawasan teknologi dan membimbing talenta digital.',
   email: 'rezarefka@gmail.com',
-  whatsapp: '+62 895 8088 60080',
-  location: 'Jakarta, Indonesia',
+  whatsapp: '+62 821 5402 5446',
+  location: 'Makassar, Indonesia',
   profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+  heroImage: '', 
   cvUrl: '',
   socials: { instagram: 'https://instagram.com/', threads: 'https://threads.net/', tiktok: 'https://tiktok.com/', linkedin: 'https://linkedin.com/' }
 };
 
 const initialStats = { visits24h: 1240, activeNow: 14, projectEngagement: 85, totalViews: 45200 };
-
-const initialProjects = [
-  { id: 'gambaryuk', title: 'GambarYuk', shortDesc: 'Alat pengolahan gambar modern dengan manipulasi web.', type: 'technical', category: 'Web App', year: '2024', featured: true, image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&q=80&w=800' },
-  { id: 'creative-brand', title: 'TechNova Branding', shortDesc: 'Desain identitas visual startup teknologi.', type: 'creative', category: 'Branding', client: 'TechNova', image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80&w=800' }
-];
-const initialBlogs = [{ id: '1', title: 'Belajar React Next.js', summary: 'Tutorial dasar React.', date: '10 Mei 2026', readTime: '5 min', tag: 'Tech', thumbnail: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=800' }];
+const initialProjects = [];
+const initialBlogs = [];
 
 const translations = {
   id: {
     main: 'Utama', home: 'Beranda', about: 'Tentang', contact: 'Kontak', portfolio: 'Portofolio', technical: 'Technical', creative: 'Creative', thoughts: 'Thoughts', professional: 'Profesional', experience: 'Pengalaman', education: 'Pendidikan', skills: 'Keahlian', links: 'Tautan', downloadCv: 'Unduh CV', darkMode: 'Mode Gelap', lightMode: 'Mode Terang', dashboard: 'Dasbor', btnContact: 'Hubungi Saya', btnPortfolio: 'Lihat Portofolio',
-    whatIDo: 'Keahlian Utama', featuredProjects: 'Proyek Unggulan', featuredProjectsDesc: 'Karya teknikal utama yang menunjukkan keahlian.', viewAllPortfolio: 'Lihat Semua', latestBlogs: 'Thoughts Terbaru', readAllBlogs: 'Lihat Semua', readMore: 'Baca Selengkapnya', back: 'Kembali', share: 'Bagikan', backToProjects: 'Kembali ke Karya',
+    whatIDo: 'Keahlian Utama', featuredProjects: 'Proyek Unggulan', featuredProjectsDesc: 'Karya teknikal utama yang menunjukkan keahlian.', viewAllPortfolio: 'Lihat Semua', latestBlogs: 'Thoughts Terbaru', readAllBlogs: 'Lihat Semua Tulisan', readMore: 'Baca Selengkapnya', back: 'Kembali', share: 'Bagikan', backToProjects: 'Kembali ke Karya',
     contactTitle: 'Kontak', contactSubtitle: 'Hubungi saya untuk kolaborasi atau pertanyaan', email: 'Email', whatsapp: 'WhatsApp', location: 'Lokasi', workingHours: 'Jam Kerja', response: 'Respon', responseDesc: 'Saya biasanya membalas pesan dalam waktu 1 jam.', workingHoursMonFri: 'Senin - Jumat', workingHoursSatSun: 'Sabtu - Minggu',
     formName: 'Nama Lengkap', formEmail: 'Email', formSubject: 'Subjek', formMessage: 'Pesan', formSend: 'Kirim Pesan', plName: 'Nama Anda', plEmail: 'email@contoh.com', plSubject: 'Perihal', plMessage: 'Tulis pesan...',
     technicalTitle: 'Proyek Teknikal', creativeTitle: 'Karya Kreatif', portfolioSub: 'Koleksi proyek teknis dan pengembangan sistem', creativeSub: 'Eksplorasi visual, branding, dan desain', overview: 'Ikhtisar', techUsed: 'Teknologi Digunakan', client: 'Klien', duration: 'Durasi', year: 'Tahun', role: 'Peran', status: 'Status', viewLive: 'Lihat Langsung', sourceCode: 'Kode Sumber', tags: 'Tag', projectLinks: 'Tautan Proyek', notAvailable: 'Tidak tersedia', featured: 'Unggulan', noProjects: 'Karya tidak ditemukan.', projectGoals: 'Tujuan Proyek', keyFeatures: 'Fitur Utama', challenges: 'Tantangan & Solusi', outcomes: 'Hasil', projectInfo: 'Informasi Proyek', organizedBy: 'Klien / Organizer', creativeStory: 'Cerita di Balik Karya', gallery: 'Galeri Visual', viewGallery: 'Lihat Galeri', creativeCTA: 'Punya Ide Kreatif?', creativeCTADesc: 'Mari ciptakan mahakarya visual bersama.', btnStartDiscuss: 'Mulai Diskusi',
     thoughtsTitle: 'Blog & Tulisan', thoughtsSub: 'Artikel dan tutorial teknologi', searchPlaceholder: 'Cari artikel...', searchBtn: 'Cari', all: 'Semua', readText: 'baca', noArticles: 'Artikel tidak ditemukan.', blogKnowledgeSession: 'Sesi Pengetahuan', blogWhyImportant: 'Mengapa Ini Penting?', blogAdaptation: 'Adaptasi sangat penting untuk terus berkembang.',
     aboutTitle: 'Tentang Saya', aboutSubtitle: 'Mengenal lebih dekat', aboutP1: 'Memiliki passion dalam membangun solusi digital berdampak.', aboutP2: 'Selain mengembangkan aplikasi, saya juga aktif berbagi pengetahuan.', aboutP3: 'Selalu terbuka untuk berkolaborasi!', philosophy: 'Filosofi', values: 'Nilai-Nilai', hobbies: 'Hobi & Minat', mySkills: 'Alat & Teknologi', mySkillsDesc: 'Teknologi yang saya gunakan.', linkDesc: 'Tautan penting.',
     val1Title: 'Inovasi', val1Desc: 'Mencari cara baru dan lebih baik.', val2Title: 'Kualitas', val2Desc: 'Standar tertinggi.', val3Title: 'Kolaborasi', val3Desc: 'Kerja sama tim.', val4Title: 'Keberlanjutan', val4Desc: 'Solusi jangka panjang.', hob1Title: 'Membaca', hob1Desc: 'Buku teknologi.', hob2Title: 'Olahraga', hob2Desc: 'Futsal & Lari.', hob3Title: 'Gaming', hob3Desc: 'Game Strategi.',
-    yearsExp: 'Tahun Pengalaman', totalWorks: 'Total Karya', articles: 'Tulisan / Artikel', happyClients: 'Project', collabTitle: 'Mari Berkolaborasi', collabDesc: 'Punya ide proyek atau ingin berdiskusi? Hubungi saya kapan saja.', sendEmail: 'Kirim Email',
+    yearsExp: 'Tahun Pengalaman', totalWorks: 'Total Karya', articles: 'Tulisan / Artikel', happyClients: 'Klien Puas', collabTitle: 'Mari Berkolaborasi', collabDesc: 'Punya ide proyek atau ingin berdiskusi? Hubungi saya kapan saja.', sendEmail: 'Kirim Email',
     expTitle: 'Pengalaman', expDesc: 'Rekam jejak karir profesional saya.', noExp: 'Belum ada data pengalaman.', eduTitle: 'Pendidikan', eduDesc: 'Latar belakang pendidikan saya.', noEdu: 'Belum ada data pendidikan.',
     notFound: 'Data tidak ditemukan.', shareSuccess: 'Tautan disalin!', shareError: 'Gagal membagikan.'
   },
   en: {
     main: 'Main', home: 'Home', about: 'About', contact: 'Contact', portfolio: 'Portfolio', technical: 'Technical', creative: 'Creative', thoughts: 'Thoughts', professional: 'Professional', experience: 'Experience', education: 'Education', skills: 'Skills', links: 'Links', downloadCv: 'Download CV', darkMode: 'Dark Mode', lightMode: 'Light Mode', dashboard: 'Dashboard', btnContact: 'Contact Me', btnPortfolio: 'View Portfolio',
-    whatIDo: 'Core Skills', featuredProjects: 'Featured Projects', featuredProjectsDesc: 'Main technical works showcasing my skills.', viewAllPortfolio: 'View All', latestBlogs: 'Latest Thoughts', readAllBlogs: 'View All', readMore: 'Read More', back: 'Back', share: 'Share', backToProjects: 'Back to Works',
+    whatIDo: 'Core Skills', featuredProjects: 'Featured Projects', featuredProjectsDesc: 'Main technical works showcasing my skills.', viewAllPortfolio: 'View All', latestBlogs: 'Latest Thoughts', readAllBlogs: 'View All Writings', readMore: 'Read More', back: 'Back', share: 'Share', backToProjects: 'Back to Works',
     contactTitle: 'Contact', contactSubtitle: 'Reach out for collaboration', email: 'Email', whatsapp: 'WhatsApp', location: 'Location', workingHours: 'Working Hours', response: 'Response Time', responseDesc: 'I usually reply within 1 hour.', workingHoursMonFri: 'Monday - Friday', workingHoursSatSun: 'Saturday - Sunday',
     formName: 'Full Name', formEmail: 'Email', formSubject: 'Subject', formMessage: 'Message', formSend: 'Send Message', plName: 'Your Name', plEmail: 'email@example.com', plSubject: 'Subject', plMessage: 'Write message...',
     technicalTitle: 'Technical Projects', creativeTitle: 'Creative Works', portfolioSub: 'System development and technical projects', creativeSub: 'Visual explorations, branding, and design', overview: 'Overview', techUsed: 'Technologies Used', client: 'Client', duration: 'Duration', year: 'Year', role: 'Role', status: 'Status', viewLive: 'View Live', sourceCode: 'Source Code', tags: 'Tags', projectLinks: 'Project Links', notAvailable: 'Not available', featured: 'Featured', noProjects: 'No works found.', projectGoals: 'Project Goals', keyFeatures: 'Key Features', challenges: 'Challenges', outcomes: 'Outcomes', projectInfo: 'Project Info', organizedBy: 'Client / Organizer', creativeStory: 'The Story Behind', gallery: 'Visual Gallery', viewGallery: 'View Gallery', creativeCTA: 'Have a Creative Idea?', creativeCTADesc: 'Let\'s create a visual masterpiece together.', btnStartDiscuss: 'Start Discussing',
     thoughtsTitle: 'Blog & Writings', thoughtsSub: 'Articles and tech tutorials', searchPlaceholder: 'Search articles...', searchBtn: 'Search', all: 'All', readText: 'read', noArticles: 'No articles found.', blogKnowledgeSession: 'Knowledge Session', blogWhyImportant: 'Why Is This Important?', blogAdaptation: 'Adaptation is crucial for growth.',
     aboutTitle: 'About Me', aboutSubtitle: 'Getting to know closer', aboutP1: 'Passionate about building impactful digital solutions.', aboutP2: 'Active in sharing tech knowledge.', aboutP3: 'Always open to collaborate!', philosophy: 'Philosophy', values: 'Values', hobbies: 'Hobbies', mySkills: 'Tools & Technologies', mySkillsDesc: 'Technologies I use.', linkDesc: 'My important links.',
-    val1Title: 'Innovation', val1Desc: 'Finding better ways.', val2Title: 'Quality', val2Desc: 'Highest standards.', val3Title: 'Collaboration', val3Desc: 'Teamwork.', val4Title: 'Sustainability', val4Desc: 'Long-term solutions.', hob1Title: 'Reading', hob1Desc: 'Tech books.', hob2Title: 'Sports', hob2Desc: 'Running.', hob3Title: 'Gaming', hob3Desc: 'Strategy Games.',
     yearsExp: 'Years Experience', totalWorks: 'Total Projects', articles: 'Articles', happyClients: 'Happy Clients', collabTitle: 'Let\'s Collaborate', collabDesc: 'Have a project idea or want to discuss? Reach out.', sendEmail: 'Send Email',
     expTitle: 'Experience', expDesc: 'My professional career track.', noExp: 'No experience data yet.', eduTitle: 'Education', eduDesc: 'My educational background.', noEdu: 'No education data yet.',
     notFound: 'Data not found.', shareSuccess: 'Link copied!', shareError: 'Failed to share link.'
@@ -113,8 +139,6 @@ const DetailCard = ({ title, content, children, icon: Icon, delay, t }) => (
     {content ? (<div className="text-gray-600 dark:text-gray-300 text-[14.5px] leading-relaxed whitespace-pre-wrap font-medium">{(content === 'Not available' || content === 'Tidak tersedia' || content === 'Not available') ? <span className="text-gray-400 italic">{t.notAvailable}</span> : content}</div>) : children}
   </div>
 );
-import ReactQuill from 'react-quill-new';
-import 'react-quill-new/dist/quill.snow.css';
 
 const quillModules = {
   toolbar: [
@@ -154,16 +178,18 @@ export default function App() {
   const [modalType, setModalType] = useState(null); 
   const [editingItem, setEditingItem] = useState(null); 
   const [defaultProjType, setDefaultProjType] = useState('technical');
-  const [previewImage, setPreviewImage] = useState(''); // File object for project/blog image
-  const [profileTempImg, setProfileTempImg] = useState(''); // File object for profile image
-  const [cvFileObj, setCvFileObj] = useState(''); // File object for CV pdf
+  
+  const [previewImage, setPreviewImage] = useState(''); 
+  const [profileTempImg, setProfileTempImg] = useState(''); 
+  const [heroTempImg, setHeroTempImg] = useState(''); 
+  const [cvFileObj, setCvFileObj] = useState(''); 
   const [cvFileName, setCvFileName] = useState('');
   
   const [toastMessage, setToastMessage] = useState(null);
   const [secretClickCount, setSecretClickCount] = useState(0);
   const [requiredClicks, setRequiredClicks] = useState(5);
   const [adminPassword, setAdminPassword] = useState('admin');
-  const [isUploading, setIsUploading] = useState(false); // Loading state for uploads
+  const [isUploading, setIsUploading] = useState(false); 
 
   const [thoughtsSearch, setThoughtsSearch] = useState('');
   const [thoughtsFilter, setThoughtsFilter] = useState('All');
@@ -171,6 +197,23 @@ export default function App() {
 
   const isModalOpen = modalType !== null;
   const t = translations[lang] || translations['id'];
+
+  // --- KOMPONEN DYNAMIC SEO ---
+  const SEO = ({ title, desc, img }) => {
+    const pageTitle = title ? `${title} | ${profile.name}` : profile.name;
+    const pageDesc = desc || profile.bio;
+    const pageImg = img || profile.profileImage;
+    return (
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDesc} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDesc} />
+        <meta property="og:image" content={pageImg} />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
+    );
+  };
 
   // ============================================================================
   // FETCH DATA DARI SUPABASE
@@ -209,6 +252,7 @@ export default function App() {
             whatsapp: profData.whatsapp || initialProfile.whatsapp, email: profData.email || initialProfile.email,
             name: profData.name || initialProfile.name, role: profData.role || initialProfile.role,
             location: profData.location || initialProfile.location, bio: profData.bio || initialProfile.bio,
+            heroImage: profData.heroImage || initialProfile.heroImage,
             socials: { ...initialProfile.socials, ...(profData.socials || {}) } 
           });
         }
@@ -221,39 +265,6 @@ export default function App() {
   useEffect(() => { if (theme === 'dark') document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); }, [theme]);
   useEffect(() => { if (secretClickCount > 0) { const timer = setTimeout(() => setSecretClickCount(0), 1500); return () => clearTimeout(timer); } }, [secretClickCount]);
   useEffect(() => { if (toastMessage) { const timer = setTimeout(() => setToastMessage(null), 3000); return () => clearTimeout(timer); } }, [toastMessage]);
-
-  // LIVE ANALYTICS (Local Storage Simulation)
-  useEffect(() => {
-    const isReturningUser = localStorage.getItem('hasVisitedBefore');
-    const storedStats = localStorage.getItem('portfolioStats');
-    let currentStats = storedStats ? JSON.parse(storedStats) : { ...initialStats, visits24h: 1240, activeNow: Math.floor(Math.random() * 20) + 5, projectEngagement: 85 };
-    
-    if (!isReturningUser) { currentStats.visits24h += 1; currentStats.totalViews += 1; localStorage.setItem('hasVisitedBefore', 'true'); }
-    setLocalStats(currentStats);
-    
-    const activeTimer = setInterval(() => {
-      setLocalStats(prev => {
-        const change = Math.floor(Math.random() * 5) - 2;
-        let newActive = prev.activeNow + change;
-        if (newActive < 2) newActive = 2; if (newActive > 45) newActive = 45;
-        const newStats = { ...prev, activeNow: newActive };
-        localStorage.setItem('portfolioStats', JSON.stringify(newStats));
-        return newStats;
-      });
-    }, 8000);
-
-    const clickHandler = () => {
-      setLocalStats(prev => {
-        let newEngage = prev.projectEngagement + 0.1;
-        if (newEngage > 99.9) newEngage = 99.9;
-        const newStats = { ...prev, projectEngagement: parseFloat(newEngage.toFixed(1)) };
-        localStorage.setItem('portfolioStats', JSON.stringify(newStats));
-        return newStats;
-      });
-    };
-    window.addEventListener('click', clickHandler);
-    return () => { clearInterval(activeTimer); window.removeEventListener('click', clickHandler); };
-  }, []);
 
   // Handlers
   const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
@@ -279,11 +290,13 @@ export default function App() {
     setPreviewImage(item ? (item.image || item.thumbnail || item.img || '') : ''); 
     if (type === 'blog') setBlogContent(item ? (item.content || '') : '');
   };
+  
   const closeModal = () => { setModalType(null); setEditingItem(null); setPreviewImage(''); setBlogContent(''); };
   
-  // File Input Handlers (Menyimpan File Object ke State, bukan sekadar URL Blob)
+  // File Input Handlers
   const handleImageUpload = (e) => { const file = e.target.files[0]; if (file) setPreviewImage(file); };
   const handleProfileImageUpload = (e) => { const file = e.target.files[0]; if (file) setProfileTempImg(file); };
+  const handleHeroImageUpload = (e) => { const file = e.target.files[0]; if (file) setHeroTempImg(file); }; 
   const handleCvUpload = (e) => { const file = e.target.files[0]; if (file) { setCvFileObj(file); setCvFileName(file.name); } };
   
   const handleDownloadCV = () => {
@@ -295,7 +308,7 @@ export default function App() {
   // FUNGSI UPLOAD FILE KE SUPABASE STORAGE
   // ============================================================================
   const uploadFileToSupabase = async (file, bucketName = 'portfolio') => {
-    if (!supabase) return URL.createObjectURL(file); // Fallback Preview Lokal jika tdk ada DB
+    if (!supabase) return URL.createObjectURL(file); 
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
@@ -327,22 +340,15 @@ export default function App() {
     let finalImageUrl = editingItem?.image || editingItem?.thumbnail || editingItem?.img || defaultImage;
 
     try {
-      // 1. Upload File Jika Ada
-      if (previewImage) {
-        showToast('Mengunggah media...');
-        finalImageUrl = await uploadFileToSupabase(previewImage);
-      }
+      if (previewImage) { showToast('Mengunggah media...'); finalImageUrl = await uploadFileToSupabase(previewImage); }
 
-      // 2. Susun Data sesuai Tabel
       if (modalType === 'project') { 
         tableName = 'projects';
         newItem = { ...newItem, title: formData.get('title'), shortDesc: formData.get('shortDesc'), type: formData.get('type'), category: formData.get('category'), image: finalImageUrl, tech: (formData.get('tech') || '').split(',').map(text => text.trim()).filter(Boolean), client: formData.get('client'), year: formData.get('year'), featured: formData.get('featured') === 'on' }; 
       }
-     else if (modalType === 'blog') { 
+      else if (modalType === 'blog') { 
         tableName = 'blogs';
         newItem = { ...newItem, title: formData.get('title'), summary: formData.get('summary'), date: formData.get('date'), readTime: formData.get('readTime'), tag: formData.get('tag'), thumbnail: previewImage || (editingItem?.thumbnail || defaultImage), content: blogContent }; 
-        if (supabase) await supabase.from(tableName).upsert(newItem);
-        setBlogs(editingItem ? blogs.map(b => b.id === id ? newItem : b) : [newItem, ...blogs]); 
       }
       else if (modalType === 'skill') { 
         tableName = 'skills';
@@ -365,13 +371,8 @@ export default function App() {
         newItem = { ...newItem, title: formData.get('title'), desc: formData.get('desc'), icon: formData.get('icon') }; 
       }
       
-      // 3. Simpan ke Supabase
-      if (supabase) {
-        showToast('Menyimpan ke database...');
-        await supabase.from(tableName).upsert(newItem);
-      }
+      if (supabase) { showToast('Menyimpan ke database...'); await supabase.from(tableName).upsert(newItem); }
       
-      // Update State Lokal agar layar langsung berubah
       if (tableName === 'projects') setProjects(editingItem ? projects.map(p => p.id === id ? newItem : p) : [newItem, ...projects]); 
       if (tableName === 'blogs') setBlogs(editingItem ? blogs.map(b => b.id === id ? newItem : b) : [newItem, ...blogs]); 
       if (tableName === 'skills') setSkills(editingItem ? skills.map(s => s.id === id ? newItem : s) : [...skills, newItem]); 
@@ -389,44 +390,40 @@ export default function App() {
     }
   };
 
-  const handleProfileSave = async (e) => {
+ const handleProfileSave = async (e) => {
     e.preventDefault(); 
     setIsUploading(true);
     const formData = new FormData(e.target);
     
     let finalProfileImgUrl = profile.profileImage;
+    let finalHeroImgUrl = profile.heroImage;
     let finalCvUrl = profile.cvUrl;
 
     try {
-      // 1. Upload Foto Profil jika ada yang baru
-      if (profileTempImg) {
-        showToast('Mengunggah foto profil...');
-        finalProfileImgUrl = await uploadFileToSupabase(profileTempImg);
-      }
-      // 2. Upload Dokumen CV jika ada yang baru
-      if (cvFileObj) {
-        showToast('Mengunggah dokumen CV...');
-        finalCvUrl = await uploadFileToSupabase(cvFileObj);
-      }
+      // 1. Upload Media
+      if (profileTempImg) { showToast('Mengunggah foto profil...'); finalProfileImgUrl = await uploadFileToSupabase(profileTempImg); }
+      if (heroTempImg) { showToast('Mengunggah foto beranda...'); finalHeroImgUrl = await uploadFileToSupabase(heroTempImg); } 
+      if (cvFileObj) { showToast('Mengunggah dokumen CV...'); finalCvUrl = await uploadFileToSupabase(cvFileObj); }
 
-      // 3. Susun data Profile
+      // 2. Susun data Profile
       const newProfile = { 
-        id: 1, // Pastikan ID selalu 1
+        id: 1, 
         name: formData.get('name'), role: formData.get('role'), bio: formData.get('bio'), 
         email: formData.get('email'), whatsapp: formData.get('whatsapp'), location: formData.get('location'), 
         profileImage: finalProfileImgUrl, 
+        heroImage: finalHeroImgUrl, 
         cvUrl: finalCvUrl, 
         socials: { instagram: formData.get('instagram') || '', threads: formData.get('threads') || '', tiktok: formData.get('tiktok') || '', linkedin: formData.get('linkedin') || '' } 
       };
 
-      // 4. Simpan ke Supabase
+      // 3. Simpan ke Supabase
       if (supabase) {
         showToast('Menyimpan ke database...');
         await supabase.from('profile').upsert(newProfile);
       }
       
       setProfile(newProfile);
-      setProfileTempImg(''); setCvFileObj(''); setCvFileName(''); 
+      setProfileTempImg(''); setHeroTempImg(''); setCvFileObj(''); setCvFileName('');
       showToast('Profil & Media tersinkronisasi!');
     } catch (err) { 
       showToast(`Error: ${err.message}`); 
@@ -504,26 +501,91 @@ export default function App() {
     // --- HOME ---
     if (currentPath === '/home') return (
       <div className="max-w-5xl mx-auto space-y-24 pb-24 w-full animate-page-enter">
-        <div className="pt-10 md:pt-24 flex flex-col items-center text-center gap-8 w-full reveal-on-scroll delay-0 relative z-10">
-          <div className="w-40 h-40 md:w-52 md:h-52 relative animate-float">
-            <div className="absolute inset-0 bg-blue-500/30 dark:bg-blue-400/20 rounded-full blur-[60px] animate-pulse"></div>
-            <img src={profile.profileImage} alt="Profile" className="w-full h-full object-cover rounded-full border-[6px] border-white/60 dark:border-slate-800/60 shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative bg-white/50 backdrop-blur-sm" />
+        <SEO title="Beranda" />
+        
+        {/* --- HERO SECTION: CINEMATIC HOVER (B&W TO COLOR) --- */}
+        <div className="relative flex flex-col justify-center min-h-[75vh] w-full pt-10 lg:pt-0 z-10 reveal-on-scroll delay-0 group rounded-[3rem] overflow-hidden bg-[#F8FAFC] dark:bg-[#05050A] border border-black/5 dark:border-white/5 shadow-2xl">
+          
+          {/* FOTO BACKGROUND KANAN (Efek Hitam Putih -> Berwarna & Zoom) */}
+          <div className="absolute inset-0 w-full h-full lg:w-[65%] lg:left-[35%] z-0 overflow-hidden bg-[#F8FAFC] dark:bg-[#05050A]">
+             {/* Gradasi agar ujung kiri foto membaur mulus dengan background gelap/terang */}
+             <div className="absolute inset-0 bg-gradient-to-r from-[#F8FAFC] via-[#F8FAFC]/90 to-transparent dark:from-[#05050A] dark:via-[#05050A]/90 dark:to-transparent z-10 w-[80%] lg:w-[50%]"></div>
+             {/* Gradasi dari bawah agar foto tidak terpotong tajam */}
+             <div className="absolute bottom-0 w-full h-1/3 bg-gradient-to-t from-[#F8FAFC] to-transparent dark:from-[#05050A] dark:to-transparent z-10"></div>
+             
+             {/* KODE EFEK: grayscale & scale-105 saat di-hover */}
+             <img 
+               src={profile.heroImage || profile.profileImage} 
+               alt="Hero Portrait" 
+               className="w-full h-full object-cover object-center lg:object-top transition-all duration-700 ease-in-out grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 opacity-50 dark:opacity-40 group-hover:opacity-100" 
+             />
           </div>
-          <div className="max-w-4xl flex flex-col items-center">
-            <h1 className="text-[clamp(2rem,6vw,5.5rem)] font-black text-transparent bg-clip-text bg-gradient-to-b from-gray-900 to-gray-500 dark:from-white dark:to-gray-400 mb-4 tracking-tighter leading-[1.1] drop-shadow-xl uppercase px-2">{profile.name}</h1>
-            <h2 className="text-xl sm:text-2xl md:text-3xl text-blue-600 dark:text-blue-400 font-extrabold mb-10 tracking-tight flex items-center justify-center gap-3 drop-shadow-md"><Code size={28} strokeWidth={2.5} className="shrink-0" /> <span>{profile.role}</span></h2>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
-              <button onClick={() => navigate('/contact')} className="px-10 py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-[0_10px_30px_rgba(37,99,235,0.3)] flex items-center justify-center gap-2 text-[15px] hover:-translate-y-1 active:scale-95">{t.btnContact} <MessageSquare size={18} strokeWidth={3} /></button>
-              <button onClick={() => navigate('/technical')} className="px-10 py-4 rounded-2xl glass-panel hover:bg-white/80 dark:hover:bg-slate-800/80 text-gray-800 dark:text-white font-bold transition-all flex items-center justify-center gap-2 text-[15px] shadow-sm hover:shadow-lg hover:-translate-y-1 active:scale-95 border-white/60 dark:border-white/10">{t.btnPortfolio} <ChevronRight size={18} strokeWidth={3} /></button>
+
+          {/* KONTEN TEKS (Kiri) */}
+          <div className="relative w-full lg:w-[60%] flex flex-col items-center lg:items-start text-center lg:text-left z-20 px-6 sm:px-12 py-16">
+            
+            {/* Deretan Ikon Sosial Media */}
+            <div className="flex gap-5 mb-6">
+               {profile.socials?.instagram && <a href={profile.socials.instagram} target="_blank" rel="noreferrer" className="text-gray-400 dark:text-gray-500 hover:text-blue-500 transition-colors"><BrandIcon name="instagram" size={18}/></a>}
+               {profile.socials?.threads && <a href={profile.socials.threads} target="_blank" rel="noreferrer" className="text-gray-400 dark:text-gray-500 hover:text-blue-500 transition-colors"><BrandIcon name="threads" size={18}/></a>}
+               {profile.socials?.tiktok && <a href={profile.socials.tiktok} target="_blank" rel="noreferrer" className="text-gray-400 dark:text-gray-500 hover:text-blue-500 transition-colors"><BrandIcon name="tiktok" size={18}/></a>}
+               {profile.socials?.linkedin && <a href={profile.socials.linkedin} target="_blank" rel="noreferrer" className="text-gray-400 dark:text-gray-500 hover:text-blue-500 transition-colors"><BrandIcon name="linkedin" size={18}/></a>}
+            </div>
+            
+            {/* Judul dengan Efek Typing */}
+            <h1 className="font-black text-gray-900 dark:text-white leading-[1.2] mb-6 tracking-tighter w-full">
+              {/* Baris Pertama: Nama Anda (Otomatis sinkron dengan CMS) */}
+              <span className="block mb-1 text-[clamp(2rem,4vw,3.5rem)] capitalize">
+                {lang === 'id' ? 'Saya ' : "I'm "} {profile.name},
+              </span>
+              
+              {/* Baris Kedua: Profesi (Ukuran dikecilkan agar tidak tumpah, min-height disesuaikan) */}
+              <span className="text-blue-500 drop-shadow-sm block min-h-[50px] md:min-h-[60px] text-[clamp(1.5rem,2.5vw,2.2rem)] w-full">
+                <TypingText text={profile.role} />
+              </span>
+            </h1>
+            
+            {/* Deskripsi Bio (Dikembalikan menjadi teks biasa, tanpa card) */}
+            <p className="text-[14px] md:text-[15px] text-gray-600 dark:text-gray-400 font-medium mb-10 max-w-md leading-relaxed z-20 relative">
+              {profile.bio}
+            </p>
+            
+            {/* Tombol Membulat */}
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto z-20 relative">
+               <button onClick={() => { const el = document.getElementById('portfolio-categories'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }} className="px-8 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-black transition-all shadow-[0_8px_20px_rgba(59,130,246,0.3)] hover:-translate-y-1 active:scale-95 flex items-center justify-center text-[12px] uppercase tracking-widest">
+                 MY WORK
+               </button>
+               <button onClick={() => navigate('/contact')} className="px-8 py-3.5 rounded-full bg-white dark:bg-white text-gray-900 font-black transition-all shadow-md hover:shadow-xl hover:-translate-y-1 active:scale-95 text-[12px] uppercase tracking-widest border border-gray-200">
+                 HIRE ME
+               </button>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 w-full reveal-on-scroll delay-200">
            <div className="glass-panel p-6 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-blue-400 transition-all hover:-translate-y-1 border border-white/60 dark:border-white/10"><Briefcase className="text-blue-500 mb-3 group-hover:scale-110 transition-transform" size={28} /><p className="text-[26px] font-black text-gray-900 dark:text-white drop-shadow-sm"><CountUp end={4} suffix="+" /></p><p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">{t.yearsExp}</p></div>
-           <div className="glass-panel p-6 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-green-400 transition-all hover:-translate-y-1 border border-white/60 dark:border-white/10"><Code className="text-green-500 mb-3 group-hover:scale-110 transition-transform" size={28} /><p className="text-[26px] font-black text-gray-900 dark:text-white drop-shadow-sm"><CountUp end={projects.length} /></p><p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">{t.totalWorks}</p></div>
+           <div className="glass-panel p-6 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-blue-400 transition-all hover:-translate-y-1 border border-white/60 dark:border-white/10"><Code className="text-green-500 mb-3 group-hover:scale-110 transition-transform" size={28} /><p className="text-[26px] font-black text-gray-900 dark:text-white drop-shadow-sm"><CountUp end={projects.length} /></p><p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">{t.totalWorks}</p></div>
            <div className="glass-panel p-6 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-purple-400 transition-all hover:-translate-y-1 border border-white/60 dark:border-white/10"><FileText className="text-purple-500 mb-3 group-hover:scale-110 transition-transform" size={28} /><p className="text-[26px] font-black text-gray-900 dark:text-white drop-shadow-sm"><CountUp end={blogs.length} /></p><p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">{t.articles}</p></div>
            <div className="glass-panel p-6 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-orange-400 transition-all hover:-translate-y-1 border border-white/60 dark:border-white/10"><Users className="text-orange-500 mb-3 group-hover:scale-110 transition-transform" size={28} /><p className="text-[26px] font-black text-gray-900 dark:text-white drop-shadow-sm"><CountUp end={10} suffix="+" /></p><p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">{t.happyClients}</p></div>
+        </div>
+
+        {/* SECTION BARU: KETIGA KATEGORI KARYA (DIARAHKAN OLEH TOMBOL PORTFOLIO) */}
+        <div id="portfolio-categories" className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full reveal-on-scroll delay-200 scroll-mt-24 pt-4">
+           <div onClick={() => navigate('/technical')} className="glass-panel p-8 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-blue-400 hover:-translate-y-2 transition-all cursor-pointer border border-white/60 dark:border-white/10 shadow-sm hover:shadow-2xl hover:shadow-blue-500/20">
+              <div className="w-20 h-20 bg-blue-50 dark:bg-blue-900/30 text-blue-500 rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><Code size={36} /></div>
+              <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Technical</h3>
+              <p className="text-[13px] font-bold text-gray-500 uppercase tracking-widest">{projects.filter(p=>p.type==='technical').length} Karya Kode</p>
+           </div>
+           <div onClick={() => navigate('/creative')} className="glass-panel p-8 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-purple-400 hover:-translate-y-2 transition-all cursor-pointer border border-white/60 dark:border-white/10 shadow-sm hover:shadow-2xl hover:shadow-purple-500/20">
+              <div className="w-20 h-20 bg-purple-50 dark:bg-purple-900/30 text-purple-500 rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><Palette size={36} /></div>
+              <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Creative</h3>
+              <p className="text-[13px] font-bold text-gray-500 uppercase tracking-widest">{projects.filter(p=>p.type==='creative').length} Karya Visual</p>
+           </div>
+           <div onClick={() => navigate('/thoughts')} className="glass-panel p-8 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-orange-400 hover:-translate-y-2 transition-all cursor-pointer border border-white/60 dark:border-white/10 shadow-sm hover:shadow-2xl hover:shadow-orange-500/20">
+              <div className="w-20 h-20 bg-orange-50 dark:bg-orange-900/30 text-orange-500 rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><FileText size={36} /></div>
+              <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Thoughts</h3>
+              <p className="text-[13px] font-bold text-gray-500 uppercase tracking-widest">{blogs.length} Tulisan</p>
+           </div>
         </div>
 
         <div className="glass-panel p-8 md:p-12 rounded-[2rem] w-full reveal-on-scroll delay-100 shadow-sm border border-white/60 dark:border-white/10">
@@ -540,8 +602,28 @@ export default function App() {
             {projects.filter(p => p.type === 'technical' && p.featured).slice(0, 4).map(proj => (
                <div key={proj.id} onClick={() => navigate(`/technical/${proj.id}`)} className="p-6 border border-black/10 dark:border-white/10 rounded-xl bg-white/40 dark:bg-slate-800/40 hover:shadow-md transition-all duration-300 cursor-pointer flex flex-col group"><h3 className="text-[18px] font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">{proj.title}</h3><p className="text-[13.5px] text-gray-500 dark:text-gray-400 line-clamp-2 flex-grow mb-5 font-medium">{proj.shortDesc}</p><div className="flex flex-wrap gap-2 mt-auto">{(proj.tech || []).slice(0, 4).map(tItem => <span key={tItem} className="text-[11px] font-bold bg-gray-100 dark:bg-slate-700/50 text-gray-600 dark:text-gray-300 px-3 py-1.5 rounded-md border border-black/5 dark:border-white/5">{tItem}</span>)}</div></div>
             ))}
+            {projects.filter(p => p.type === 'technical' && p.featured).length === 0 && <p className="col-span-2 text-center text-gray-500 text-sm py-4">Belum ada karya unggulan.</p>}
           </div>
           <div className="mt-8 flex justify-center"><button onClick={() => navigate('/technical')} className="flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-slate-800 border border-black/10 dark:border-white/10 text-gray-800 dark:text-gray-200 rounded-xl text-sm font-bold shadow-sm hover:scale-105 active:scale-95 transition-transform">{t.viewAllPortfolio} <ExternalLink size={16} className="ml-1" /></button></div>
+        </div>
+
+        {/* SECTION BARU: TULISAN/BLOG TERBARU DI BERANDA */}
+        <div className="glass-panel p-8 md:p-12 rounded-[2rem] w-full reveal-on-scroll delay-200 shadow-sm border border-white/60 dark:border-white/10">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-8 text-center tracking-tight">{t.latestBlogs}</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {blogs.slice(0, 4).map(blog => (
+               <div key={blog.id} onClick={() => navigate(`/thoughts/${blog.id}`)} className="p-5 border border-black/10 dark:border-white/10 rounded-2xl bg-white/40 dark:bg-slate-800/40 hover:shadow-md transition-all duration-300 cursor-pointer flex gap-5 group items-center">
+                 <img src={blog.thumbnail} className="w-24 h-24 rounded-xl object-cover border border-white/50 dark:border-white/10 shrink-0" alt="" />
+                 <div className="flex-1 min-w-0">
+                   <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-2 block">{blog.tag}</span>
+                   <h3 className="text-[16px] font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2 leading-snug">{blog.title}</h3>
+                   <p className="text-[12px] font-bold text-gray-500 flex items-center gap-1.5"><Calendar size={12}/>{blog.date}</p>
+                 </div>
+               </div>
+            ))}
+            {blogs.length === 0 && <p className="col-span-2 text-center text-gray-500 text-sm py-4">Belum ada tulisan terbaru.</p>}
+          </div>
+          <div className="mt-8 flex justify-center"><button onClick={() => navigate('/thoughts')} className="flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-slate-800 border border-black/10 dark:border-white/10 text-gray-800 dark:text-gray-200 rounded-xl text-sm font-bold shadow-sm hover:scale-105 active:scale-95 transition-transform">{t.readAllBlogs} <ExternalLink size={16} className="ml-1" /></button></div>
         </div>
 
         <footer className="w-full pt-12 reveal-on-scroll delay-400">
@@ -551,7 +633,6 @@ export default function App() {
                 <p className="text-[15px] text-gray-600 dark:text-gray-400 max-w-lg mx-auto mb-10 font-medium">{t.collabDesc}</p>
                 <div className="flex flex-wrap justify-center gap-5 mb-12">
                    <a href={`mailto:${profile.email || ''}`} className="flex items-center gap-2 px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all shadow-md"><Mail size={18}/> {t.sendEmail}</a>
-                   {/* PERBAIKAN: Mengamankan nomor WhatsApp agar tidak error replace jika null */}
                    <a href={`https://wa.me/${(profile.whatsapp || '').replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-8 py-4 glass-panel text-gray-900 dark:text-white rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all shadow-sm border border-black/10 dark:border-white/10"><Phone size={18}/> WhatsApp</a>
                 </div>
                 <div className="flex justify-center gap-6 border-t border-black/5 dark:border-white/10 pt-10">
@@ -570,6 +651,7 @@ export default function App() {
     // --- ABOUT ---
     if (currentPath === '/about') return (
       <div className="max-w-4xl mx-auto pt-6 w-full pb-20 animate-page-enter">
+        <SEO title={t.aboutTitle} />
         <div className="mb-10 reveal-on-scroll delay-0"><h1 className="text-4xl font-black text-gray-900 dark:text-white mb-2">{t.aboutTitle}</h1><p className="text-[16px] text-gray-600 dark:text-gray-400 font-medium">{t.aboutSubtitle} {profile.name}</p></div>
         <div className="space-y-6">
           <div className="glass-panel p-8 md:p-10 rounded-[2.5rem] w-full reveal-on-scroll delay-100 space-y-6 text-[15px] text-gray-700 dark:text-gray-300 font-medium border border-white/60 dark:border-white/10"><p>{t.aboutP1}</p><p>{t.aboutP2}</p><p>{t.aboutP3}</p></div>
@@ -582,6 +664,7 @@ export default function App() {
     // --- CONTACT ---
     if (currentPath === '/contact') return (
       <div className="max-w-5xl mx-auto pt-6 w-full pb-20 animate-page-enter">
+        <SEO title={t.contactTitle} />
         <div className="mb-10 reveal-on-scroll delay-0"><h1 className="text-4xl font-black text-gray-900 dark:text-white mb-2">{t.contactTitle}</h1><p className="text-[16px] text-gray-600 dark:text-gray-400 font-medium">{t.contactSubtitle}</p></div>
         <div className="flex flex-col lg:flex-row gap-8 w-full">
           <div className="w-full lg:w-2/3 glass-panel p-8 md:p-10 rounded-[3rem] border border-white/60 dark:border-white/10 reveal-on-scroll delay-100">
@@ -611,6 +694,7 @@ export default function App() {
     // --- EXPERIENCE & EDUCATION ---
     if (currentPath === '/experience') return (
       <div className="max-w-4xl mx-auto pt-6 w-full pb-20 animate-page-enter">
+        <SEO title={t.expTitle} />
         <h1 className="text-4xl font-black dark:text-white mb-2 tracking-tight flex items-center gap-4"><Briefcase className="text-blue-500" size={32}/> {t.expTitle}</h1>
         <p className="text-[16px] text-gray-600 dark:text-gray-400 font-medium mb-12 border-b border-black/5 dark:border-white/10 pb-6">{t.expDesc}</p>
         <div className="border-l-[3px] border-blue-200 dark:border-blue-900/50 ml-4 md:ml-8 space-y-12">
@@ -624,6 +708,7 @@ export default function App() {
 
     if (currentPath === '/education') return (
       <div className="max-w-5xl mx-auto pt-6 w-full pb-20 animate-page-enter">
+        <SEO title={t.eduTitle} />
         <h1 className="text-4xl font-black dark:text-white mb-2 tracking-tight flex items-center gap-4"><GraduationCap className="text-blue-500" size={32}/> {t.eduTitle}</h1>
         <p className="text-[16px] text-gray-600 dark:text-gray-400 font-medium mb-12 border-b border-black/5 dark:border-white/10 pb-6">{t.eduDesc}</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -637,6 +722,7 @@ export default function App() {
 
     if (currentPath === '/skills') return (
       <div className="max-w-5xl mx-auto pt-6 w-full pb-20 animate-page-enter">
+        <SEO title={t.skillsTitle || t.mySkills} />
         <h1 className="text-4xl font-black dark:text-white mb-2">{t.skillsTitle || t.mySkills}</h1>
         <p className="text-[16px] text-gray-600 dark:text-gray-400 font-medium mb-12 border-b border-black/5 dark:border-white/10 pb-6">{t.skillsDesc || t.mySkillsDesc}</p>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-6">
@@ -647,6 +733,7 @@ export default function App() {
 
     if (currentPath === '/links') return (
       <div className="max-w-2xl mx-auto pt-12 w-full pb-20 animate-page-enter text-center">
+        <SEO title={t.links} />
         <img src={profile.profileImage} alt="Profile" className="w-28 h-28 rounded-full border-[6px] border-white/60 dark:border-slate-700 shadow-2xl object-cover mx-auto mb-5 animate-float" />
         <h1 className="text-3xl font-black dark:text-white mb-2 tracking-tight">{profile.name}</h1>
         <p className="text-gray-500 dark:text-gray-400 mt-2 font-bold uppercase tracking-widest text-[11px] mb-12">{t.linkDesc}</p>
@@ -659,6 +746,7 @@ export default function App() {
       const filtered = projects.filter(p => p.type === 'technical');
       return (
         <div className="max-w-5xl mx-auto pt-6 w-full animate-page-enter">
+          <SEO title={t.technicalTitle} />
           <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-2 reveal-on-scroll delay-0">{t.technicalTitle}</h1>
           <p className="text-gray-600 dark:text-gray-400 mb-12 text-[16px] font-medium reveal-on-scroll delay-100">{t.portfolioSub}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full reveal-on-scroll delay-200">
@@ -680,6 +768,7 @@ export default function App() {
       if (!proj) return <div className="text-center pt-20 text-gray-500 font-bold">{t.notFound}</div>;
       return (
         <div className="max-w-5xl mx-auto pt-6 w-full animate-page-enter">
+          <SEO title={proj.title} desc={proj.shortDesc} img={proj.image} />
           <div className="flex justify-between items-center mb-8 reveal-on-scroll delay-0">
             <button onClick={() => navigate(`/technical`)} className="flex items-center gap-2 px-5 py-2.5 glass-panel rounded-xl font-bold hover:scale-105 transition-all w-fit border border-white/60 dark:border-white/10 shadow-sm"><ArrowLeft size={16}/> {t.backToProjects}</button>
             <button onClick={() => handleShare(proj.title, proj.shortDesc)} className="flex items-center gap-2 px-5 py-2.5 glass-panel rounded-xl font-bold text-blue-600 dark:text-blue-400 hover:scale-105 transition-all w-fit border border-white/60 dark:border-white/10 shadow-sm"><Share2 size={16}/> {t.share}</button>
@@ -715,6 +804,7 @@ export default function App() {
       const filtered = projects.filter(p => p.type === 'creative');
       return (
         <div className="max-w-5xl mx-auto pt-6 w-full animate-page-enter">
+          <SEO title={t.creativeTitle} />
           <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-2 reveal-on-scroll delay-0">{t.creativeTitle}</h1>
           <p className="text-gray-600 dark:text-gray-400 mb-12 text-[16px] font-medium reveal-on-scroll delay-100">{t.creativeSub}</p>
           <div className="flex flex-col gap-8 w-full max-w-full reveal-on-scroll delay-200">
@@ -748,6 +838,7 @@ export default function App() {
 
       return (
         <div className="max-w-6xl mx-auto pt-6 w-full animate-page-enter">
+          <SEO title={proj.title} desc={proj.shortDesc} img={proj.image} />
           <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-start w-full relative">
             <div className="w-full lg:w-1/3 flex flex-col gap-6 lg:sticky lg:top-24 z-10 reveal-on-scroll delay-0">
                <div className="flex justify-between items-center w-full">
@@ -798,6 +889,7 @@ export default function App() {
       });
       return (
         <div className="max-w-5xl mx-auto pt-6 w-full animate-page-enter">
+          <SEO title={t.thoughtsTitle} />
           <h1 className="text-4xl font-black dark:text-white mb-2">{t.thoughtsTitle}</h1><p className="text-gray-600 dark:text-gray-400 mb-12 font-medium">{t.thoughtsSub}</p>
           <div className="mb-12 w-full reveal-on-scroll delay-200">
             <div className="flex flex-col sm:flex-row gap-4 mb-8 w-full"><div className="relative flex-1"><Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={20} /><input type="text" placeholder={t.searchPlaceholder} value={thoughtsSearch} onChange={(e) => setThoughtsSearch(e.target.value)} className="w-full pl-14 pr-5 py-4 rounded-2xl glass-panel outline-none focus:ring-2 focus:ring-blue-500 font-bold border border-white/60 dark:border-white/10 shadow-sm" /></div><button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg active:scale-95 text-[15px]">{t.searchBtn}</button></div>
@@ -822,6 +914,7 @@ export default function App() {
       if (!blog) return <div className="text-center pt-20 text-gray-500 font-bold">{t.notFound}</div>;
       return (
         <div className="max-w-4xl mx-auto pt-6 w-full animate-page-enter glass-panel p-8 md:p-16 rounded-[3rem] border border-white/60 dark:border-white/10 shadow-xl">
+          <SEO title={blog.title} desc={blog.summary} img={blog.thumbnail} />
           <div className="flex justify-between items-center mb-8 border-b border-black/5 dark:border-white/10 pb-6">
             <button onClick={() => navigate('/thoughts')} className="flex items-center gap-2 px-5 py-2.5 bg-white/50 dark:bg-slate-800/50 rounded-xl font-bold shadow-sm hover:text-blue-500 transition-colors border border-white/60 dark:border-white/10"><ArrowLeft size={16}/> {t.back}</button>
             <button onClick={() => handleShare(blog.title, blog.summary)} className="flex items-center gap-2 px-5 py-2.5 bg-white/50 dark:bg-slate-800/50 rounded-xl font-bold shadow-sm hover:text-blue-500 transition-colors border border-white/60 dark:border-white/10"><Share2 size={16}/> {t.share}</button>
@@ -851,9 +944,10 @@ export default function App() {
 
       return (
         <div className="max-w-6xl mx-auto pb-24 w-full animate-dashboard-enter">
+          <SEO title="Admin Dashboard" />
           {isModalOpen && (
              <div className="fixed inset-0 bg-black/40 backdrop-blur-md z-[60] flex items-center justify-center p-4">
-                <form onSubmit={handleSaveData} className="glass-panel w-full max-w-2xl rounded-[3rem] p-8 md:p-10 shadow-2xl bg-white/95 dark:bg-slate-900/95 max-h-[90vh] overflow-y-auto border border-white/60 dark:border-white/10 animate-fade-in relative">
+                <form onSubmit={handleSaveData} className="glass-panel w-full max-w-3xl rounded-[3rem] p-8 md:p-10 shadow-2xl bg-white/95 dark:bg-slate-900/95 max-h-[90vh] overflow-y-auto border border-white/60 dark:border-white/10 animate-fade-in relative">
                    
                    {isUploading && (
                      <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-[3rem]">
@@ -944,14 +1038,25 @@ export default function App() {
 
                 <h2 className="text-3xl font-black mb-8 border-b pb-6 border-black/5 dark:border-white/10 flex items-center gap-3 tracking-tight"><User className="text-blue-500"/> Personal Identity Setup</h2>
                 <form onSubmit={handleProfileSave} className="space-y-10">
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-8 border-b border-black/5 dark:border-white/10">
-                      <div className="bg-white/40 dark:bg-slate-800/40 p-8 rounded-[2.5rem] border-dashed border border-white/60 dark:border-white/10 relative">
-                        <label className="block text-[14px] font-black text-gray-700 dark:text-gray-300 mb-5 uppercase tracking-widest">Foto Profil Beranda</label>
-                        <div className="flex flex-col sm:flex-row items-center gap-6"><div className="w-24 h-24 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden shrink-0 border-4 border-white dark:border-slate-800 shadow-xl animate-float">{profileTempImg ? <img src={URL.createObjectURL(profileTempImg)} className="w-full h-full object-cover"/> : (profile.profileImage ? <img src={profile.profileImage} className="w-full h-full object-cover" /> : <ImageIcon size={40} className="text-gray-400"/>)}</div><label className="flex items-center justify-center gap-2 px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-sm cursor-pointer shadow-lg active:scale-95 transition-all w-full sm:w-auto"><UploadCloud size={20}/> Pilih Foto Baru<input type="file" accept="image/*" onChange={handleProfileImageUpload} className="hidden" /></label></div>
+                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-8 border-b border-black/5 dark:border-white/10">
+                      
+                      <div className="bg-white/40 dark:bg-slate-800/40 p-6 rounded-[2rem] border-dashed border border-white/60 dark:border-white/10 flex flex-col items-center text-center">
+                        <label className="block text-[12px] font-black text-gray-700 dark:text-gray-300 mb-4 uppercase tracking-widest">Foto Sidebar</label>
+                        <div className="w-20 h-20 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden mb-4 border-2 border-white dark:border-slate-800 shadow-md">{profileTempImg ? <img src={URL.createObjectURL(profileTempImg)} className="w-full h-full object-cover"/> : (profile.profileImage ? <img src={profile.profileImage} className="w-full h-full object-cover" /> : <ImageIcon size={30} className="text-gray-400 mt-5 mx-auto"/>)}</div>
+                        <label className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs cursor-pointer shadow-md active:scale-95 transition-all w-full"><UploadCloud size={16}/> Pilih Profil<input type="file" accept="image/*" onChange={handleProfileImageUpload} className="hidden" /></label>
                       </div>
-                      <div className="bg-white/40 dark:bg-slate-800/40 p-8 rounded-[2.5rem] border-dashed border border-white/60 dark:border-white/10 relative flex flex-col justify-center">
-                        <label className="block text-[14px] font-black text-gray-700 dark:text-gray-300 mb-5 uppercase tracking-widest">Dokumen CV (PDF)</label>
-                        <div className="flex flex-col gap-4"><label className="flex items-center justify-center gap-2 px-6 py-4 bg-gray-900 dark:bg-white hover:bg-black text-white dark:text-gray-900 rounded-2xl font-black text-sm cursor-pointer shadow-lg active:scale-95 transition-all"><FileText size={20}/> {cvFileName ? 'Ganti File Terpilih' : 'Pilih File PDF'}<input type="file" accept=".pdf" onChange={handleCvUpload} className="hidden" /></label>{cvFileName && <p className="text-[13px] text-green-600 dark:text-green-400 font-bold flex items-center gap-2 justify-center"><Check size={16}/> {cvFileName}</p>}{profile.cvUrl && !cvFileName && <p className="text-[13px] text-gray-500 font-bold flex items-center gap-2 justify-center"><CheckCircle size={16} className="text-blue-500"/> CV Publik saat ini sudah aktif.</p>}</div>
+                      
+                      
+                      <div className="bg-white/40 dark:bg-slate-800/40 p-6 rounded-[2rem] border-dashed border border-white/60 dark:border-white/10 flex flex-col items-center text-center">
+                        <label className="block text-[12px] font-black text-gray-700 dark:text-gray-300 mb-4 uppercase tracking-widest">Foto Beranda (Tanpa BG)</label>
+                        <div className="w-20 h-20 bg-gray-200 dark:bg-slate-700 rounded-xl overflow-hidden mb-4 border-2 border-white dark:border-slate-800 shadow-md">{heroTempImg ? <img src={URL.createObjectURL(heroTempImg)} className="w-full h-full object-cover"/> : (profile.heroImage ? <img src={profile.heroImage} className="w-full h-full object-cover" /> : <ImageIcon size={30} className="text-gray-400 mt-5 mx-auto"/>)}</div>
+                        <label className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-bold text-xs cursor-pointer shadow-md active:scale-95 transition-all w-full"><UploadCloud size={16}/> Pilih Hero PNG<input type="file" accept="image/*" onChange={handleHeroImageUpload} className="hidden" /></label>
+                      </div>
+
+                      
+                      <div className="bg-white/40 dark:bg-slate-800/40 p-6 rounded-[2rem] border-dashed border border-white/60 dark:border-white/10 flex flex-col items-center text-center justify-center">
+                        <label className="block text-[12px] font-black text-gray-700 dark:text-gray-300 mb-4 uppercase tracking-widest">Dokumen CV (PDF)</label>
+                        <div className="flex flex-col gap-3 w-full"><label className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold text-xs cursor-pointer shadow-md active:scale-95 transition-all w-full"><FileText size={16}/> {cvFileName ? 'Ganti File' : 'Upload PDF'}<input type="file" accept=".pdf" onChange={handleCvUpload} className="hidden" /></label>{cvFileName && <p className="text-[11px] text-blue-600 font-bold flex items-center gap-1 justify-center truncate"><Check size={12}/> {cvFileName}</p>}{profile.cvUrl && !cvFileName && <p className="text-[11px] text-gray-500 font-bold flex items-center gap-1 justify-center"><CheckCircle size={12} className="text-blue-500"/> CV Publik Aktif</p>}</div>
                       </div>
                    </div>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -970,7 +1075,7 @@ export default function App() {
                    </div>
                    <div className="flex justify-end pt-8 mt-6 border-t border-black/5 dark:border-white/10"><button type="submit" disabled={isUploading} className="px-10 py-5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-[16px] shadow-2xl shadow-blue-500/40 flex items-center gap-3 active:scale-95 transition-all hover:scale-105 disabled:opacity-50"><Save size={22}/> Publish & Simpan ke Database</button></div>
                 </form>
-             </div>
+              </div>
             )}
 
             {(cmsTab === 'technical' || cmsTab === 'creative') && (
@@ -987,7 +1092,7 @@ export default function App() {
                             )}
                             <div><h4 className="font-black text-gray-900 dark:text-white text-[18px] mb-1 group-hover:text-blue-500 transition-colors">{p.title}</h4><p className="text-[12px] font-bold text-gray-500 uppercase tracking-widest">{p.category}</p></div>
                           </div>
-                          <div className="flex items-center gap-3 shrink-0"><button onClick={() => openModal('project', p, cmsTab)} className="p-4 bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Edit size={20}/></button><button onClick={() => handleDeleteData(p.id, 'projects')} className="p-4 bg-white dark:bg-slate-700 text-red-600 dark:text-red-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Trash2 size={20}/></button></div>
+                          <div className="flex items-center gap-3 shrink-0"><button onClick={() => openModal('project', p, cmsTab)} className="p-4 bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Edit size={20}/></button><button onClick={async () => { if(supabase) await supabase.from('projects').delete().eq('id', p.id); setProjects(projects.filter(x => x.id !== p.id)); showToast('Dihapus');}} className="p-4 bg-white dark:bg-slate-700 text-red-600 dark:text-red-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Trash2 size={20}/></button></div>
                        </div>
                     ))}
                     {projects.filter(p => p.type === cmsTab).length === 0 && <div className="p-12 text-center border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-[2.5rem] font-bold text-gray-500">Belum ada karya.</div>}
@@ -997,12 +1102,12 @@ export default function App() {
 
             {cmsTab === 'blogs' && (
               <div className="glass-panel p-8 md:p-12 rounded-[3rem] shadow-2xl border border-white/60 dark:border-white/10">
-                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4"><h2 className="text-3xl font-black uppercase text-gray-900 dark:text-white flex items-center gap-3 tracking-tighter"><FileText size={30} className="text-blue-500"/> Koleksi Artikel</h2><button onClick={() => openModal('blog', null)} className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-sm shadow-xl shadow-blue-500/30 flex items-center gap-2 active:scale-95 transition-all hover:scale-105"><Plus size={18}/> Tulis Artikel</button></div>
+                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4"><h2 className="text-3xl font-black uppercase text-gray-900 dark:text-white flex items-center gap-3 tracking-tighter"><FileText size={30} className="text-blue-500"/> Artikel Blog (Rich Text)</h2><button onClick={() => openModal('blog', null)} className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-sm shadow-xl shadow-blue-500/30 flex items-center gap-2 active:scale-95 transition-all hover:scale-105"><Plus size={18}/> Tulis Artikel</button></div>
                  <div className="grid grid-cols-1 gap-5">
                     {blogs.map(b => (
                        <div key={b.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-white/40 dark:bg-slate-800/40 rounded-[2rem] border border-white/60 dark:border-white/10 hover:shadow-xl transition-all duration-300 group gap-5 hover:-translate-y-1">
                           <div className="flex items-center gap-6"><img src={b.thumbnail} className="w-24 h-24 rounded-2xl object-cover shadow-md border border-white/50 dark:border-white/10 shrink-0" alt="" /><div><h4 className="font-black text-gray-900 dark:text-white text-[18px] mb-2 line-clamp-1 group-hover:text-blue-500 transition-colors">{b.title}</h4><p className="text-[12px] font-bold text-blue-700 dark:text-blue-400 uppercase tracking-widest bg-blue-100/50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg inline-block border border-blue-200/50 dark:border-blue-800/30 shadow-sm">{b.tag} • {b.date}</p></div></div>
-                          <div className="flex items-center gap-3 shrink-0"><button onClick={() => openModal('blog', b)} className="p-4 bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Edit size={20}/></button><button onClick={() => handleDeleteData(b.id, 'blogs')} className="p-4 bg-white dark:bg-slate-700 text-red-600 dark:text-red-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Trash2 size={20}/></button></div>
+                          <div className="flex items-center gap-3 shrink-0"><button onClick={() => openModal('blog', b)} className="p-4 bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Edit size={20}/></button><button onClick={async () => { if(supabase) await supabase.from('blogs').delete().eq('id', b.id); setBlogs(blogs.filter(x => x.id !== b.id)); showToast('Dihapus');}} className="p-4 bg-white dark:bg-slate-700 text-red-600 dark:text-red-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Trash2 size={20}/></button></div>
                        </div>
                     ))}
                  </div>
@@ -1017,7 +1122,7 @@ export default function App() {
                     {experiences.map(e => (
                        <div key={e.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-white/40 dark:bg-slate-800/40 rounded-[2rem] border border-white/60 dark:border-white/10 hover:shadow-xl transition-all duration-300 group gap-5 hover:-translate-y-1">
                           <div><h4 className="font-black text-gray-900 dark:text-white text-[18px] mb-1">{e.role}</h4><p className="text-[13px] font-bold text-gray-500 bg-white/50 dark:bg-black/20 px-3 py-1.5 rounded-lg inline-block border border-black/5 dark:border-white/5 mt-2">{e.company} • {e.period}</p></div>
-                          <div className="flex items-center gap-3 shrink-0"><button onClick={() => openModal('experience', e)} className="p-4 bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Edit size={20}/></button><button onClick={() => handleDeleteData(e.id, 'experiences')} className="p-4 bg-white dark:bg-slate-700 text-red-600 dark:text-red-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Trash2 size={20}/></button></div>
+                          <div className="flex items-center gap-3 shrink-0"><button onClick={() => openModal('experience', e)} className="p-4 bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Edit size={20}/></button><button onClick={async () => { if(supabase) await supabase.from('experiences').delete().eq('id', e.id); setExperiences(experiences.filter(x => x.id !== e.id)); showToast('Dihapus');}} className="p-4 bg-white dark:bg-slate-700 text-red-600 dark:text-red-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Trash2 size={20}/></button></div>
                        </div>
                     ))}
                     {experiences.length === 0 && <p className="text-gray-500 font-bold p-6 text-center border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-3xl">Belum ada data pengalaman.</p>}
@@ -1029,7 +1134,7 @@ export default function App() {
                     {educations.map(e => (
                        <div key={e.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-white/40 dark:bg-slate-800/40 rounded-[2rem] border border-white/60 dark:border-white/10 hover:shadow-xl transition-all duration-300 group gap-5 hover:-translate-y-1">
                           <div><h4 className="font-black text-gray-900 dark:text-white text-[18px] mb-1">{e.degree}</h4><p className="text-[13px] font-bold text-gray-500 bg-white/50 dark:bg-black/20 px-3 py-1.5 rounded-lg inline-block border border-black/5 dark:border-white/5 mt-2">{e.institution} • {e.period}</p></div>
-                          <div className="flex items-center gap-3 shrink-0"><button onClick={() => openModal('education', e)} className="p-4 bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Edit size={20}/></button><button onClick={() => handleDeleteData(e.id, 'educations')} className="p-4 bg-white dark:bg-slate-700 text-red-600 dark:text-red-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Trash2 size={20}/></button></div>
+                          <div className="flex items-center gap-3 shrink-0"><button onClick={() => openModal('education', e)} className="p-4 bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Edit size={20}/></button><button onClick={async () => { if(supabase) await supabase.from('educations').delete().eq('id', e.id); setEducations(educations.filter(x => x.id !== e.id)); showToast('Dihapus');}} className="p-4 bg-white dark:bg-slate-700 text-red-600 dark:text-red-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Trash2 size={20}/></button></div>
                        </div>
                     ))}
                     {educations.length === 0 && <p className="text-gray-500 font-bold p-6 text-center border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-3xl">Belum ada data pendidikan.</p>}
@@ -1046,7 +1151,7 @@ export default function App() {
                        <div key={s.id} className="flex flex-col items-center justify-between p-6 bg-white/40 dark:bg-slate-800/40 rounded-[2rem] border border-white/60 dark:border-white/10 hover:shadow-xl transition-all duration-300 group gap-5 hover:-translate-y-1">
                           <img src={s.img} className={`w-16 h-16 object-contain ${s.invert ? 'dark:invert' : ''}`}/>
                           <h4 className="font-black text-gray-900 dark:text-white text-[16px]">{s.name}</h4>
-                          <div className="flex items-center gap-3 shrink-0"><button onClick={() => openModal('skill', s)} className="p-3 bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Edit size={16}/></button><button onClick={() => handleDeleteData(s.id, 'skills')} className="p-3 bg-white dark:bg-slate-700 text-red-600 dark:text-red-400 rounded-xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Trash2 size={16}/></button></div>
+                          <div className="flex items-center gap-3 shrink-0"><button onClick={() => openModal('skill', s)} className="p-3 bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Edit size={16}/></button><button onClick={async () => { if(supabase) await supabase.from('skills').delete().eq('id', s.id); setSkills(skills.filter(x => x.id !== s.id)); showToast('Dihapus');}} className="p-3 bg-white dark:bg-slate-700 text-red-600 dark:text-red-400 rounded-xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Trash2 size={16}/></button></div>
                        </div>
                     ))}
                     {skills.length === 0 && <p className="text-gray-500 font-bold p-6 text-center col-span-full border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-3xl">Belum ada skill ditambahkan.</p>}
@@ -1064,7 +1169,7 @@ export default function App() {
                           </div>
                           <div className="flex items-center gap-3 shrink-0">
                              <button onClick={() => openModal('link', l)} className="p-4 bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Edit size={20}/></button>
-                             <button onClick={() => handleDeleteData(l.id, 'links')} className="p-4 bg-white dark:bg-slate-700 text-red-600 dark:text-red-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Trash2 size={20}/></button>
+                             <button onClick={async () => { if(supabase) await supabase.from('links').delete().eq('id', l.id); setLinks(links.filter(x => x.id !== l.id)); showToast('Dihapus');}} className="p-4 bg-white dark:bg-slate-700 text-red-600 dark:text-red-400 rounded-2xl shadow-sm border border-black/5 hover:scale-110 active:scale-95 transition-transform"><Trash2 size={20}/></button>
                           </div>
                        </div>
                     ))}
@@ -1080,7 +1185,8 @@ export default function App() {
   };
 
   return (
-    <div className="flex relative bg-[#F8FAFC] dark:bg-[#05050A] text-gray-900 dark:text-gray-100 min-h-screen font-sans overflow-x-hidden selection:bg-blue-500/30 selection:text-white">
+    <HelmetProvider>
+      <div className="flex relative bg-[#F8FAFC] dark:bg-[#05050A] text-gray-900 dark:text-gray-100 min-h-screen font-sans overflow-x-hidden selection:bg-blue-500/30 selection:text-white">
        {toastMessage && (
           <div className="fixed bottom-8 right-8 z-[100] animate-dashboard-enter">
              <div className="glass-panel bg-white/95 dark:bg-slate-800/95 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-blue-200/50 dark:border-blue-900/50 backdrop-blur-2xl">
@@ -1097,20 +1203,63 @@ export default function App() {
        </div>
 
        <style dangerouslySetInnerHTML={{__html: `
-        .glass-panel { background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%); backdrop-filter: blur(30px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(255, 255, 255, 0.2); }
-        html.dark .glass-panel { background: linear-gradient(135deg, rgba(15, 23, 42, 0.4) 0%, rgba(5, 5, 10, 0.6) 100%); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.05); }
+        /* --- GAYA "BENTO BOX / SOLID MATTE" SUPER RINGAN --- */
+        /* Light Mode: Putih solid dengan bayangan elegan */
+        .glass-panel { 
+          background: #ffffff; 
+          border: 1px solid rgba(0, 0, 0, 0.08); 
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0,0,0,0.02); 
+          transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        
+        /* Dark Mode: Abu-abu gelap kebiruan (Slate) dengan border tipis bercahaya */
+        html.dark .glass-panel { 
+          background: #0f172a; /* Warna Slate-900 yang elegan */
+          border: 1px solid rgba(255, 255, 255, 0.06); 
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.02); 
+        }
+
+        /* Efek Hover untuk interaksi (Opsional tapi membuat UI terasa hidup) */
+        .glass-panel:hover {
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+          border-color: rgba(59, 130, 246, 0.3); /* Warna biru menyala tipis saat disentuh */
+        }
+        html.dark .glass-panel:hover {
+          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+          border-color: rgba(59, 130, 246, 0.4); /* Warna biru */
+        }
+
+        /* Mematikan Animasi Latar Belakang Lingkaran Blur di Mobile (Agar hemat baterai & RAM) */
+        @media (max-width: 768px) {
+           .animate-\\[pulse_8s_ease-in-out_infinite_alternate\\],
+           .animate-\\[pulse_10s_ease-in-out_infinite_alternate-reverse\\],
+           .animate-\\[pulse_12s_ease-in-out_infinite_alternate\\] {
+              animation: none !important;
+              opacity: 0.3; /* Lingkaran tetap ada tapi diam */
+           }
+           .glass-panel:hover, html.dark .glass-panel:hover {
+              transform: none;
+           }
+        }
+
         .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; } .custom-scrollbar::-webkit-scrollbar-track { background: transparent; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 20px; border: 2px solid transparent; background-clip: padding-box; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.6); border: 2px solid transparent; background-clip: padding-box;}
+        
         .reveal-on-scroll { opacity: 0; animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes revealUp { 0% { opacity: 0; transform: translateY(40px) scale(0.98); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+        
         .animate-dashboard-enter { animation: dashboardEnter 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         @keyframes dashboardEnter { 0% { opacity: 0; transform: scale(0.96) translateY(20px); filter: blur(8px); } 100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); } }
+        
         .animate-page-enter { animation: pageEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         @keyframes pageEnter { 0% { opacity: 0; transform: translateX(15px); } 100% { opacity: 1; transform: translateX(0); } }
+        
         @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } } .animate-float { animation: float 6s ease-in-out infinite; }
-        @keyframes float-delayed { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } } .animate-float-delayed { animation: float-delayed 7s ease-in-out infinite 2s; }
-        .delay-0 { animation-delay: 0ms; } .delay-100 { animation-delay: 80ms; } .delay-200 { animation-delay: 160ms; } .delay-300 { animation-delay: 240ms; } .delay-400 { animation-delay: 320ms; } .delay-500 { animation-delay: 400ms; } .delay-600 { animation-delay: 480ms; } .delay-700 { animation-delay: 560ms; } .delay-800 { animation-delay: 640ms; } .delay-900 { animation-delay: 720ms; } .delay-1000 { animation-delay: 800ms; }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* CSS UNTUK TYPING EFFECT (KEDIP KURSOR) */
+        @keyframes blink { 0%, 100% { border-color: transparent; } 50% { border-color: #3b82f6; } }
+
         /* CSS UNTUK RICH TEXT EDITOR & TABEL */
         .article-content table { width: 100%; border-collapse: collapse; margin: 2rem 0; border: 1px solid rgba(156, 163, 175, 0.3); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .article-content th, .article-content td { border: 1px solid rgba(156, 163, 175, 0.3); padding: 12px 16px; text-align: left; }
@@ -1141,7 +1290,8 @@ export default function App() {
           <div key={currentPath} className="p-5 sm:p-8 md:p-12 lg:p-16 min-h-screen max-w-[1400px] mx-auto w-full overflow-x-hidden">
             {renderContent()}
           </div>
-        </main>
-    </div>
+       </main>
+      </div>
+    </HelmetProvider>
   );
 }
