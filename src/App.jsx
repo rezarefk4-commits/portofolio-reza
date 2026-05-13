@@ -498,34 +498,19 @@ export default function App() {
   // RENDER MAIN CONTENT
   // ==========================================================================
   const renderContent = () => {
-    // --- HOME ---
+// --- HOME ---
     if (currentPath === '/home') return (
-      <div className="max-w-5xl mx-auto space-y-24 pb-24 w-full animate-page-enter">
+      <div className="max-w-5xl mx-auto space-y-24 pb-24 w-full animate-page-enter overflow-hidden">
         <SEO title="Beranda" />
         
-        {/* --- HERO SECTION: CINEMATIC HOVER (B&W TO COLOR) --- */}
-        <div className="relative flex flex-col justify-center min-h-[75vh] w-full pt-10 lg:pt-0 z-10 reveal-on-scroll delay-0 group rounded-[3rem] overflow-hidden bg-[#F8FAFC] dark:bg-[#05050A] border border-black/5 dark:border-white/5 shadow-2xl">
+        {/* --- HERO SECTION: SPLIT LAYOUT (FOTO PERSEGI PANJANG) --- */}
+        <div className="relative flex flex-col-reverse lg:flex-row items-center justify-between min-h-[75vh] w-full pt-10 lg:pt-0 gap-12 lg:gap-10 z-10">
           
-          {/* FOTO BACKGROUND KANAN (Efek Hitam Putih -> Berwarna & Zoom) */}
-          <div className="absolute inset-0 w-full h-full lg:w-[65%] lg:left-[35%] z-0 overflow-hidden bg-[#F8FAFC] dark:bg-[#05050A]">
-             {/* Gradasi agar ujung kiri foto membaur mulus dengan background gelap/terang */}
-             <div className="absolute inset-0 bg-gradient-to-r from-[#F8FAFC] via-[#F8FAFC]/90 to-transparent dark:from-[#05050A] dark:via-[#05050A]/90 dark:to-transparent z-10 w-[80%] lg:w-[50%]"></div>
-             {/* Gradasi dari bawah agar foto tidak terpotong tajam */}
-             <div className="absolute bottom-0 w-full h-1/3 bg-gradient-to-t from-[#F8FAFC] to-transparent dark:from-[#05050A] dark:to-transparent z-10"></div>
-             
-             {/* KODE EFEK: grayscale & scale-105 saat di-hover */}
-             <img 
-               src={profile.heroImage || profile.profileImage} 
-               alt="Hero Portrait" 
-               className="w-full h-full object-cover object-center lg:object-top transition-all duration-700 ease-in-out grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 opacity-50 dark:opacity-40 group-hover:opacity-100" 
-             />
-          </div>
-
-          {/* KONTEN TEKS (Kiri) */}
-          <div className="relative w-full lg:w-[60%] flex flex-col items-center lg:items-start text-center lg:text-left z-20 px-6 sm:px-12 py-16">
+          {/* KONTEN TEKS (Kiri) - Muncul Bertahap */}
+          <div className="relative w-full lg:w-[55%] flex flex-col items-center lg:items-start text-center lg:text-left z-20">
             
             {/* Deretan Ikon Sosial Media */}
-            <div className="flex gap-5 mb-6">
+            <div className="flex gap-5 mb-6 reveal-on-scroll" style={{ animationDelay: '0.1s' }}>
                {profile.socials?.instagram && <a href={profile.socials.instagram} target="_blank" rel="noreferrer" className="text-gray-400 dark:text-gray-500 hover:text-blue-500 transition-colors"><BrandIcon name="instagram" size={18}/></a>}
                {profile.socials?.threads && <a href={profile.socials.threads} target="_blank" rel="noreferrer" className="text-gray-400 dark:text-gray-500 hover:text-blue-500 transition-colors"><BrandIcon name="threads" size={18}/></a>}
                {profile.socials?.tiktok && <a href={profile.socials.tiktok} target="_blank" rel="noreferrer" className="text-gray-400 dark:text-gray-500 hover:text-blue-500 transition-colors"><BrandIcon name="tiktok" size={18}/></a>}
@@ -533,25 +518,22 @@ export default function App() {
             </div>
             
             {/* Judul dengan Efek Typing */}
-            <h1 className="font-black text-gray-900 dark:text-white leading-[1.2] mb-6 tracking-tighter w-full">
-              {/* Baris Pertama: Nama Anda (Otomatis sinkron dengan CMS) */}
+            <h1 className="font-black text-gray-900 dark:text-white leading-[1.2] mb-6 tracking-tighter w-full reveal-on-scroll" style={{ animationDelay: '0.2s' }}>
               <span className="block mb-1 text-[clamp(2rem,4vw,3.5rem)] capitalize">
                 {lang === 'id' ? 'Saya ' : "I'm "} {profile.name},
               </span>
-              
-              {/* Baris Kedua: Profesi (Ukuran dikecilkan agar tidak tumpah, min-height disesuaikan) */}
               <span className="text-blue-500 drop-shadow-sm block min-h-[50px] md:min-h-[60px] text-[clamp(1.5rem,2.5vw,2.2rem)] w-full">
                 <TypingText text={profile.role} />
               </span>
             </h1>
             
-            {/* Deskripsi Bio (Dikembalikan menjadi teks biasa, tanpa card) */}
-            <p className="text-[14px] md:text-[15px] text-gray-600 dark:text-gray-400 font-medium mb-10 max-w-md leading-relaxed z-20 relative">
+            {/* Deskripsi Bio */}
+            <p className="text-[14px] md:text-[15px] text-gray-600 dark:text-gray-400 font-medium mb-10 max-w-md leading-relaxed z-20 relative reveal-on-scroll" style={{ animationDelay: '0.3s' }}>
               {profile.bio}
             </p>
             
             {/* Tombol Membulat */}
-            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto z-20 relative">
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto z-20 relative reveal-on-scroll" style={{ animationDelay: '0.4s' }}>
                <button onClick={() => { const el = document.getElementById('portfolio-categories'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }} className="px-8 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-black transition-all shadow-[0_8px_20px_rgba(59,130,246,0.3)] hover:-translate-y-1 active:scale-95 flex items-center justify-center text-[12px] uppercase tracking-widest">
                  MY WORK
                </button>
@@ -560,59 +542,73 @@ export default function App() {
                </button>
             </div>
           </div>
+
+          {/* FOTO KANAN (Kartu Persegi Panjang Elegan) */}
+          <div className="w-full lg:w-[45%] h-[400px] lg:h-[500px] relative group rounded-[2rem] overflow-hidden shadow-2xl border border-white/60 dark:border-white/10 reveal-on-scroll z-20" style={{ animationDelay: '0.5s' }}>
+             <img 
+               src={profile.heroImage || profile.profileImage} 
+               alt="Hero Portrait" 
+               className="w-full h-full object-cover object-center transition-all duration-700 ease-in-out grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105" 
+             />
+             {/* Overlay gradasi tipis di bawah foto agar tidak kaku */}
+             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+          </div>
+          
+          {/* Elemen Dekorasi Bias Cahaya di Latar */}
+          <div className="absolute top-[10%] right-[10%] w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] -z-10 reveal-on-scroll" style={{ animationDelay: '0.6s' }}></div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 w-full reveal-on-scroll delay-200">
-           <div className="glass-panel p-6 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-blue-400 transition-all hover:-translate-y-1 border border-white/60 dark:border-white/10"><Briefcase className="text-blue-500 mb-3 group-hover:scale-110 transition-transform" size={28} /><p className="text-[26px] font-black text-gray-900 dark:text-white drop-shadow-sm"><CountUp end={4} suffix="+" /></p><p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">{t.yearsExp}</p></div>
-           <div className="glass-panel p-6 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-blue-400 transition-all hover:-translate-y-1 border border-white/60 dark:border-white/10"><Code className="text-green-500 mb-3 group-hover:scale-110 transition-transform" size={28} /><p className="text-[26px] font-black text-gray-900 dark:text-white drop-shadow-sm"><CountUp end={projects.length} /></p><p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">{t.totalWorks}</p></div>
-           <div className="glass-panel p-6 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-purple-400 transition-all hover:-translate-y-1 border border-white/60 dark:border-white/10"><FileText className="text-purple-500 mb-3 group-hover:scale-110 transition-transform" size={28} /><p className="text-[26px] font-black text-gray-900 dark:text-white drop-shadow-sm"><CountUp end={blogs.length} /></p><p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">{t.articles}</p></div>
-           <div className="glass-panel p-6 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-orange-400 transition-all hover:-translate-y-1 border border-white/60 dark:border-white/10"><Users className="text-orange-500 mb-3 group-hover:scale-110 transition-transform" size={28} /><p className="text-[26px] font-black text-gray-900 dark:text-white drop-shadow-sm"><CountUp end={10} suffix="+" /></p><p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">{t.happyClients}</p></div>
+        {/* --- KOTAK STATISTIK --- */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 w-full">
+           <div className="glass-panel p-6 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-blue-400 transition-all hover:-translate-y-1 border border-white/60 dark:border-white/10 reveal-on-scroll" style={{ animationDelay: '0.1s' }}><Briefcase className="text-blue-500 mb-3 group-hover:scale-110 transition-transform" size={28} /><p className="text-[26px] font-black text-gray-900 dark:text-white drop-shadow-sm"><CountUp end={4} suffix="+" /></p><p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">{t.yearsExp}</p></div>
+           <div className="glass-panel p-6 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-blue-400 transition-all hover:-translate-y-1 border border-white/60 dark:border-white/10 reveal-on-scroll" style={{ animationDelay: '0.2s' }}><Code className="text-green-500 mb-3 group-hover:scale-110 transition-transform" size={28} /><p className="text-[26px] font-black text-gray-900 dark:text-white drop-shadow-sm"><CountUp end={projects.length} /></p><p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">{t.totalWorks}</p></div>
+           <div className="glass-panel p-6 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-purple-400 transition-all hover:-translate-y-1 border border-white/60 dark:border-white/10 reveal-on-scroll" style={{ animationDelay: '0.3s' }}><FileText className="text-purple-500 mb-3 group-hover:scale-110 transition-transform" size={28} /><p className="text-[26px] font-black text-gray-900 dark:text-white drop-shadow-sm"><CountUp end={blogs.length} /></p><p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">{t.articles}</p></div>
+           <div className="glass-panel p-6 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-orange-400 transition-all hover:-translate-y-1 border border-white/60 dark:border-white/10 reveal-on-scroll" style={{ animationDelay: '0.4s' }}><Users className="text-orange-500 mb-3 group-hover:scale-110 transition-transform" size={28} /><p className="text-[26px] font-black text-gray-900 dark:text-white drop-shadow-sm"><CountUp end={10} suffix="+" /></p><p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">{t.happyClients}</p></div>
         </div>
 
-        {/* SECTION BARU: KETIGA KATEGORI KARYA (DIARAHKAN OLEH TOMBOL PORTFOLIO) */}
-        <div id="portfolio-categories" className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full reveal-on-scroll delay-200 scroll-mt-24 pt-4">
-           <div onClick={() => navigate('/technical')} className="glass-panel p-8 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-blue-400 hover:-translate-y-2 transition-all cursor-pointer border border-white/60 dark:border-white/10 shadow-sm hover:shadow-2xl hover:shadow-blue-500/20">
+        {/* SECTION BARU: KETIGA KATEGORI KARYA */}
+        <div id="portfolio-categories" className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full scroll-mt-24 pt-4">
+           <div onClick={() => navigate('/technical')} className="glass-panel p-8 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-blue-400 hover:-translate-y-2 transition-all cursor-pointer border border-white/60 dark:border-white/10 shadow-sm hover:shadow-2xl hover:shadow-blue-500/20 reveal-on-scroll" style={{ animationDelay: '0.1s' }}>
               <div className="w-20 h-20 bg-blue-50 dark:bg-blue-900/30 text-blue-500 rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><Code size={36} /></div>
               <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Technical</h3>
               <p className="text-[13px] font-bold text-gray-500 uppercase tracking-widest">{projects.filter(p=>p.type==='technical').length} Karya Kode</p>
            </div>
-           <div onClick={() => navigate('/creative')} className="glass-panel p-8 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-purple-400 hover:-translate-y-2 transition-all cursor-pointer border border-white/60 dark:border-white/10 shadow-sm hover:shadow-2xl hover:shadow-purple-500/20">
+           <div onClick={() => navigate('/creative')} className="glass-panel p-8 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-purple-400 hover:-translate-y-2 transition-all cursor-pointer border border-white/60 dark:border-white/10 shadow-sm hover:shadow-2xl hover:shadow-purple-500/20 reveal-on-scroll" style={{ animationDelay: '0.2s' }}>
               <div className="w-20 h-20 bg-purple-50 dark:bg-purple-900/30 text-purple-500 rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><Palette size={36} /></div>
               <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Creative</h3>
               <p className="text-[13px] font-bold text-gray-500 uppercase tracking-widest">{projects.filter(p=>p.type==='creative').length} Karya Visual</p>
            </div>
-           <div onClick={() => navigate('/thoughts')} className="glass-panel p-8 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-orange-400 hover:-translate-y-2 transition-all cursor-pointer border border-white/60 dark:border-white/10 shadow-sm hover:shadow-2xl hover:shadow-orange-500/20">
+           <div onClick={() => navigate('/thoughts')} className="glass-panel p-8 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-orange-400 hover:-translate-y-2 transition-all cursor-pointer border border-white/60 dark:border-white/10 shadow-sm hover:shadow-2xl hover:shadow-orange-500/20 reveal-on-scroll" style={{ animationDelay: '0.3s' }}>
               <div className="w-20 h-20 bg-orange-50 dark:bg-orange-900/30 text-orange-500 rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><FileText size={36} /></div>
               <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Thoughts</h3>
               <p className="text-[13px] font-bold text-gray-500 uppercase tracking-widest">{blogs.length} Tulisan</p>
            </div>
         </div>
 
-        <div className="glass-panel p-8 md:p-12 rounded-[2rem] w-full reveal-on-scroll delay-100 shadow-sm border border-white/60 dark:border-white/10">
+        <div className="glass-panel p-8 md:p-12 rounded-[2rem] w-full reveal-on-scroll shadow-sm border border-white/60 dark:border-white/10" style={{ animationDelay: '0.1s' }}>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-8 text-center tracking-tight">{t.whatIDo}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {services.map(srv => { const IconComp = getIcon(srv.icon); return (<div key={srv.id} className="p-5 border border-black/10 dark:border-white/10 rounded-xl bg-white/40 dark:bg-slate-800/40 flex gap-4 hover:shadow-md transition-all items-start group"><div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-slate-700/50 flex items-center justify-center shrink-0 shadow-sm"><IconComp size={18} className="text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" /></div><div><h3 className="text-[15px] font-bold text-gray-900 dark:text-white mb-1">{srv.title}</h3><p className="text-[13px] text-gray-500 dark:text-gray-400 font-medium">{srv.desc}</p></div></div>)})}
+            {services.map((srv, idx) => { const IconComp = getIcon(srv.icon); return (<div key={srv.id} className="p-5 border border-black/10 dark:border-white/10 rounded-xl bg-white/40 dark:bg-slate-800/40 flex gap-4 hover:shadow-md transition-all items-start group reveal-on-scroll" style={{ animationDelay: `${0.2 + (idx * 0.1)}s` }}><div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-slate-700/50 flex items-center justify-center shrink-0 shadow-sm"><IconComp size={18} className="text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400" /></div><div><h3 className="text-[15px] font-bold text-gray-900 dark:text-white mb-1">{srv.title}</h3><p className="text-[13px] text-gray-500 dark:text-gray-400 font-medium">{srv.desc}</p></div></div>)})}
             {services.length === 0 && <p className="col-span-2 text-center text-gray-500">Belum ada layanan ditambahkan.</p>}
           </div>
         </div>
 
-        <div className="glass-panel p-8 md:p-12 rounded-[2rem] w-full reveal-on-scroll delay-200 shadow-sm border border-white/60 dark:border-white/10">
+        <div className="glass-panel p-8 md:p-12 rounded-[2rem] w-full reveal-on-scroll shadow-sm border border-white/60 dark:border-white/10" style={{ animationDelay: '0.1s' }}>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-8 text-center tracking-tight">{t.featuredProjects}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {projects.filter(p => p.type === 'technical' && p.featured).slice(0, 4).map(proj => (
-               <div key={proj.id} onClick={() => navigate(`/technical/${proj.id}`)} className="p-6 border border-black/10 dark:border-white/10 rounded-xl bg-white/40 dark:bg-slate-800/40 hover:shadow-md transition-all duration-300 cursor-pointer flex flex-col group"><h3 className="text-[18px] font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">{proj.title}</h3><p className="text-[13.5px] text-gray-500 dark:text-gray-400 line-clamp-2 flex-grow mb-5 font-medium">{proj.shortDesc}</p><div className="flex flex-wrap gap-2 mt-auto">{(proj.tech || []).slice(0, 4).map(tItem => <span key={tItem} className="text-[11px] font-bold bg-gray-100 dark:bg-slate-700/50 text-gray-600 dark:text-gray-300 px-3 py-1.5 rounded-md border border-black/5 dark:border-white/5">{tItem}</span>)}</div></div>
+            {projects.filter(p => p.type === 'technical' && p.featured).slice(0, 4).map((proj, idx) => (
+               <div key={proj.id} onClick={() => navigate(`/technical/${proj.id}`)} className="p-6 border border-black/10 dark:border-white/10 rounded-xl bg-white/40 dark:bg-slate-800/40 hover:shadow-md transition-all duration-300 cursor-pointer flex flex-col group reveal-on-scroll" style={{ animationDelay: `${0.2 + (idx * 0.1)}s` }}><h3 className="text-[18px] font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">{proj.title}</h3><p className="text-[13.5px] text-gray-500 dark:text-gray-400 line-clamp-2 flex-grow mb-5 font-medium">{proj.shortDesc}</p><div className="flex flex-wrap gap-2 mt-auto">{(proj.tech || []).slice(0, 4).map(tItem => <span key={tItem} className="text-[11px] font-bold bg-gray-100 dark:bg-slate-700/50 text-gray-600 dark:text-gray-300 px-3 py-1.5 rounded-md border border-black/5 dark:border-white/5">{tItem}</span>)}</div></div>
             ))}
             {projects.filter(p => p.type === 'technical' && p.featured).length === 0 && <p className="col-span-2 text-center text-gray-500 text-sm py-4">Belum ada karya unggulan.</p>}
           </div>
-          <div className="mt-8 flex justify-center"><button onClick={() => navigate('/technical')} className="flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-slate-800 border border-black/10 dark:border-white/10 text-gray-800 dark:text-gray-200 rounded-xl text-sm font-bold shadow-sm hover:scale-105 active:scale-95 transition-transform">{t.viewAllPortfolio} <ExternalLink size={16} className="ml-1" /></button></div>
+          <div className="mt-8 flex justify-center reveal-on-scroll" style={{ animationDelay: '0.6s' }}><button onClick={() => navigate('/technical')} className="flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-slate-800 border border-black/10 dark:border-white/10 text-gray-800 dark:text-gray-200 rounded-xl text-sm font-bold shadow-sm hover:scale-105 active:scale-95 transition-transform">{t.viewAllPortfolio} <ExternalLink size={16} className="ml-1" /></button></div>
         </div>
 
-        {/* SECTION BARU: TULISAN/BLOG TERBARU DI BERANDA */}
-        <div className="glass-panel p-8 md:p-12 rounded-[2rem] w-full reveal-on-scroll delay-200 shadow-sm border border-white/60 dark:border-white/10">
+        <div className="glass-panel p-8 md:p-12 rounded-[2rem] w-full reveal-on-scroll shadow-sm border border-white/60 dark:border-white/10" style={{ animationDelay: '0.1s' }}>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-8 text-center tracking-tight">{t.latestBlogs}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {blogs.slice(0, 4).map(blog => (
-               <div key={blog.id} onClick={() => navigate(`/thoughts/${blog.id}`)} className="p-5 border border-black/10 dark:border-white/10 rounded-2xl bg-white/40 dark:bg-slate-800/40 hover:shadow-md transition-all duration-300 cursor-pointer flex gap-5 group items-center">
+            {blogs.slice(0, 4).map((blog, idx) => (
+               <div key={blog.id} onClick={() => navigate(`/thoughts/${blog.id}`)} className="p-5 border border-black/10 dark:border-white/10 rounded-2xl bg-white/40 dark:bg-slate-800/40 hover:shadow-md transition-all duration-300 cursor-pointer flex gap-5 group items-center reveal-on-scroll" style={{ animationDelay: `${0.2 + (idx * 0.1)}s` }}>
                  <img src={blog.thumbnail} className="w-24 h-24 rounded-xl object-cover border border-white/50 dark:border-white/10 shrink-0" alt="" />
                  <div className="flex-1 min-w-0">
                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-2 block">{blog.tag}</span>
@@ -623,10 +619,10 @@ export default function App() {
             ))}
             {blogs.length === 0 && <p className="col-span-2 text-center text-gray-500 text-sm py-4">Belum ada tulisan terbaru.</p>}
           </div>
-          <div className="mt-8 flex justify-center"><button onClick={() => navigate('/thoughts')} className="flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-slate-800 border border-black/10 dark:border-white/10 text-gray-800 dark:text-gray-200 rounded-xl text-sm font-bold shadow-sm hover:scale-105 active:scale-95 transition-transform">{t.readAllBlogs} <ExternalLink size={16} className="ml-1" /></button></div>
+          <div className="mt-8 flex justify-center reveal-on-scroll" style={{ animationDelay: '0.6s' }}><button onClick={() => navigate('/thoughts')} className="flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-slate-800 border border-black/10 dark:border-white/10 text-gray-800 dark:text-gray-200 rounded-xl text-sm font-bold shadow-sm hover:scale-105 active:scale-95 transition-transform">{t.readAllBlogs} <ExternalLink size={16} className="ml-1" /></button></div>
         </div>
 
-        <footer className="w-full pt-12 reveal-on-scroll delay-400">
+        <footer className="w-full pt-12 reveal-on-scroll" style={{ animationDelay: '0.2s' }}>
           <div className="glass-panel p-10 md:p-16 rounded-[3rem] text-center w-full relative overflow-hidden bg-gradient-to-br from-blue-500/5 to-purple-500/5 border border-white/60 dark:border-white/10 shadow-lg">
              <div className="relative z-10">
                 <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4 tracking-tight">{t.collabTitle}</h2>
@@ -636,14 +632,14 @@ export default function App() {
                    <a href={`https://wa.me/${(profile.whatsapp || '').replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-8 py-4 glass-panel text-gray-900 dark:text-white rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all shadow-sm border border-black/10 dark:border-white/10"><Phone size={18}/> WhatsApp</a>
                 </div>
                 <div className="flex justify-center gap-6 border-t border-black/5 dark:border-white/10 pt-10">
-                   {profile.socials?.instagram && <a href={profile.socials.instagram} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-xl glass-panel flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400 hover:scale-110 transition-all border border-white/60 dark:border-white/10 shadow-sm"><BrandIcon name="instagram" size={20}/></a>}
+                   {profile.socials?.instagram && <a href={profile.socials.instagram} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-xl glass-panel flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:scale-110 transition-all border border-white/60 dark:border-white/10 shadow-sm"><BrandIcon name="instagram" size={20}/></a>}
                    {profile.socials?.threads && <a href={profile.socials.threads} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-xl glass-panel flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:scale-110 transition-all border border-white/60 dark:border-white/10 shadow-sm"><BrandIcon name="threads" size={20}/></a>}
                    {profile.socials?.tiktok && <a href={profile.socials.tiktok} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-xl glass-panel flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:scale-110 transition-all border border-white/60 dark:border-white/10 shadow-sm"><BrandIcon name="tiktok" size={20}/></a>}
                    {profile.socials?.linkedin && <a href={profile.socials.linkedin} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-xl glass-panel flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:scale-110 transition-all border border-white/60 dark:border-white/10 shadow-sm"><BrandIcon name="linkedin" size={20}/></a>}
                 </div>
              </div>
           </div>
-          <div className="mt-8 mb-4 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest px-4"><p>© {new Date().getFullYear()} {profile.name}.</p><p className="flex items-center gap-1.5">Powered by <Code size={14} className="text-blue-500"/> & Coffee</p></div>
+          <div className="mt-8 mb-4 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest px-4 reveal-on-scroll" style={{ animationDelay: '0.4s' }}><p>© {new Date().getFullYear()} {profile.name}.</p><p className="flex items-center gap-1.5">Powered by <Code size={14} className="text-blue-500"/> & Coffee</p></div>
         </footer>
       </div>
     );
