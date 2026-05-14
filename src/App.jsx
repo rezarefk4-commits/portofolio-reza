@@ -76,18 +76,21 @@ const TypingText = ({ text }) => {
 
 // ============================================================================
 // DATA FALLBACK AWAL
+
+// ============================================================================
+// DATA FALLBACK AWAL
 // ============================================================================
 const initialProfile = {
-  name: 'REZA REFKA KURNIAWAN',
-  role: 'AI-Driven Web Developer',
-  bio: 'Saya membangun aplikasi web dan seluler modern dengan fokus pada performa dan pengalaman pengguna. Aktif berbagi wawasan teknologi dan membimbing talenta digital.',
-  email: 'rezarefka@gmail.com',
-  whatsapp: '+62 821 5402 5446',
-  location: 'Makassar, Indonesia',
-  profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+  name: '',
+  role: '',
+  bio: '',
+  email: '',
+  whatsapp: '',
+  location: '',
+  profileImage: '', // <-- URL foto bawaan sudah dikosongkan
   heroImage: '', 
   cvUrl: '',
-  socials: { instagram: 'https://instagram.com/', threads: 'https://threads.net/', tiktok: 'https://tiktok.com/', linkedin: 'https://linkedin.com/' }
+  socials: { instagram: '', threads: '', tiktok: '', linkedin: '' }
 };
 
 const initialStats = { visits24h: 1240, activeNow: 14, projectEngagement: 85, totalViews: 45200 };
@@ -155,6 +158,7 @@ const quillModules = {
 // MAIN APP COMPONENT
 // ============================================================================
 export default function App() {
+  const [isLoadingData, setIsLoadingData] = useState(true);
   const [theme, setTheme] = useState('dark');
   const [lang, setLang] = useState('id'); 
   const [currentPath, setCurrentPath] = useState('/home');
@@ -218,9 +222,12 @@ export default function App() {
   // ============================================================================
   // FETCH DATA DARI SUPABASE
   // ============================================================================
+  // ============================================================================
+  // FETCH DATA DARI SUPABASE
+  // ============================================================================
   useEffect(() => {
     const fetchSupabaseData = async () => {
-      if (!supabase) { setProjects(initialProjects); setBlogs(initialBlogs); return; }
+      if (!supabase) { setProjects(initialProjects); setBlogs(initialBlogs); setIsLoadingData(false); return; }
       try {
         console.log("Mengambil data dari Supabase...");
         const [ 
@@ -256,7 +263,11 @@ export default function App() {
             socials: { ...initialProfile.socials, ...(profData.socials || {}) } 
           });
         }
-      } catch (error) { console.error("Gagal menarik data:", error); setProjects(initialProjects); setBlogs(initialBlogs); }
+      } catch (error) { 
+        console.error("Gagal menarik data:", error); setProjects(initialProjects); setBlogs(initialBlogs); 
+      } finally {
+        setIsLoadingData(false); // <-- TAMBAHAN: Matikan loading saat selesai
+      }
     };
     fetchSupabaseData();
   }, []);
@@ -1183,6 +1194,16 @@ export default function App() {
     }
     return null;
   };
+ // --- LAYAR LOADING ---
+  // Tahan tampilan utama sampai data Supabase berhasil ditarik
+  if (isLoadingData) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#F8FAFC] dark:bg-[#05050A]">
+         <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4 shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
+         <p className="text-gray-500 dark:text-gray-400 font-bold animate-pulse text-sm tracking-widest uppercase">Memuat Portofolio...</p>
+      </div>
+    );
+  }
 
   return (
     <HelmetProvider>
