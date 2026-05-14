@@ -3,8 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 
 import { 
   Home, User, MessageSquare, Folder, Mic, Users, FileText, 
-  Briefcase, GraduationCap, Lightbulb, Link as LinkIcon,
-  Download, Sun, Moon, Menu, X, ChevronRight, ArrowLeft, Plus, Edit, Trash2, Settings,
+  Briefcase, GraduationCap, Lightbulb, Link as LinkIcon, Award,
+  Download, Sun, Moon, Menu, X, ChevronRight, ArrowRight, ArrowLeft, Plus, Edit, Trash2, Settings,
   PlayCircle, Calendar, MapPin, Code, Palette, Terminal, Lock, Send,
   ExternalLink, Share2, Clock, Target, CheckCircle, Search, Video,
   Mail, Phone, Save, UploadCloud, Check, Image as ImageIcon,
@@ -23,13 +23,12 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// --- IKON MEREK KUSTOM ---
 const BrandIcon = ({ name, size = 20, className = "" }) => {
-  if (name === 'instagram') return <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>;
-  if (name === 'threads') return <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 12.5C14.5 13.8807 13.3807 15 12 15C10.6193 15 9.5 13.8807 9.5 12.5C9.5 11.1193 10.6193 10 12 10C13.3807 10 14.5 11.1193 14.5 12.5Z" /><path d="M14.5 12.5V11.5C14.5 9.84315 13.1569 8.5 11.5 8.5H11C9.34315 8.5 8 9.84315 8 11.5V12.5C8 14.1569 9.34315 15.5 11 15.5H11.5C12.3284 15.5 13 14.8284 13 14" /><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.238 2.22416 14.4239 2.63214 15.5218C3.04013 16.6197 3.61439 17.6253 4.33157 18.5" /></svg>;
-  if (name === 'tiktok') return <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>;
-  if (name === 'linkedin') return <svg width={size} height={size} className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>;
-  return <LinkIcon size={size} className={className} />;
+  if (name === 'instagram') return <svg width={size} height={size} className={`${className} icon-ig`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>;
+  if (name === 'threads') return <svg width={size} height={size} className={`${className} icon-th`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 12.5C14.5 13.8807 13.3807 15 12 15C10.6193 15 9.5 13.8807 9.5 12.5C9.5 11.1193 10.6193 10 12 10C13.3807 10 14.5 11.1193 14.5 12.5Z" /><path d="M14.5 12.5V11.5C14.5 9.84315 13.1569 8.5 11.5 8.5H11C9.34315 8.5 8 9.84315 8 11.5V12.5C8 14.1569 9.34315 15.5 11 15.5H11.5C12.3284 15.5 13 14.8284 13 14" /><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.238 2.22416 14.4239 2.63214 15.5218C3.04013 16.6197 3.61439 17.6253 4.33157 18.5" /></svg>;
+  if (name === 'tiktok') return <svg width={size} height={size} className={`${className} icon-tt`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>;
+  if (name === 'linkedin') return <svg width={size} height={size} className={`${className} icon-in`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>;
+  return <LinkIcon size={size} className={`${className} icon-in`} />;
 };
 
 const CountUp = ({ end, duration = 2000, suffix = "" }) => {
@@ -66,7 +65,7 @@ const TypingText = ({ text }) => {
   }, [displayText, isDeleting, text]);
 
   return (
-    <span className="border-r-[3px] border-gray-900 dark:border-white pr-1 animate-[blink_1s_step-end_infinite] inline-block">
+    <span className="border-r-[3px] border-blue-500 pr-1 animate-[blink_1s_step-end_infinite] inline-block">
       {displayText || '\u200B'}
     </span>
   );
@@ -127,6 +126,7 @@ const translations = {
     aboutTitle: 'Tentang Saya', aboutSubtitle: 'Mengenal lebih dekat', philosophy: 'Filosofi', values: 'Nilai-Nilai', linkDesc: 'Tautan penting.',
     yearsExp: 'Tahun Pengalaman', totalWorks: 'Total Karya', articles: 'Tulisan / Artikel', happyClients: 'Klien Puas', collabTitle: 'Mari Berkolaborasi', collabDesc: 'Punya ide proyek atau ingin berdiskusi? Hubungi saya kapan saja.', sendEmail: 'Kirim Email',
     expTitle: 'Pengalaman', expDesc: 'Rekam jejak karir profesional saya.', noExp: 'Belum ada data pengalaman.', eduTitle: 'Pendidikan', eduDesc: 'Latar belakang pendidikan saya.', noEdu: 'Belum ada data pendidikan.',
+    certifications: 'Sertifikasi', certDesc: 'Lisensi profesional dan sertifikasi keahlian terverifikasi.',
     notFound: 'Data tidak ditemukan.', shareSuccess: 'Tautan disalin!', shareError: 'Gagal membagikan.',
     deleteConfirm: 'Yakin ingin menghapus data ini secara permanen?', deleting: 'Menghapus...', deleted: 'Berhasil dihapus'
   },
@@ -140,6 +140,7 @@ const translations = {
     aboutTitle: 'About Me', aboutSubtitle: 'Getting to know closer', philosophy: 'Philosophy', values: 'Values', linkDesc: 'My important links.',
     yearsExp: 'Years Experience', totalWorks: 'Total Projects', articles: 'Articles', happyClients: 'Happy Clients', collabTitle: 'Let\'s Collaborate', collabDesc: 'Have a project idea or want to discuss? Reach out.', sendEmail: 'Send Email',
     expTitle: 'Experience', expDesc: 'My professional career track.', noExp: 'No experience data yet.', eduTitle: 'Education', eduDesc: 'My educational background.', noEdu: 'No education data yet.',
+    certifications: 'Certifications', certDesc: 'Verified professional licenses and skill certifications.',
     notFound: 'Data not found.', shareSuccess: 'Link copied!', shareError: 'Failed to share link.',
     deleteConfirm: 'Are you sure you want to delete this permanently?', deleting: 'Deleting...', deleted: 'Deleted successfully'
   }
@@ -193,6 +194,8 @@ export default function App() {
   const [links, setLinks] = useState([]);
   const [experiences, setExperiences] = useState([]);
   const [educations, setEducations] = useState([]);
+  const [certifications, setCertifications] = useState([]);
+  const [selectedCert, setSelectedCert] = useState(null); 
 
   const [visibleTech, setVisibleTech] = useState(6);
   const [visibleCreative, setVisibleCreative] = useState(6);
@@ -253,7 +256,7 @@ export default function App() {
         const [ 
           { data: projData }, { data: blogData }, { data: expData }, 
           { data: eduData }, { data: skillData }, { data: linkData }, 
-          { data: servData }, { data: profData } 
+          { data: servData }, { data: profData }, { data: certData }
         ] = await Promise.all([
           supabase.from('projects').select('*').order('year', { ascending: false }),
           supabase.from('blogs').select('*').order('date', { ascending: false }),
@@ -262,7 +265,8 @@ export default function App() {
           supabase.from('skills').select('*'),
           supabase.from('links').select('*'),
           supabase.from('services').select('*'),
-          supabase.from('profile').select('*').single()
+          supabase.from('profile').select('*').single(),
+          supabase.from('certifications').select('*').order('year', { ascending: false })
         ]);
 
         if (projData) setProjects(projData); 
@@ -272,6 +276,7 @@ export default function App() {
         if (skillData) setSkills(skillData);
         if (linkData) setLinks(linkData);
         if (servData) setServices(servData);
+        if (certData) setCertifications(certData);
         
         if (profData) {
           const parsedAbout = splitText(profData.about || '');
@@ -341,9 +346,7 @@ export default function App() {
         if(supabase) await supabase.from(table).delete().eq('id', id);
         stateUpdater(stateList.filter(x => x.id !== id));
         showToast(t.deleted);
-      } catch (e) {
-        showToast(e.message);
-      }
+      } catch (e) { showToast(e.message); }
     }
   };
 
@@ -351,7 +354,7 @@ export default function App() {
   const triggerCropModal = (e, type) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.type.includes('video')) {
+      if (file.type.includes('video') || file.type.includes('pdf')) {
          if(type === 'preview') setPreviewImage(file);
       } else {
          setCropType(type);
@@ -415,7 +418,7 @@ export default function App() {
       }
       else if (modalType === 'skill') { 
         tableName = 'skills';
-        newItem = { ...newItem, name: formData.get('name'), img: finalImageUrl, invert: formData.get('invert') === 'on' }; 
+        newItem = { ...newItem, name: combine('name'), img: finalImageUrl, invert: formData.get('invert') === 'on' }; 
       }
       else if (modalType === 'link') { 
         tableName = 'links';
@@ -428,6 +431,10 @@ export default function App() {
       else if (modalType === 'education') { 
         tableName = 'educations';
         newItem = { ...newItem, degree: combine('degree'), institution: combine('institution'), period: combine('period'), desc: combine('desc') }; 
+      }
+      else if (modalType === 'certification') { 
+        tableName = 'certifications';
+        newItem = { ...newItem, name: combine('name'), issuer: combine('issuer'), year: formData.get('year'), desc: combine('desc'), image: finalImageUrl }; 
       }
       else if (modalType === 'service') { 
         tableName = 'services';
@@ -465,13 +472,18 @@ export default function App() {
   };
 
   const renderSidebar = () => (
-    <aside className={`fixed inset-y-0 left-0 z-40 w-[280px] max-w-[85vw] flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] lg:translate-x-0 glass-panel border-r-0 lg:border-r border-gray-200 dark:border-white/10 shadow-[20px_0_40px_-15px_rgba(0,0,0,0.05)] lg:shadow-none ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-      <div className="flex flex-col items-center pt-10 pb-6 border-b border-black/5 dark:border-white/10 shrink-0 px-4 relative group w-full overflow-hidden">
+    <aside className={`fixed inset-y-0 left-0 z-[70] w-[280px] max-w-[85vw] flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] lg:translate-x-0 glass-panel border-r-0 lg:border-r border-gray-200 dark:border-white/5 shadow-[20px_0_40px_-15px_rgba(0,0,0,0.5)] lg:shadow-none ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      
+      <button onClick={() => setIsMobileMenuOpen(false)} className="lg:hidden absolute top-4 right-4 p-2 bg-gray-100 dark:bg-white/10 rounded-full text-gray-500 z-50">
+         <X size={18} />
+      </button>
+
+      <div className="flex flex-col items-center pt-14 lg:pt-10 pb-6 border-b border-black/5 dark:border-white/5 shrink-0 px-4 relative group w-full overflow-hidden">
         <div className="relative">
-          <img src={profile.profileImage} alt="Profile" onClick={handleSecretClick} className="w-24 h-24 rounded-full object-cover mb-4 ring-[4px] ring-gray-100 dark:ring-gray-800 shadow-2xl cursor-pointer hover:scale-105 active:scale-95 transition-all duration-300 bg-gray-50 dark:bg-gray-900" />
+          <img src={profile.profileImage} alt="Profile" onClick={handleSecretClick} className="w-24 h-24 rounded-full object-cover mb-4 ring-[4px] ring-gray-100 dark:ring-gray-800 shadow-2xl cursor-pointer hover:scale-105 active:scale-95 transition-all duration-300 bg-gray-50 dark:bg-[#050505]" />
         </div>
         <h2 className="text-[19px] font-extrabold text-gray-900 dark:text-white text-center leading-snug tracking-tight drop-shadow-sm break-words w-full px-2">{tText(profile.name, lang)}</h2>
-        <p className="text-[12px] text-gray-900 dark:text-gray-100 mt-2 font-black text-center tracking-widest uppercase bg-gray-100 dark:bg-white/10 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-white/20 w-fit max-w-[95%] break-words leading-tight">{tText(profile.role, lang)}</p>
+        <p className="text-[12px] text-gray-900 dark:text-gray-100 mt-2 font-black text-center tracking-widest uppercase bg-gray-100 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-white/10 w-fit max-w-[95%] break-words leading-tight">{tText(profile.role, lang)}</p>
       </div>
       
       <div className="flex-1 overflow-y-auto custom-scrollbar px-5 py-6 space-y-7">
@@ -496,127 +508,150 @@ export default function App() {
           <div className="space-y-1.5">
             <NavItem icon={Briefcase} label={t.experience} path="/experience" onNavigate={navigate} isActive={currentPath === '/experience'} delayClass="delay-400" />
             <NavItem icon={GraduationCap} label={t.education} path="/education" onNavigate={navigate} isActive={currentPath === '/education'} delayClass="delay-500" />
+            <NavItem icon={Award} label={t.certifications} path="/certifications" onNavigate={navigate} isActive={currentPath === '/certifications'} delayClass="delay-500" />
             <NavItem icon={Lightbulb} label={t.skills} path="/skills" onNavigate={navigate} isActive={currentPath === '/skills'} delayClass="delay-500" />
             <NavItem icon={LinkIcon} label={t.links} path="/links" onNavigate={navigate} isActive={currentPath === '/links'} delayClass="delay-600" />
           </div>
         </div>
       </div>
 
-      <div className="px-5 py-6 border-t border-black/5 dark:border-white/10 flex flex-col items-center gap-4 shrink-0 bg-gray-50/50 dark:bg-black/20 backdrop-blur-md">
-        <div className="flex rounded-xl p-1 bg-gray-200/50 dark:bg-white/10 border border-black/5 dark:border-white/5 shadow-inner w-full justify-center">
-          <button onClick={() => setLang('id')} className={`px-6 py-2 text-xs font-bold rounded-lg transition-all flex-1 ${lang === 'id' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}>ID</button>
-          <button onClick={() => setLang('en')} className={`px-6 py-2 text-xs font-bold rounded-lg transition-all flex-1 ${lang === 'en' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}>EN</button>
+      <div className="px-5 py-6 border-t border-black/5 dark:border-white/5 flex flex-col items-center gap-4 shrink-0 bg-gray-50/50 dark:bg-[#050505]/50 backdrop-blur-md">
+        <div className="flex rounded-xl p-1 bg-gray-200/50 dark:bg-white/5 w-full justify-center">
+          <button onClick={() => setLang('id')} className={`px-6 py-2 text-xs font-bold rounded-lg transition-all flex-1 ${lang === 'id' ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}>ID</button>
+          <button onClick={() => setLang('en')} className={`px-6 py-2 text-xs font-bold rounded-lg transition-all flex-1 ${lang === 'en' ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}>EN</button>
         </div>
-        <div className="w-full space-y-3 flex flex-col items-center">
-          <div className="flex justify-center gap-3 w-full pb-2">
-              {['instagram', 'threads', 'tiktok', 'linkedin'].map(s => profile.socials?.[s] && <a key={s} href={profile.socials[s]} target="_blank" className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all shadow-sm border border-gray-200 dark:border-white/10"><BrandIcon name={s} size={18}/></a>)}
-          </div>
-          <button onClick={handleDownloadCV} className="w-full py-3.5 rounded-xl bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-200 text-white dark:text-gray-900 font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-95"><Download size={18} /> {t.downloadCv}</button>
-          <button onClick={toggleTheme} className="w-full py-3.5 rounded-xl glass-panel hover:bg-gray-100 dark:hover:bg-white/10 text-gray-800 dark:text-gray-200 font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 border-gray-200 dark:border-white/10">{theme === 'light' ? <Sun size={18} className="text-gray-900"/> : <Moon size={18} className="text-white"/>} {theme === 'light' ? t.darkMode : t.lightMode}</button>
+        <div className="flex justify-center gap-3 w-full pb-2">
+            {['instagram', 'threads', 'tiktok', 'linkedin'].map(s => profile.socials?.[s] && <a key={s} href={profile.socials[s]} target="_blank" className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center transition-all hover:scale-125 shadow-sm border border-gray-200 dark:border-white/5"><BrandIcon name={s} size={18}/></a>)}
         </div>
+        <button onClick={handleDownloadCV} className="w-full py-3.5 rounded-xl bg-gray-900 hover:bg-black dark:bg-white text-white dark:text-gray-900 font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-95"><Download size={18} /> {t.downloadCv}</button>
+        <button onClick={toggleTheme} className="w-full py-3.5 rounded-xl glass-panel hover:bg-gray-100 dark:hover:bg-white/5 text-gray-800 dark:text-gray-200 font-bold text-sm flex items-center justify-center gap-2 border-gray-200 dark:border-white/5 transition-all hover:shadow-md">{theme === 'light' ? <Sun size={18} className="text-orange-500"/> : <Moon size={18} className="text-yellow-400"/>} {theme === 'light' ? t.darkMode : t.lightMode}</button>
       </div>
     </aside>
   );
 
   const renderContent = () => {
-    // --- HOME ---
     if (currentPath === '/home') return (
       <div className="max-w-5xl mx-auto space-y-24 pb-24 w-full animate-page-enter">
         <SEO title={t.home} />
         
-        {/* --- HERO SECTION --- (Tetap rata kiri dan landscape di Mobile) */}
-        <div className="relative flex flex-col justify-center min-h-[400px] sm:min-h-[500px] w-full z-10 reveal-on-scroll delay-0 group rounded-[2rem] sm:rounded-[3rem] overflow-hidden glass-panel">
-          
-          
-          
-        
-         {/* FOTO AREA (SEPARUH KANAN) DENGAN GRADIENT BLENDING MULUS */}
-          {/* FOTO AREA DENGAN CSS MASKING (TRANSPARANSI SEAMLESS 100%) */}
+        {/* --- HERO SECTION --- */}
+        <div className="relative flex flex-row items-center justify-start min-h-[350px] sm:min-h-[500px] w-full z-10 reveal-on-scroll delay-0 group rounded-[2rem] sm:rounded-[3rem] overflow-hidden glass-panel border border-gray-200 dark:border-white/5">
           <div 
             className="absolute inset-y-0 right-0 w-[80%] sm:w-[60%] z-0 overflow-hidden"
             style={{ 
-              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 70%, black 100%)',
-              maskImage: 'linear-gradient(to right, transparent 0%, black 70%, black 100%)' 
+              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 35%, black 100%)',
+              maskImage: 'linear-gradient(to right, transparent 0%, black 35%, black 100%)' 
             }}
           >
-             {/* Foto Dibuat Center */}
              <img 
                src={profile.heroImage || profile.profileImage} 
                loading="lazy" 
                className="w-full h-full object-cover object-center transition-all duration-700 ease-in-out grayscale group-hover:grayscale-0 scale-100 group-hover:scale-105 opacity-90 dark:opacity-50 group-hover:opacity-100" 
                alt="Hero Portrait" 
              />
-             
-             {/* Gradient Vertikal di bawah foto agar ujung bawah membaur mulus */}
-             <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-white/50 to-transparent dark:from-black/50 dark:to-transparent z-10 pointer-events-none"></div>
+             <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-white/50 to-transparent dark:from-[#050505]/80 dark:to-transparent z-10 pointer-events-none"></div>
           </div>
 
-          <div className="relative w-[90%] sm:w-[60%] flex flex-col items-start text-left z-20 px-6 sm:px-12 py-12 sm:py-16">
-            <div className="flex gap-4 sm:gap-5 mb-6">
-               {['instagram', 'threads', 'tiktok', 'linkedin'].map(s => profile.socials?.[s] && <a key={s} href={profile.socials[s]} target="_blank" className="text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"><BrandIcon name={s} size={18}/></a>)}
+          <div className="relative w-[85%] sm:w-[60%] flex flex-col items-start text-left z-20 px-6 sm:px-12 py-10">
+            <div className="flex gap-4 mb-4 sm:mb-6">
+               {['instagram', 'threads', 'tiktok', 'linkedin'].map(s => profile.socials?.[s] && <a key={s} href={profile.socials[s]} target="_blank" className="hover:scale-125 transition-transform"><BrandIcon name={s} size={20}/></a>)}
             </div>
-            
-            <h1 className="font-black text-gray-900 dark:text-white leading-[1.1] sm:leading-[1.2] mb-4 sm:mb-6 tracking-tighter w-full">
-              <span className="block mb-1 text-[clamp(1.8rem,5vw,3.5rem)] capitalize">{lang === 'id' ? 'Saya ' : "I'm "} {tText(profile.name, lang)},</span>
-              <span className="text-gray-900 dark:text-white drop-shadow-sm block min-h-[40px] sm:min-h-[60px] text-[clamp(1.3rem,3vw,2.2rem)] w-full"><TypingText text={tText(profile.role, lang)} /></span>
+            <h1 className="font-black text-gray-900 dark:text-white leading-[1.1] mb-4 sm:mb-6 tracking-tighter">
+              <span className="block mb-1 text-[clamp(1.5rem,6vw,3.5rem)] capitalize">{lang === 'id' ? 'Saya ' : "I'm "} {tText(profile.name, lang)},</span>
+              <span className="text-gray-900 dark:text-white drop-shadow-sm block min-h-[40px] text-[clamp(1.2rem,4vw,2.2rem)] w-full"><TypingText text={tText(profile.role, lang)} /></span>
             </h1>
-            
-            <p className="text-[12px] sm:text-[15px] text-gray-600 dark:text-gray-400 font-medium mb-8 sm:mb-10 max-w-[280px] sm:max-w-md leading-relaxed z-20 relative line-clamp-3 sm:line-clamp-none">{tText(profile.bio, lang)}</p>
-            
-            <div className="flex flex-row flex-wrap gap-3 sm:gap-4 w-full sm:w-auto z-20 relative">
-               <button onClick={() => { const el = document.getElementById('portfolio-categories'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }} className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-200 text-white dark:text-gray-900 font-black transition-all shadow-[0_8px_20px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_20px_rgba(255,255,255,0.2)] hover:-translate-y-1 active:scale-95 text-[10px] sm:text-[12px] uppercase tracking-widest border border-gray-900 dark:border-white">MY WORK</button>
-               <button onClick={() => navigate('/contact')} className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-white dark:bg-transparent text-gray-900 dark:text-white font-black transition-all shadow-md hover:shadow-xl hover:-translate-y-1 active:scale-95 text-[10px] sm:text-[12px] uppercase tracking-widest border border-gray-200 dark:border-white/30 hover:bg-gray-50 dark:hover:bg-white/10">HIRE ME</button>
+            <p className="text-[clamp(11px,2.5vw,15px)] text-gray-600 dark:text-gray-400 font-medium mb-6 sm:mb-10 max-w-[200px] sm:max-w-md leading-relaxed z-20 relative line-clamp-3 sm:line-clamp-none">{tText(profile.bio, lang)}</p>
+            <div className="flex flex-row gap-2 sm:gap-4 z-20 relative">
+               <button onClick={() => document.getElementById('portfolio-categories')?.scrollIntoView({ behavior: 'smooth' })} className="px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-black transition-all hover:-translate-y-1 active:scale-95 text-[9px] sm:text-[12px] uppercase tracking-widest">MY WORK</button>
+               <button onClick={() => navigate('/contact')} className="px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-full bg-white dark:bg-transparent text-gray-900 dark:text-white font-black transition-all shadow-md hover:-translate-y-1 active:scale-95 text-[9px] sm:text-[12px] uppercase border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5">HIRE ME</button>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 w-full reveal-on-scroll delay-200">
-           {[{i:Briefcase, e:4, l:t.yearsExp}, {i:Code, e:projects.length, l:t.totalWorks}, {i:FileText, e:blogs.length, l:t.articles}, {i:Users, e:10, l:t.happyClients}].map((s, idx) => (
-             <div key={idx} className="glass-panel p-6 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-gray-900 dark:hover:border-white transition-all hover:-translate-y-1 border border-gray-200 dark:border-white/10">
-               <s.i className="text-gray-900 dark:text-white mb-3 group-hover:scale-110 transition-transform" size={28} />
-               <p className="text-[26px] font-black text-gray-900 dark:text-white drop-shadow-sm"><CountUp end={s.e} suffix={idx===0||idx===3?"+":""}/></p>
+           {[ {i:Briefcase, e:4, l:t.yearsExp, c:'text-blue-500'}, {i:Code, e:projects.length, l:t.totalWorks, c:'text-green-500'}, {i:FileText, e:blogs.length, l:t.articles, c:'text-orange-500'}, {i:Users, e:10, l:t.happyClients, c:'text-purple-500'} ].map((s, idx) => (
+             <div key={idx} className="glass-panel p-6 rounded-[2rem] flex flex-col items-center justify-center text-center group border border-gray-200 dark:border-white/5 hover:shadow-xl transition-all">
+               <s.i className={`${s.c} mb-3 group-hover:scale-110 transition-transform`} size={28} />
+               <p className="text-[26px] font-black text-gray-900 dark:text-white"><CountUp end={s.e} suffix={idx===0||idx===3?"+":""}/></p>
                <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">{s.l}</p>
              </div>
            ))}
         </div>
 
         <div id="portfolio-categories" className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full reveal-on-scroll delay-200 scroll-mt-24 pt-4">
-           {[{p:'/technical', i:Code, l:'Technical', c:projects.filter(p=>p.type==='technical').length}, {p:'/creative', i:Palette, l:'Creative', c:projects.filter(p=>p.type==='creative').length}, {p:'/thoughts', i:FileText, l:'Thoughts', c:blogs.length}].map((c, idx) => (
-             <div key={idx} onClick={() => navigate(c.p)} className="glass-panel p-8 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-gray-900 dark:hover:border-white hover:-translate-y-2 transition-all cursor-pointer border border-gray-200 dark:border-white/10 shadow-sm hover:shadow-2xl dark:hover:shadow-white/5">
-                <div className="w-20 h-20 bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><c.i size={36} /></div>
+           {[ {p:'/technical', i:Code, l:'Technical', c:projects.filter(p=>p.type==='technical').length, cl:'text-blue-500'}, {p:'/creative', i:Palette, l:'Creative', c:projects.filter(p=>p.type==='creative').length, cl:'text-purple-500'}, {p:'/thoughts', i:FileText, l:'Thoughts', c:blogs.length, cl:'text-orange-500'} ].map((c, idx) => (
+             <div key={idx} onClick={() => navigate(c.p)} className="glass-panel p-8 rounded-[2rem] flex flex-col items-center justify-center text-center group hover:border-gray-400 dark:hover:border-white/10 hover:-translate-y-2 transition-all cursor-pointer border border-gray-200 dark:border-white/5">
+                <div className="w-20 h-20 bg-gray-100 dark:bg-white/5 rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-inner"><c.i className={c.cl} size={36} /></div>
                 <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">{c.l}</h3>
                 <p className="text-[13px] font-bold text-gray-500 uppercase tracking-widest">{c.c} {idx===2?'Tulisan':'Karya'}</p>
              </div>
            ))}
         </div>
 
-        <div className="glass-panel p-8 md:p-12 rounded-[2rem] w-full reveal-on-scroll delay-100 shadow-sm border border-gray-200 dark:border-white/10">
+        <div className="glass-panel p-8 md:p-12 rounded-[2rem] w-full reveal-on-scroll delay-100 shadow-sm border border-gray-200 dark:border-white/5">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-8 text-center tracking-tight">{t.whatIDo}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {services.map((srv, idx) => { const IconComp = getIcon(srv.icon); return (<div key={srv.id} className="p-5 border border-gray-200 dark:border-white/10 rounded-xl bg-white/40 dark:bg-white/5 flex gap-4 hover:shadow-md transition-all items-start group"><div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/10 flex items-center justify-center shrink-0 shadow-sm"><IconComp size={18} className="text-gray-700 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white" /></div><div><h3 className="text-[15px] font-bold text-gray-900 dark:text-white mb-1">{tText(srv.title, lang)}</h3><p className="text-[13px] text-gray-500 dark:text-gray-400 font-medium">{tText(srv.desc, lang)}</p></div></div>)})}
+            {services.map((srv, idx) => { const IconComp = getIcon(srv.icon); return (<div key={srv.id} className="p-5 border border-gray-200 dark:border-white/5 rounded-xl bg-white/40 dark:bg-white/5 flex gap-4 hover:shadow-md transition-all items-start group"><div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/5 flex items-center justify-center shrink-0 shadow-sm"><IconComp size={18} className="text-gray-700 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white" /></div><div><h3 className="text-[15px] font-bold text-gray-900 dark:text-white mb-1">{tText(srv.title, lang)}</h3><p className="text-[13px] text-gray-500 dark:text-gray-400 font-medium">{tText(srv.desc, lang)}</p></div></div>)})}
             {services.length === 0 && <p className="col-span-2 text-center text-gray-500">Belum ada layanan ditambahkan.</p>}
           </div>
         </div>
 
-        <div className="glass-panel p-8 md:p-12 rounded-[2rem] w-full reveal-on-scroll delay-200 shadow-sm border border-gray-200 dark:border-white/10">
+        <div className="glass-panel p-8 md:p-12 rounded-[2rem] w-full reveal-on-scroll delay-200 shadow-sm border border-gray-200 dark:border-white/5">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-8 text-center tracking-tight">{t.featuredProjects}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {projects.filter(p => p.type === 'technical' && p.featured).slice(0, 4).map(proj => (
-               <div key={proj.id} onClick={() => navigate(`/technical/${proj.id}`)} className="p-6 border border-gray-200 dark:border-white/10 rounded-xl bg-white/40 dark:bg-white/5 hover:shadow-md transition-all duration-300 cursor-pointer flex flex-col group"><h3 className="text-[18px] font-bold text-gray-900 dark:text-white mb-2 group-hover:text-gray-600 dark:group-hover:text-gray-300">{tText(proj.title, lang)}</h3><p className="text-[13.5px] text-gray-500 dark:text-gray-400 line-clamp-2 flex-grow mb-5 font-medium">{tText(proj.shortDesc, lang)}</p><div className="flex flex-wrap gap-2 mt-auto">{(proj.tech || []).slice(0, 4).map((tItem, i) => <span key={i} className="text-[11px] font-bold bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-gray-200 px-3 py-1.5 rounded-md border border-gray-200 dark:border-white/10">{tItem}</span>)}</div></div>
+               <div key={proj.id} onClick={() => navigate(`/technical/${proj.id}`)} className="p-6 border border-gray-200 dark:border-white/5 rounded-xl bg-white/40 dark:bg-white/5 hover:shadow-md transition-all duration-300 cursor-pointer flex flex-col group"><h3 className="text-[18px] font-bold text-gray-900 dark:text-white mb-2 group-hover:text-gray-600 dark:group-hover:text-gray-300">{tText(proj.title, lang)}</h3><p className="text-[13.5px] text-gray-500 dark:text-gray-400 line-clamp-2 flex-grow mb-5 font-medium">{tText(proj.shortDesc, lang)}</p><div className="flex flex-wrap gap-2 mt-auto">{(proj.tech || []).slice(0, 4).map((tItem, i) => <span key={i} className="text-[11px] font-bold bg-gray-100 dark:bg-white/5 text-gray-800 dark:text-gray-200 px-3 py-1.5 rounded-md border border-gray-200 dark:border-white/5">{tItem}</span>)}</div></div>
             ))}
             {projects.filter(p => p.type === 'technical' && p.featured).length === 0 && <p className="col-span-2 text-center text-gray-500 text-sm py-4">Belum ada karya unggulan.</p>}
           </div>
-          <div className="mt-8 flex justify-center"><button onClick={() => navigate('/technical')} className="flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-transparent border border-gray-200 dark:border-white/30 text-gray-900 dark:text-white rounded-xl text-sm font-bold shadow-sm hover:scale-105 active:scale-95 transition-transform hover:bg-gray-50 dark:hover:bg-white/10">{t.viewAllPortfolio} <ExternalLink size={16} className="ml-1" /></button></div>
+          <div className="mt-8 flex justify-center"><button onClick={() => navigate('/technical')} className="flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-transparent border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-xl text-sm font-bold shadow-sm hover:scale-105 active:scale-95 transition-transform hover:bg-gray-50 dark:hover:bg-white/5">{t.viewAllPortfolio} <ExternalLink size={16} className="ml-1" /></button></div>
+        </div>
+        
+        {/* --- BERANDA: NEW CARD MODEL "GLASS PASS" ELEGANT --- */}
+        <div className="glass-panel p-8 md:p-12 rounded-[3rem] w-full reveal-on-scroll delay-200 shadow-sm border border-gray-200 dark:border-white/5">
+          <div className="flex justify-between items-end mb-8 border-b border-gray-200 dark:border-white/5 pb-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight uppercase tracking-widest">{t.certifications}</h2>
+            <button onClick={() => navigate('/certifications')} className="hidden sm:flex items-center gap-2 text-xs font-bold text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors uppercase tracking-widest">Lihat Semua <ArrowRight size={16}/></button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {certifications.slice(0, 4).map(cert => (
+              <div key={cert.id} onClick={() => navigate('/certifications')} className="group relative flex flex-col sm:flex-row items-center gap-5 sm:gap-6 p-4 sm:p-5 glass-panel rounded-[2rem] border border-gray-200 dark:border-white/5 hover:border-gray-400 dark:hover:border-white/20 transition-all cursor-pointer overflow-hidden shadow-sm hover:shadow-xl bg-white/40 dark:bg-white/5">
+                
+                {/* Light Sweep Highlight on Hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-purple-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none"></div>
+
+                {/* Left: Certificate Thumbnail */}
+                <div className="w-full sm:w-28 h-32 sm:h-28 shrink-0 bg-gray-50 dark:bg-[#050505] rounded-[1.2rem] p-3 border border-gray-200 dark:border-white/5 shadow-inner relative overflow-hidden flex items-center justify-center">
+                   <img src={cert.image} loading="lazy" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 relative z-10" alt=""/>
+                </div>
+
+                {/* Right: Typography details */}
+                <div className="flex-1 min-w-0 flex flex-col text-center sm:text-left w-full relative z-10">
+                   <div className="flex items-center justify-center sm:justify-start gap-2 mb-2.5">
+                     <span className="text-[10px] font-black text-gray-500 tracking-widest uppercase bg-gray-100 dark:bg-white/5 px-2.5 py-1 rounded-md">{cert.year}</span>
+                   </div>
+                   <h3 className="text-[15px] md:text-[16px] font-black text-gray-900 dark:text-white leading-snug mb-1.5 line-clamp-1 group-hover:text-blue-500 transition-colors">{tText(cert.name, lang)}</h3>
+                   <p className="text-[12.5px] font-bold text-gray-500 flex items-center justify-center sm:justify-start gap-1.5 truncate">{tText(cert.issuer, lang)} <CheckCircle size={12} className="text-blue-500"/></p>
+                </div>
+                
+                {/* Arrow Icon Indicator */}
+                <div className="hidden sm:flex w-8 h-8 rounded-full items-center justify-center bg-transparent text-gray-300 group-hover:text-blue-500 transition-all shrink-0"><ChevronRight size={18}/></div>
+              </div>
+            ))}
+            {certifications.length === 0 && <p className="col-span-2 text-center text-gray-500 text-sm py-4">Belum ada sertifikasi terbaru.</p>}
+          </div>
+          <div className="mt-8 flex sm:hidden justify-center pt-4"><button onClick={() => navigate('/certifications')} className="flex items-center gap-2 text-xs font-bold text-blue-500 transition-colors uppercase tracking-widest border border-blue-500/30 px-6 py-2.5 rounded-full">Lihat Semua <ArrowRight size={14}/></button></div>
         </div>
 
-        <div className="glass-panel p-8 md:p-12 rounded-[2rem] w-full reveal-on-scroll delay-200 shadow-sm border border-gray-200 dark:border-white/10">
+        <div className="glass-panel p-8 md:p-12 rounded-[2rem] w-full reveal-on-scroll delay-200 shadow-sm border border-gray-200 dark:border-white/5">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-8 text-center tracking-tight">{t.latestBlogs}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {blogs.slice(0, 4).map(blog => (
-               <div key={blog.id} onClick={() => navigate(`/thoughts/${blog.id}`)} className="p-5 border border-gray-200 dark:border-white/10 rounded-2xl bg-white/40 dark:bg-white/5 hover:shadow-md transition-all duration-300 cursor-pointer flex gap-5 group items-center">
-                 <img src={blog.thumbnail} loading="lazy" className="w-24 h-24 rounded-xl object-cover border border-gray-200 dark:border-white/10 shrink-0" alt="" />
+               <div key={blog.id} onClick={() => navigate(`/thoughts/${blog.id}`)} className="p-5 border border-gray-200 dark:border-white/5 rounded-2xl bg-white/40 dark:bg-white/5 hover:shadow-md transition-all duration-300 cursor-pointer flex gap-5 group items-center">
+                 <img src={blog.thumbnail} loading="lazy" className="w-24 h-24 rounded-xl object-cover border border-gray-200 dark:border-white/5 shrink-0" alt="" />
                  <div className="flex-1 min-w-0">
-                   <span className="text-[10px] font-black uppercase tracking-widest text-gray-900 dark:text-white mb-2 block px-2 py-1 bg-gray-100 dark:bg-white/10 rounded-md w-fit border border-gray-200 dark:border-white/20">{blog.tag}</span>
+                   <span className="text-[10px] font-black uppercase tracking-widest text-gray-900 dark:text-white mb-2 block px-2 py-1 bg-gray-100 dark:bg-white/5 rounded-md w-fit border border-gray-200 dark:border-white/10">{blog.tag}</span>
                    <h3 className="text-[16px] font-bold text-gray-900 dark:text-white mb-2 group-hover:text-gray-600 dark:group-hover:text-gray-300 line-clamp-2 leading-snug">{tText(blog.title, lang)}</h3>
                    <p className="text-[12px] font-bold text-gray-500 flex items-center gap-1.5"><Calendar size={12}/>{blog.date}</p>
                  </div>
@@ -624,23 +659,11 @@ export default function App() {
             ))}
             {blogs.length === 0 && <p className="col-span-2 text-center text-gray-500 text-sm py-4">Belum ada tulisan terbaru.</p>}
           </div>
-          <div className="mt-8 flex justify-center"><button onClick={() => navigate('/thoughts')} className="flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-transparent border border-gray-200 dark:border-white/30 text-gray-900 dark:text-white rounded-xl text-sm font-bold shadow-sm hover:scale-105 active:scale-95 transition-transform hover:bg-gray-50 dark:hover:bg-white/10">{t.readAllBlogs} <ExternalLink size={16} className="ml-1" /></button></div>
+          <div className="mt-8 flex justify-center"><button onClick={() => navigate('/thoughts')} className="flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-transparent border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-xl text-sm font-bold shadow-sm hover:scale-105 active:scale-95 transition-transform hover:bg-gray-50 dark:hover:bg-white/5">{t.readAllBlogs} <ExternalLink size={16} className="ml-1" /></button></div>
         </div>
 
         <footer className="w-full pt-12 reveal-on-scroll delay-400">
-          <div className="glass-panel p-10 md:p-16 rounded-[3rem] text-center w-full relative overflow-hidden bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 shadow-lg">
-             <div className="relative z-10">
-                <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4 tracking-tight">{t.collabTitle}</h2>
-                <p className="text-[15px] text-gray-600 dark:text-gray-400 max-w-lg mx-auto mb-10 font-medium">{t.collabDesc}</p>
-                <div className="flex flex-wrap justify-center gap-5 mb-12">
-                   <a href={`mailto:${profile.email || ''}`} className="flex items-center gap-2 px-8 py-4 bg-gray-900 dark:bg-white hover:bg-black dark:hover:bg-gray-200 text-white dark:text-gray-900 rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all shadow-md"><Mail size={18}/> {t.sendEmail}</a>
-                   <a href={`https://wa.me/${(profile.whatsapp || '').replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-8 py-4 glass-panel text-gray-900 dark:text-white rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all shadow-sm border border-gray-200 dark:border-white/10"><Phone size={18}/> WhatsApp</a>
-                </div>
-                <div className="flex justify-center gap-6 border-t border-gray-200 dark:border-white/10 pt-10">
-                   {['instagram', 'threads', 'tiktok', 'linkedin'].map(s => profile.socials?.[s] && <a key={s} href={profile.socials[s]} target="_blank" className="w-12 h-12 rounded-xl glass-panel flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:scale-110 transition-all border border-gray-200 dark:border-white/10 shadow-sm"><BrandIcon name={s} size={20}/></a>)}
-                </div>
-             </div>
-          </div>
+          <div className="glass-panel p-10 sm:p-16 rounded-[3rem] text-center w-full relative overflow-hidden bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/5 shadow-lg"><div className="relative z-10"><h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4 tracking-tight">{t.collabTitle}</h2><p className="text-[15px] text-gray-600 dark:text-gray-400 max-w-lg mx-auto mb-10 font-medium">{t.collabDesc}</p><div className="flex flex-wrap justify-center gap-5 mb-12"><a href={`mailto:${profile.email || ''}`} className="flex items-center gap-2 px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all shadow-md"><Mail size={18}/> {t.sendEmail}</a><a href={`https://wa.me/${(profile.whatsapp || '').replace(/\D/g, '')}`} target="_blank" className="flex items-center gap-2 px-8 py-4 glass-panel text-gray-900 dark:text-white rounded-xl font-bold text-sm hover:scale-105 active:scale-95 transition-all shadow-sm border border-gray-200 dark:border-white/5"><Phone size={18}/> WhatsApp</a></div><div className="flex justify-center gap-6 border-t border-gray-200 dark:border-white/5 pt-10">{['instagram', 'threads', 'tiktok', 'linkedin'].map(s => profile.socials?.[s] && <a key={s} href={profile.socials[s]} target="_blank" className="w-12 h-12 rounded-xl glass-panel flex items-center justify-center hover:scale-125 transition-all border border-gray-200 dark:border-white/5 shadow-sm"><BrandIcon name={s} size={20}/></a>)}</div></div></div>
           <div className="mt-8 mb-4 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest px-4"><p>© {new Date().getFullYear()} {tText(profile.name, lang)}.</p><p className="flex items-center gap-1.5">Powered by <Code size={14} className="text-gray-900 dark:text-white"/> & Coffee</p></div>
         </footer>
       </div>
@@ -650,10 +673,8 @@ export default function App() {
       <div className="max-w-4xl mx-auto pt-6 w-full pb-20 animate-page-enter">
         <SEO title={t.aboutTitle} />
         <div className="mb-10 reveal-on-scroll delay-0"><h1 className="text-4xl font-black text-gray-900 dark:text-white mb-2">{t.aboutTitle}</h1><p className="text-[16px] text-gray-600 dark:text-gray-400 font-medium">{t.aboutSubtitle} {tText(profile.name, lang)}</p></div>
-        <div className="space-y-6">
-          <div className="glass-panel p-8 md:p-12 rounded-[3rem] w-full reveal-on-scroll delay-100 border border-gray-200 dark:border-white/10">
-             <div className="article-content text-[15.5px] text-gray-800 dark:text-gray-200 font-medium leading-relaxed" dangerouslySetInnerHTML={{ __html: tText(profile.about, lang) || `<p>Tuliskan filosofi, nilai-nilai, atau deskripsi panjang tentang diri Anda melalui CMS di tab Profil & CV.</p>` }} />
-          </div>
+        <div className="glass-panel p-8 md:p-12 rounded-[3rem] w-full border border-gray-200 dark:border-white/5 shadow-sm overflow-hidden">
+           <div className="article-content text-[15.5px] text-gray-800 dark:text-gray-200 font-medium leading-relaxed" dangerouslySetInnerHTML={{ __html: tText(profile.about, lang) || `<p>Profil tentang saya sedang diperbarui melalui CMS...</p>` }} />
         </div>
       </div>
     );
@@ -663,21 +684,19 @@ export default function App() {
         <SEO title={t.contactTitle} />
         <div className="mb-10 reveal-on-scroll delay-0"><h1 className="text-4xl font-black text-gray-900 dark:text-white mb-2">{t.contactTitle}</h1><p className="text-[16px] text-gray-600 dark:text-gray-400 font-medium">{t.contactSubtitle}</p></div>
         <div className="flex flex-col lg:flex-row gap-8 w-full">
-          <div className="w-full lg:w-2/3 glass-panel p-8 md:p-10 rounded-[3rem] border border-gray-200 dark:border-white/10 reveal-on-scroll delay-100">
+          <div className="w-full lg:w-2/3 glass-panel p-8 md:p-10 rounded-[3rem] border border-gray-200 dark:border-white/5 shadow-sm">
             <form className="space-y-6 w-full" onSubmit={(e) => { e.preventDefault(); showToast('Pesan Terkirim!'); e.target.reset(); }}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6"><div><label className="block text-[13px] font-bold text-gray-700 dark:text-gray-300 mb-2">{t.formName}</label><input required className="w-full px-5 py-3.5 rounded-2xl glass-panel outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white border-gray-200 dark:border-white/10" /></div><div><label className="block text-[13px] font-bold text-gray-700 dark:text-gray-300 mb-2">{t.formEmail}</label><input type="email" required className="w-full px-5 py-3.5 rounded-2xl glass-panel outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white border-gray-200 dark:border-white/10" /></div></div>
-              <div><label className="block text-[13px] font-bold text-gray-700 dark:text-gray-300 mb-2">{t.formSubject}</label><input required className="w-full px-5 py-3.5 rounded-2xl glass-panel outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white border-gray-200 dark:border-white/10" /></div>
-              <div><label className="block text-[13px] font-bold text-gray-700 dark:text-gray-300 mb-2">{t.formMessage}</label><textarea required rows="5" className="w-full px-5 py-3.5 rounded-2xl glass-panel outline-none resize-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white border-gray-200 dark:border-white/10"></textarea></div>
-              <button type="submit" className="py-4 px-8 rounded-2xl bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-200 text-white dark:text-gray-900 font-bold flex items-center gap-2 hover:scale-105 active:scale-95 transition-transform"><Send size={18}/> {t.formSend}</button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6"><div><label className="block text-[13px] font-bold text-gray-700 dark:text-gray-300 mb-2">{t.formName}</label><input required className="w-full px-5 py-3.5 rounded-2xl glass-panel outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white border-gray-200 dark:border-white/5" /></div><div><label className="block text-[13px] font-bold text-gray-700 dark:text-gray-300 mb-2">{t.formEmail}</label><input type="email" required className="w-full px-5 py-3.5 rounded-2xl glass-panel outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white border-gray-200 dark:border-white/5" /></div></div>
+              <div><label className="block text-[13px] font-bold text-gray-700 dark:text-gray-300 mb-2">{t.formSubject}</label><input required className="w-full px-5 py-3.5 rounded-2xl glass-panel outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white border-gray-200 dark:border-white/5" /></div>
+              <div><label className="block text-[13px] font-bold text-gray-700 dark:text-gray-300 mb-2">{t.formMessage}</label><textarea required rows="5" className="w-full px-5 py-3.5 rounded-2xl glass-panel outline-none resize-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white border-gray-200 dark:border-white/5"></textarea></div>
+              <button type="submit" className="py-4 px-8 rounded-2xl bg-gray-900 hover:bg-black dark:bg-white text-white dark:text-gray-900 font-bold flex items-center gap-2 hover:scale-105 active:scale-95 transition-transform shadow-xl"><Send size={18}/> {t.formSend}</button>
             </form>
           </div>
           <div className="w-full lg:w-1/3 flex flex-col gap-6">
-            <div className="glass-panel p-8 md:p-10 rounded-[3rem] border border-gray-200 dark:border-white/10 space-y-6 reveal-on-scroll delay-200">
-               <div className="flex gap-4 items-start"><div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white flex items-center justify-center border border-gray-200 dark:border-white/20"><Mail size={18}/></div><div className="flex-1 min-w-0"><h4 className="text-[15px] font-bold dark:text-white">{t.email}</h4><p className="text-[14px] text-gray-500 break-all">{profile.email}</p></div></div>
-               <div className="flex gap-4 items-start"><div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white flex items-center justify-center border border-gray-200 dark:border-white/20"><Phone size={18}/></div><div className="flex-1 min-w-0"><h4 className="text-[15px] font-bold dark:text-white">{t.whatsapp}</h4><p className="text-[14px] text-gray-500 break-all">{profile.whatsapp}</p></div></div>
-               <div className="pt-4 border-t border-gray-200 dark:border-white/10 flex justify-start gap-4">
-                  {['instagram', 'threads', 'tiktok', 'linkedin'].map(s => profile.socials?.[s] && <a key={s} href={profile.socials[s]} target="_blank" className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:scale-110 transition-all shadow-sm border border-gray-200 dark:border-white/10"><BrandIcon name={s} size={18}/></a>)}
-               </div>
+            <div className="glass-panel p-8 md:p-10 rounded-[3rem] border border-gray-200 dark:border-white/5 space-y-6">
+               <div className="flex gap-4 items-start"><div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center"><Mail size={18}/></div><div className="flex-1"><h4 className="text-[15px] font-bold dark:text-white">{t.email}</h4><p className="text-[14px] text-gray-500 break-all">{profile.email}</p></div></div>
+               <div className="flex gap-4 items-start"><div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 text-green-600 flex items-center justify-center"><Phone size={18}/></div><div className="flex-1"><h4 className="text-[15px] font-bold dark:text-white">{t.whatsapp}</h4><p className="text-[14px] text-gray-500 break-all">{profile.whatsapp}</p></div></div>
+               <div className="flex gap-4 items-start"><div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center"><MapPin size={18}/></div><div className="flex-1"><h4 className="text-[15px] font-bold dark:text-white">{t.location}</h4><p className="text-[14px] text-gray-500">{profile.location}</p></div></div>
             </div>
           </div>
         </div>
@@ -691,7 +710,7 @@ export default function App() {
         <p className="text-[16px] text-gray-600 dark:text-gray-400 font-medium mb-12 border-b border-gray-200 dark:border-white/10 pb-6">{t.expDesc}</p>
         <div className="border-l-[3px] border-gray-300 dark:border-gray-700 ml-4 md:ml-8 space-y-12">
           {experiences.map(exp => (
-            <div key={exp.id} className="relative pl-8 md:pl-12"><div className="absolute w-6 h-6 bg-gray-900 dark:bg-white rounded-full -left-[13.5px] top-1.5 ring-[6px] ring-[#F8FAFC] dark:ring-[#0a0a0a]"></div><div className="glass-panel p-8 rounded-[2.5rem] border border-gray-200 dark:border-white/10 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300"><span className="text-gray-900 dark:text-white bg-gray-100 dark:bg-white/10 px-3.5 py-1.5 rounded-lg text-[13px] font-bold mb-4 inline-block border border-gray-200 dark:border-white/20">{tText(exp.period, lang)}</span><h3 className="text-2xl font-black dark:text-white mb-2">{tText(exp.role, lang)}</h3><h4 className="font-bold text-gray-600 dark:text-gray-400 mb-5">{tText(exp.company, lang)}</h4><p className="text-[15px] font-medium text-gray-700 dark:text-gray-300">{tText(exp.desc, lang)}</p></div></div>
+            <div key={exp.id} className="relative pl-8 md:pl-12"><div className="absolute w-6 h-6 bg-gray-900 dark:bg-white rounded-full -left-[13.5px] top-1.5 ring-[6px] ring-[#F8FAFC] dark:ring-[#050505]"></div><div className="glass-panel p-8 rounded-[2.5rem] border border-gray-200 dark:border-white/5 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300"><span className="text-gray-900 dark:text-white bg-gray-100 dark:bg-white/10 px-3.5 py-1.5 rounded-lg text-[13px] font-bold mb-4 inline-block border border-gray-200 dark:border-white/10">{tText(exp.period, lang)}</span><h3 className="text-2xl font-black dark:text-white mb-2">{tText(exp.role, lang)}</h3><h4 className="font-bold text-gray-600 dark:text-gray-400 mb-5">{tText(exp.company, lang)}</h4><p className="text-[15px] font-medium text-gray-700 dark:text-gray-300">{tText(exp.desc, lang)}</p></div></div>
           ))}
           {experiences.length === 0 && <div className="pl-8 text-gray-500">{t.noExp}</div>}
         </div>
@@ -705,12 +724,85 @@ export default function App() {
         <p className="text-[16px] text-gray-600 dark:text-gray-400 font-medium mb-12 border-b border-gray-200 dark:border-white/10 pb-6">{t.eduDesc}</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {educations.map(edu => (
-             <div key={edu.id} className="glass-panel p-8 md:p-10 rounded-[3rem] hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-white/10"><div className="w-16 h-16 bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white rounded-[1.2rem] flex items-center justify-center mb-6 shadow-sm border border-gray-200 dark:border-white/20"><GraduationCap size={32}/></div><span className="text-[12px] font-bold text-gray-900 dark:text-white bg-gray-100 dark:bg-white/10 px-3.5 py-1.5 rounded-lg mb-4 inline-block shadow-sm border border-gray-200 dark:border-white/20">{tText(edu.period, lang)}</span><h3 className="text-2xl font-black dark:text-white mb-2 leading-snug">{tText(edu.degree, lang)}</h3><h4 className="font-bold text-gray-600 dark:text-gray-400 mb-5">{tText(edu.institution, lang)}</h4><p className="text-[14.5px] font-medium text-gray-700 dark:text-gray-300">{tText(edu.desc, lang)}</p></div>
+             <div key={edu.id} className="glass-panel p-8 md:p-10 rounded-[3rem] hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-white/5"><div className="w-16 h-16 bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white rounded-[1.2rem] flex items-center justify-center mb-6 shadow-sm border border-gray-200 dark:border-white/10"><GraduationCap size={32}/></div><span className="text-[12px] font-bold text-gray-900 dark:text-white bg-gray-100 dark:bg-white/5 px-3.5 py-1.5 rounded-lg mb-4 inline-block shadow-sm border border-gray-200 dark:border-white/10">{tText(edu.period, lang)}</span><h3 className="text-2xl font-black dark:text-white mb-2 leading-snug">{tText(edu.degree, lang)}</h3><h4 className="font-bold text-gray-600 dark:text-gray-400 mb-5">{tText(edu.institution, lang)}</h4><p className="text-[14.5px] font-medium text-gray-700 dark:text-gray-300">{tText(edu.desc, lang)}</p></div>
           ))}
           {educations.length === 0 && <div className="col-span-2 text-center py-10 text-gray-500">{t.noEdu}</div>}
         </div>
       </div>
     );
+    
+    // --- HALAMAN SERTIFIKASI DETAIL - NEW MASTER/DETAIL (NO POPUP) ---
+    if (currentPath === '/certifications') {
+      const activeCert = selectedCert || (certifications.length > 0 ? certifications[0] : null);
+
+      return (
+        <div className="max-w-6xl mx-auto pt-6 w-full pb-24 animate-page-enter relative">
+          <SEO title={t.certifications} />
+          
+          <div className="mb-12 reveal-on-scroll">
+             <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4 tracking-tight flex items-center gap-4"><Award className="text-blue-500" size={40}/> {t.certifications}</h1>
+             <p className="text-[16px] text-gray-600 dark:text-gray-400 font-medium leading-relaxed max-w-2xl">{t.certDesc}</p>
+          </div>
+
+          {certifications.length > 0 ? (
+            <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-start relative w-full">
+              
+              {/* Kolom Kiri: Master List (Daftar Sertifikat) */}
+              <div className="w-full lg:w-[35%] flex flex-col gap-3 lg:sticky lg:top-8 z-10 shrink-0">
+                 <h4 className="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest px-2 mb-2 hidden lg:block">Koleksi Lisensi</h4>
+                 {certifications.map(cert => (
+                    <button 
+                      key={cert.id} 
+                      onClick={() => { setSelectedCert(cert); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+                      className={`text-left p-4 rounded-[1.5rem] transition-all border flex gap-4 items-center group w-full ${activeCert?.id === cert.id ? 'bg-white dark:bg-[#111111] border-gray-300 dark:border-white/20 shadow-xl lg:scale-[1.02]' : 'glass-panel border-transparent hover:border-gray-200 dark:hover:border-white/10 hover:bg-white/60 dark:hover:bg-white/5'}`}
+                    >
+                       <div className={`w-12 h-12 rounded-xl shrink-0 flex items-center justify-center transition-all ${activeCert?.id === cert.id ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30' : 'bg-gray-100 dark:bg-[#050505] border border-gray-200 dark:border-white/5 text-gray-500 group-hover:text-blue-500'}`}>
+                          <Award size={20} />
+                       </div>
+                       <div className="min-w-0 flex-1">
+                          <h4 className={`text-[14px] font-black truncate transition-colors ${activeCert?.id === cert.id ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white'}`}>{tText(cert.name, lang)}</h4>
+                          <p className="text-[12px] font-bold text-gray-500 mt-1 flex items-center gap-1.5 truncate">{tText(cert.issuer, lang)} • {cert.year}</p>
+                       </div>
+                    </button>
+                 ))}
+              </div>
+
+              {/* Kolom Kanan: Detail Viewer (Tanpa Modal Popup) */}
+              <div className="w-full lg:w-[65%] flex flex-col animate-fade-in">
+                 <div className="glass-panel rounded-[2.5rem] p-6 sm:p-10 border border-gray-200 dark:border-white/5 shadow-2xl relative overflow-hidden bg-white/40 dark:bg-white/[0.02]">
+                    
+                    {/* Frame Gambar Eksklusif */}
+                    <div className="w-full h-[300px] sm:h-[450px] bg-gray-100 dark:bg-[#050505] rounded-[1.5rem] p-6 flex items-center justify-center relative overflow-hidden border border-gray-200 dark:border-white/5 mb-8 shadow-inner">
+                       <div className="absolute inset-0 opacity-20 blur-3xl saturate-200" style={{backgroundImage: `url(${activeCert.image})`, backgroundPosition: 'center', backgroundSize: 'cover'}}></div>
+                       <img key={activeCert.id} src={activeCert.image} className="w-full h-full object-contain relative z-10 drop-shadow-md animate-reveal-up" alt={tText(activeCert.name, lang)} />
+                    </div>
+
+                    {/* Tipografi Rincian Bersih */}
+                    <div className="px-2 pb-4">
+                       <div className="flex items-center gap-3 mb-4">
+                          <span className="text-[10px] font-black text-gray-500 dark:text-gray-400 bg-white dark:bg-[#050505] border border-gray-200 dark:border-white/10 px-3.5 py-1.5 rounded-full tracking-widest uppercase shadow-sm">{activeCert.year}</span>
+                          <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700 hidden sm:block"></span>
+                          <span className="font-bold text-gray-500 text-[13px] flex items-center gap-1.5 truncate">{tText(activeCert.issuer, lang)} <CheckCircle size={14} className="text-blue-500"/></span>
+                       </div>
+                       
+                       <h2 className="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white mb-6 leading-tight tracking-tight">{tText(activeCert.name, lang)}</h2>
+                       
+                       <div className="pt-6 border-t border-gray-200 dark:border-white/10">
+                          <h4 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3">Deskripsi / Cakupan Ilmu</h4>
+                          <p className="text-[15px] font-medium text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{tText(activeCert.desc, lang) || 'Tidak ada deskripsi tersedia.'}</p>
+                       </div>
+                    </div>
+
+                 </div>
+              </div>
+
+            </div>
+          ) : (
+            <div className="text-center py-20 text-gray-500 font-medium w-full">Belum ada data sertifikasi.</div>
+          )}
+        </div>
+      );
+    }
 
     if (currentPath === '/skills') return (
       <div className="max-w-5xl mx-auto pt-6 w-full pb-20 animate-page-enter">
@@ -718,7 +810,7 @@ export default function App() {
         <h1 className="text-4xl font-black dark:text-white mb-2">{t.skillsTitle || t.mySkills}</h1>
         <p className="text-[16px] text-gray-600 dark:text-gray-400 font-medium mb-12 border-b border-gray-200 dark:border-white/10 pb-6">{t.skillsDesc || t.mySkillsDesc}</p>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-6">
-          {skills.map(s => (<div key={s.id} className="glass-panel p-6 rounded-[2rem] flex flex-col items-center gap-5 hover:-translate-y-2 hover:shadow-xl transition-all border border-gray-200 dark:border-white/10"><div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 dark:bg-white/5 p-3 rounded-2xl shadow-sm border border-gray-200 dark:border-white/10"><img src={s.img} loading="lazy" className={`w-full h-full object-contain ${s.invert ? 'dark:invert' : ''}`} alt=""/></div><h3 className="font-bold dark:text-white">{tText(s.name, lang)}</h3></div>))}
+          {skills.map(s => (<div key={s.id} className="glass-panel p-6 rounded-[2rem] flex flex-col items-center gap-5 hover:-translate-y-2 hover:shadow-xl transition-all border border-gray-200 dark:border-white/5"><div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 dark:bg-white/5 p-3 rounded-2xl shadow-sm border border-gray-200 dark:border-white/5"><img src={s.img} loading="lazy" className={`w-full h-full object-contain ${s.invert ? 'dark:invert' : ''}`} alt=""/></div><h3 className="font-bold dark:text-white">{tText(s.name, lang)}</h3></div>))}
         </div>
       </div>
     );
@@ -726,10 +818,10 @@ export default function App() {
     if (currentPath === '/links') return (
       <div className="max-w-2xl mx-auto pt-12 w-full pb-20 animate-page-enter text-center">
         <SEO title={t.links} />
-        <img src={profile.profileImage} alt="Profile" className="w-28 h-28 rounded-full border-[6px] border-white/60 dark:border-gray-800 shadow-2xl object-cover mx-auto mb-5 animate-float bg-gray-100 dark:bg-gray-900" />
+        <img src={profile.profileImage} alt="Profile" className="w-28 h-28 rounded-full border-[6px] border-white/60 dark:border-gray-800 shadow-2xl object-cover mx-auto mb-5 animate-float bg-gray-100 dark:bg-[#050505]" />
         <h1 className="text-3xl font-black dark:text-white mb-2 tracking-tight">{tText(profile.name, lang)}</h1>
         <p className="text-gray-500 dark:text-gray-400 mt-2 font-bold uppercase tracking-widest text-[11px] mb-12">{t.linkDesc}</p>
-        <div className="space-y-5 w-full">{links.map(l => (<a key={l.id} href={l.url} target="_blank" rel="noreferrer" className="block w-full p-6 glass-panel rounded-[2rem] text-left hover:-translate-y-1 hover:shadow-2xl transition-all border border-gray-200 dark:border-white/10 flex justify-between items-center group"><div className="min-w-0 flex-1"><h3 className="font-black dark:text-white text-lg group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">{tText(l.label, lang)}</h3><p className="text-gray-500 font-bold mt-1">{tText(l.desc, lang)}</p></div><div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-gray-600 dark:text-white group-hover:bg-gray-200 dark:group-hover:bg-white/20 transition-all shadow-sm border border-gray-200 dark:border-white/20"><ExternalLink size={18} /></div></a>))}</div>
+        <div className="space-y-5 w-full">{links.map(l => (<a key={l.id} href={l.url} target="_blank" rel="noreferrer" className="block w-full p-6 glass-panel rounded-[2rem] text-left hover:-translate-y-1 hover:shadow-2xl transition-all border border-gray-200 dark:border-white/5 flex justify-between items-center group"><div className="min-w-0 flex-1"><h3 className="font-black dark:text-white text-lg group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">{tText(l.label, lang)}</h3><p className="text-gray-500 font-bold mt-1">{tText(l.desc, lang)}</p></div><div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-white group-hover:bg-gray-200 dark:group-hover:bg-white/10 transition-all shadow-sm border border-gray-200 dark:border-white/10"><ExternalLink size={18} /></div></a>))}</div>
       </div>
     );
 
@@ -751,9 +843,9 @@ export default function App() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full reveal-on-scroll delay-200">
               {displayed.map(proj => (
-                <div key={proj.id} onClick={() => navigate(`/technical/${proj.id}`)} className="glass-panel rounded-[2.5rem] overflow-hidden cursor-pointer group hover:-translate-y-2 transition-all flex flex-col w-full shadow-sm border border-gray-200 dark:border-white/10 hover:shadow-2xl hover:border-gray-400 dark:hover:border-white/30">
+                <div key={proj.id} onClick={() => navigate(`/technical/${proj.id}`)} className="glass-panel rounded-[2.5rem] overflow-hidden cursor-pointer group hover:-translate-y-2 transition-all flex flex-col w-full shadow-sm border border-gray-200 dark:border-white/5 hover:shadow-2xl hover:border-gray-400 dark:hover:border-white/20">
                   <div className="w-full h-56 overflow-hidden relative"><img src={proj.image} loading="lazy" alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" /></div>
-                  <div className="p-8 flex-1 flex flex-col w-full"><div className="flex justify-between items-start mb-4"><h3 className="text-xl font-black dark:text-white group-hover:text-gray-600 dark:group-hover:text-gray-300">{tText(proj.title, lang)}</h3>{proj.featured && <span className="bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest border border-gray-200 dark:border-white/20">{t.featured}</span>}</div><p className="text-[14.5px] text-gray-600 dark:text-gray-400 mb-6 flex-1 line-clamp-2">{tText(proj.shortDesc, lang)}</p><div className="flex flex-wrap gap-2 mt-auto">{(proj.tech || []).slice(0, 4).map((tItem, i) => <span key={i} className="text-[11px] font-bold bg-gray-100 dark:bg-white/10 border border-gray-200 dark:border-white/20 px-3 py-1.5 rounded-lg shadow-sm text-gray-800 dark:text-gray-200">{tItem}</span>)}</div></div>
+                  <div className="p-8 flex-1 flex flex-col w-full"><div className="flex justify-between items-start mb-4"><h3 className="text-xl font-black dark:text-white group-hover:text-gray-600 dark:group-hover:text-gray-300">{tText(proj.title, lang)}</h3>{proj.featured && <span className="bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest border border-gray-200 dark:border-white/10">{t.featured}</span>}</div><p className="text-[14.5px] text-gray-600 dark:text-gray-400 mb-6 flex-1 line-clamp-2">{tText(proj.shortDesc, lang)}</p><div className="flex flex-wrap gap-2 mt-auto">{(proj.tech || []).slice(0, 4).map((tItem, i) => <span key={i} className="text-[11px] font-bold bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 px-3 py-1.5 rounded-lg shadow-sm text-gray-800 dark:text-gray-200">{tItem}</span>)}</div></div>
                 </div>
               ))}
           </div>
@@ -813,7 +905,7 @@ export default function App() {
           <p className="text-gray-600 dark:text-gray-400 mb-12 text-[16px] font-medium reveal-on-scroll delay-100">{t.creativeSub}</p>
           <div className="flex flex-col gap-8 w-full max-w-full reveal-on-scroll delay-200">
               {displayed.map(proj => (
-                <div key={proj.id} onClick={() => navigate(`/creative/${proj.id}`)} className="glass-panel rounded-[2.5rem] overflow-hidden cursor-pointer group hover:-translate-y-2 transition-all flex flex-col md:flex-row w-full shadow-sm border border-gray-200 dark:border-white/10 hover:shadow-2xl hover:border-gray-400 dark:hover:border-white/30">
+                <div key={proj.id} onClick={() => navigate(`/creative/${proj.id}`)} className="glass-panel rounded-[2.5rem] overflow-hidden cursor-pointer group hover:-translate-y-2 transition-all flex flex-col md:flex-row w-full shadow-sm border border-gray-200 dark:border-white/5 hover:shadow-2xl hover:border-gray-400 dark:hover:border-white/20">
                   <div className="w-full md:w-[40%] h-64 md:h-auto shrink-0 overflow-hidden relative">
                     <img src={proj.image} loading="lazy" alt={tText(proj.title, lang)} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 absolute inset-0" />
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500 flex items-center justify-center">
@@ -905,7 +997,7 @@ export default function App() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {displayed.map((blog, idx) => (
-              <div key={blog.id} onClick={() => navigate(`/thoughts/${blog.id}`)} className={`glass-panel rounded-[2.5rem] overflow-hidden cursor-pointer group hover:-translate-y-2 transition-all flex flex-col border border-gray-200 dark:border-white/10 shadow-sm hover:shadow-2xl delay-${(idx % 4) * 100}`}>
+              <div key={blog.id} onClick={() => navigate(`/thoughts/${blog.id}`)} className={`glass-panel rounded-[2.5rem] overflow-hidden cursor-pointer group hover:-translate-y-2 transition-all flex flex-col border border-gray-200 dark:border-white/5 shadow-sm hover:shadow-2xl delay-${(idx % 4) * 100}`}>
                 <div className="h-64 overflow-hidden relative"><img src={blog.thumbnail} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" alt="" /></div>
                 <div className="p-8 flex-1 flex flex-col"><span className="bg-gray-900 text-white dark:bg-white dark:text-gray-900 border border-transparent px-3.5 py-1.5 rounded-lg text-[11px] font-black uppercase mb-5 w-fit shadow-sm">{blog.tag}</span><h3 className="text-2xl font-black dark:text-white mb-3 group-hover:text-gray-600 dark:group-hover:text-gray-300 leading-snug">{tText(blog.title, lang)}</h3><p className="text-[15px] text-gray-600 dark:text-gray-400 mb-8 flex-1 line-clamp-2 font-medium">{tText(blog.summary, lang)}</p><div className="mt-auto flex items-center gap-6 text-[13px] font-bold text-gray-500 border-t border-gray-200 dark:border-white/10 pt-5"><div className="flex items-center gap-2"><Calendar size={16}/> {blog.date}</div><div className="flex items-center gap-2"><Clock size={16}/> {blog.readTime} {t.readText}</div></div></div>
               </div>
@@ -968,16 +1060,13 @@ export default function App() {
 
                    <div className="flex justify-between items-center mb-8 border-b border-gray-200 dark:border-white/10 pb-5"><h2 className="text-2xl font-black dark:text-white flex items-center gap-3"><Settings size={24} className="text-gray-900 dark:text-white"/> Form {modalType.toUpperCase()}</h2><button type="button" onClick={closeModal} className="p-2.5 bg-gray-100 dark:bg-white/10 rounded-full text-gray-500 hover:text-white hover:bg-red-500 transition-all"><X size={20}/></button></div>
                    <div className="space-y-8">
+                      {/* UPLOAD DENGAN CROP */}
                       {(modalType === 'project' || modalType === 'blog' || modalType === 'skill') && (
                         <div className="bg-gray-50 dark:bg-white/5 p-6 rounded-[2rem] border-dashed border border-gray-300 dark:border-white/20 shadow-inner">
                           <label className="block text-[13px] font-bold text-gray-700 dark:text-gray-300 mb-4 uppercase tracking-widest">Media Utama (Otomatis Crop)</label>
                           <div className="flex flex-col sm:flex-row items-center gap-6">
                              <div className="w-40 h-28 bg-gray-200 dark:bg-black/50 rounded-2xl overflow-hidden flex items-center justify-center border-4 border-white dark:border-white/10 shadow-inner">
-                                {previewImage instanceof File ? (
-                                  <img src={URL.createObjectURL(previewImage)} className="w-full h-full object-cover"/>
-                                ) : (
-                                  (editingItem?.image || editingItem?.thumbnail || editingItem?.img) ? <img src={editingItem.image || editingItem.thumbnail || editingItem.img} className="w-full h-full object-cover"/> : <ImageIcon size={32} className="text-gray-400"/>
-                                )}
+                                {previewImage instanceof File ? ( <img src={URL.createObjectURL(previewImage)} className="w-full h-full object-cover"/> ) : ( (editingItem?.image || editingItem?.thumbnail || editingItem?.img) ? <img src={editingItem.image || editingItem.thumbnail || editingItem.img} className="w-full h-full object-cover"/> : <ImageIcon size={32} className="text-gray-400"/> )}
                              </div>
                              <div className="flex flex-col gap-3 w-full sm:w-auto">
                                 <label className="px-6 py-4 bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-200 text-white dark:text-gray-900 font-bold rounded-xl cursor-pointer shadow-lg active:scale-95 text-sm transition-all flex items-center justify-center">
@@ -985,6 +1074,24 @@ export default function App() {
                                    <input type="file" accept="image/*,video/mp4" onChange={(e) => triggerCropModal(e, 'preview')} className="hidden"/>
                                 </label>
                                 <p className="text-[11px] text-gray-500 font-bold text-center">Video MP4 tidak akan di-crop</p>
+                             </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* UPLOAD BEBAS (TANPA CROP) UNTUK SERTIFIKASI */}
+                      {modalType === 'certification' && (
+                        <div className="bg-gray-50 dark:bg-white/5 p-6 rounded-[2rem] border-dashed border border-gray-300 dark:border-white/20 shadow-inner">
+                          <label className="block text-[13px] font-bold text-gray-700 dark:text-gray-300 mb-4 uppercase tracking-widest">Gambar Sertifikat (Bebas Rasio)</label>
+                          <div className="flex flex-col sm:flex-row items-center gap-6">
+                             <div className="w-40 h-28 bg-gray-200 dark:bg-[#050505] rounded-2xl overflow-hidden flex items-center justify-center shadow-inner relative p-2 border-2 border-white/10">
+                                {previewImage instanceof File ? ( <img src={URL.createObjectURL(previewImage)} className="w-full h-full object-contain relative z-10"/> ) : ( (editingItem?.image) ? <img src={editingItem.image} className="w-full h-full object-contain relative z-10"/> : <ImageIcon size={32} className="text-gray-400"/> )}
+                             </div>
+                             <div className="flex flex-col gap-3 w-full sm:w-auto">
+                                <label className="px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl cursor-pointer shadow-lg active:scale-95 text-sm transition-all flex items-center justify-center">
+                                   <UploadCloud size={18} className="inline mr-2"/> Upload Original
+                                   <input type="file" accept="image/*" onChange={(e) => { const file = e.target.files[0]; if(file) setPreviewImage(file); }} className="hidden"/>
+                                </label>
                              </div>
                           </div>
                         </div>
@@ -1087,6 +1194,21 @@ export default function App() {
                          </>
                       )}
 
+                      {/* INPUT BILINGUAL - CERTIFICATION */}
+                      {modalType === 'certification' && (
+                         <>
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                             <input name="name_id" defaultValue={splitText(editingItem?.name).id} placeholder="Nama Sertifikat (ID)" required className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"/>
+                             <input name="name_en" defaultValue={splitText(editingItem?.name).en} placeholder="Certificate Name (EN)" className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"/>
+                             <input name="issuer_id" defaultValue={splitText(editingItem?.issuer).id} placeholder="Penerbit (ID)" required className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"/>
+                             <input name="issuer_en" defaultValue={splitText(editingItem?.issuer).en} placeholder="Issuer (EN)" className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"/>
+                             <input name="year" defaultValue={editingItem?.year} placeholder="Tahun (e.g., 2024)" required className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-white col-span-full"/>
+                             <textarea name="desc_id" defaultValue={splitText(editingItem?.desc).id} placeholder="Deskripsi/Cakupan Ilmu (ID)" required rows="3" className="w-full p-4 glass-panel rounded-xl font-medium dark:text-white resize-none"/>
+                             <textarea name="desc_en" defaultValue={splitText(editingItem?.desc).en} placeholder="Description/Scope (EN)" rows="3" className="w-full p-4 glass-panel rounded-xl font-medium dark:text-white resize-none"/>
+                           </div>
+                         </>
+                      )}
+
                       {/* INPUT BILINGUAL - SKILL */}
                       {modalType === 'skill' && (
                         <>
@@ -1128,7 +1250,7 @@ export default function App() {
              <div><h1 className="text-4xl font-black dark:text-white flex items-center gap-4 tracking-tighter"><Settings className="text-gray-900 dark:text-white" size={36}/> <span className="truncate">Workspace Admin</span></h1><p className="text-[16px] font-medium text-gray-500 mt-2 max-w-2xl">Kelola konten bilingual, identitas, media sosial, dan potong foto otomatis.</p></div>
              <div className="flex items-center justify-between w-full bg-white/40 dark:bg-[#111111] p-3 rounded-[2.5rem] border border-gray-200 dark:border-white/10 backdrop-blur-2xl shadow-lg mt-2 overflow-hidden">
                <div className="flex items-center gap-2 overflow-x-auto custom-scrollbar pb-3 sm:pb-0 w-full px-2 flex-nowrap">
-                 {[{id:'overview', label:'Overview', icon: Home}, {id:'profile', label:'Profil & CV', icon: User}, {id:'technical', label:'Technical', icon: Code}, {id:'creative', label:'Creative', icon: Palette}, {id:'blogs', label:'Thoughts', icon: FileText}, {id:'experience', label:'Exp & Edu', icon: Briefcase}, {id:'skills', label:'Skills & Links', icon: Lightbulb}].map(tb => (<button key={tb.id} onClick={()=>setCmsTab(tb.id)} className={`px-6 py-3.5 rounded-[1.2rem] text-[13px] font-black shrink-0 transition-all flex items-center gap-2 ${cmsTab === tb.id ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 shadow-lg shadow-gray-900/20 transform scale-[1.03]' : 'text-gray-600 dark:text-gray-400 hover:bg-white/80 hover:bg-white/10 hover:text-gray-900 dark:hover:text-white'}`}><tb.icon size={16}/> {tb.label}</button>))}
+                 {[{id:'overview', label:'Overview', icon: Home}, {id:'profile', label:'Profil & CV', icon: User}, {id:'technical', label:'Technical', icon: Code}, {id:'creative', label:'Creative', icon: Palette}, {id:'blogs', label:'Thoughts', icon: FileText}, {id:'experience', label:'Exp & Edu', icon: Briefcase}, {id:'certifications', label:'Sertifikasi', icon: Award}, {id:'skills', label:'Skills & Links', icon: Lightbulb}].map(tb => (<button key={tb.id} onClick={()=>setCmsTab(tb.id)} className={`px-6 py-3.5 rounded-[1.2rem] text-[13px] font-black shrink-0 transition-all flex items-center gap-2 ${cmsTab === tb.id ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 shadow-lg shadow-gray-900/20 transform scale-[1.03]' : 'text-gray-600 dark:text-gray-400 hover:bg-white/80 hover:bg-white/10 hover:text-gray-900 dark:hover:text-white'}`}><tb.icon size={16}/> {tb.label}</button>))}
                </div>
                <button onClick={()=>{setIsAuthenticated(false); showToast('Keluar Sesi');}} className="hidden md:flex items-center gap-2 px-6 py-3.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-[1.2rem] font-black shrink-0 border border-red-100 dark:border-red-900/50 hover:scale-105 active:scale-95 text-[13px] ml-4"><Lock size={16}/> Keluar</button>
              </div>
@@ -1140,7 +1262,7 @@ export default function App() {
                 <div className="glass-panel p-8 rounded-[2.5rem] border-l-8 border-gray-900 dark:border-white shadow-xl hover:-translate-y-2 transition-all"><p className="text-[12px] font-black text-gray-500 uppercase tracking-widest mb-2">Technical</p><h4 className="text-5xl font-black dark:text-white">{projects.filter(p=>p.type==='technical').length} <span className="text-xl text-gray-400 font-bold">Karya</span></h4></div>
                 <div className="glass-panel p-8 rounded-[2.5rem] border-l-8 border-gray-900 dark:border-white shadow-xl hover:-translate-y-2 transition-all"><p className="text-[12px] font-black text-gray-500 uppercase tracking-widest mb-2">Creative</p><h4 className="text-5xl font-black dark:text-white">{projects.filter(p=>p.type==='creative').length} <span className="text-xl text-gray-400 font-bold">Karya</span></h4></div>
                 <div className="glass-panel p-8 rounded-[2.5rem] border-l-8 border-gray-900 dark:border-white shadow-xl hover:-translate-y-2 transition-all"><p className="text-[12px] font-black text-gray-500 uppercase tracking-widest mb-2">Thoughts</p><h4 className="text-5xl font-black dark:text-white">{blogs.length} <span className="text-xl text-gray-400 font-bold">Blog</span></h4></div>
-                <div className="glass-panel p-8 rounded-[2.5rem] border-l-8 border-gray-900 dark:border-white shadow-xl hover:-translate-y-2 transition-all"><p className="text-[12px] font-black text-gray-500 uppercase tracking-widest mb-2">Pengalaman</p><h4 className="text-5xl font-black dark:text-white">{experiences.length} <span className="text-xl text-gray-400 font-bold">Data</span></h4></div>
+                <div className="glass-panel p-8 rounded-[2.5rem] border-l-8 border-gray-900 dark:border-white shadow-xl hover:-translate-y-2 transition-all"><p className="text-[12px] font-black text-gray-500 uppercase tracking-widest mb-2">Sertifikasi</p><h4 className="text-5xl font-black dark:text-white">{certifications.length} <span className="text-xl text-gray-400 font-bold">Data</span></h4></div>
               </div>
             )}
 
@@ -1279,6 +1401,22 @@ export default function App() {
               </div>
             )}
             
+            {/* CMS TAB - SERTIFIKASI */}
+            {cmsTab === 'certifications' && (
+              <div className="glass-panel p-8 md:p-12 rounded-[3rem]">
+                 <div className="flex justify-between items-center mb-10 border-b border-gray-200 dark:border-white/5 pb-6"><h2 className="text-3xl font-black uppercase text-gray-900 dark:text-white flex items-center gap-3 tracking-tighter"><Award size={30} className="text-blue-500"/> Sertifikasi</h2><button onClick={() => openModal('certification', null)} className="px-8 py-4 bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-200 text-white dark:text-gray-900 rounded-2xl font-black text-sm flex items-center gap-2 active:scale-95 transition-all hover:scale-105"><Plus size={18}/> Tambah Sertifikat</button></div>
+                 <div className="grid grid-cols-1 gap-5 mb-16">
+                    {certifications.map(c => (
+                       <div key={c.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-white/40 dark:bg-[#111111] rounded-[2rem] border border-gray-200 dark:border-white/5 hover:-translate-y-1 transition-all duration-300 group gap-5">
+                          <div className="flex items-center gap-6"><img src={c.image} className="w-20 h-20 rounded-2xl object-cover border border-gray-200 dark:border-white/10 shrink-0" alt="" /><div><h4 className="font-black text-gray-900 dark:text-white text-[18px] mb-1">{tText(c.name, lang)}</h4><p className="text-[13px] font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-white/10 px-3 py-1.5 rounded-lg inline-block border border-gray-200 dark:border-white/10 mt-2">{tText(c.issuer, lang)} • {c.year}</p></div></div>
+                          <div className="flex items-center gap-3 shrink-0"><button onClick={() => openModal('certification', c)} className="p-4 bg-white dark:bg-[#1A1A1A] text-gray-900 dark:text-white rounded-2xl border border-gray-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-transform"><Edit size={20}/></button><button onClick={() => handleDelete('certifications', c.id, certifications, setCertifications)} className="p-4 bg-white dark:bg-[#1A1A1A] text-red-600 dark:text-red-500 rounded-2xl border border-gray-200 dark:border-white/10 hover:scale-110 active:scale-95 transition-transform"><Trash2 size={20}/></button></div>
+                       </div>
+                    ))}
+                    {certifications.length === 0 && <p className="text-gray-500 font-bold p-6 text-center border-2 border-dashed border-gray-300 dark:border-white/10 rounded-3xl">Belum ada data sertifikasi.</p>}
+                 </div>
+              </div>
+            )}
+
             {cmsTab === 'skills' && (
               <div className="glass-panel p-8 md:p-12 rounded-[3rem]">
                  <div className="flex justify-between items-center mb-10 border-b border-gray-200 dark:border-white/5 pb-6"><h2 className="text-3xl font-black uppercase text-gray-900 dark:text-white flex items-center gap-3 tracking-tighter"><Lightbulb size={30} className="text-gray-900 dark:text-white"/> Keahlian (Skills)</h2><button onClick={() => openModal('skill', null)} className="px-8 py-4 bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-200 text-white dark:text-gray-900 rounded-2xl font-black text-sm flex items-center gap-2 active:scale-95 transition-all hover:scale-105"><Plus size={18}/> Tambah Skill</button></div>
@@ -1321,8 +1459,8 @@ export default function App() {
 
   if (isLoadingData) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#F8FAFC] dark:bg-[#0a0a0a]">
-         <div className="w-12 h-12 border-4 border-gray-900 dark:border-white border-t-transparent rounded-full animate-spin mb-4 shadow-lg dark:shadow-white/20"></div>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#F8FAFC] dark:bg-[#050505]">
+         <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4 shadow-lg shadow-blue-500/20"></div>
          <p className="text-gray-500 dark:text-gray-400 font-bold animate-pulse text-sm tracking-widest uppercase">Memuat Portofolio...</p>
       </div>
     );
@@ -1330,56 +1468,81 @@ export default function App() {
 
   return (
     <HelmetProvider>
-      <div className="flex relative bg-[#F8FAFC] dark:bg-[#0a0a0a] text-gray-900 dark:text-gray-100 min-h-screen font-sans overflow-x-hidden selection:bg-gray-900/30 dark:selection:bg-white/30 selection:text-white dark:selection:text-black">
+      <div className="flex relative bg-[#F8FAFC] dark:bg-[#050505] text-gray-900 dark:text-gray-100 min-h-screen font-sans overflow-x-hidden selection:bg-blue-500/30 selection:text-blue-900 dark:selection:text-blue-100">
+       
+       {/* Latar Belakang Baru: Dark Black dengan Subtle Gradient Cahaya */}
+       <div className="fixed inset-0 z-0 pointer-events-none bg-gradient-to-br from-transparent via-transparent to-blue-900/5 dark:bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] dark:from-gray-800/20 dark:via-[#050505] dark:to-[#050505]"></div>
+
        {toastMessage && (
           <div className="fixed bottom-8 right-8 z-[100] animate-dashboard-enter">
              <div className="glass-panel bg-white/95 dark:bg-[#1A1A1A]/95 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-gray-200 dark:border-white/20 backdrop-blur-2xl">
-                <div className="w-10 h-10 rounded-xl bg-gray-900 dark:bg-white flex items-center justify-center text-white dark:text-gray-900 shrink-0"><Check size={20} strokeWidth={4} /></div>
+                <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/30"><Check size={20} strokeWidth={4} /></div>
                 <p className="text-[14px] font-black uppercase tracking-wider">{toastMessage}</p>
              </div>
           </div>
        )}
 
-       {/* EFEK NOISE BACKGROUND */}
-       <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] dark:opacity-[0.06]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")", backgroundRepeat: "repeat" }}></div>
-
        <style dangerouslySetInnerHTML={{__html: `
-        body { background-color: #0a0a0a; }
+        body { background-color: #050505; }
+/* ========================================= */
+        /* CUSTOM ELEGANT SCROLLBAR                  */
+        /* ========================================= */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.8); }
+        html.dark ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); }
+        html.dark ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
 
-        .glass-panel { 
-          background: rgba(255, 255, 255, 0.7); 
-          backdrop-filter: blur(16px); 
-          -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(255, 255, 255, 0.4); 
-          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
-          transition: all 0.3s ease;
+        /* Untuk Sidebar / Custom Area */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        html.dark .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+        html.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+
+        /* ========================================= */
+        /* EFEK HOVER IKON SOSMED MONOKROM -> WARNA  */
+        /* ========================================= */
+        .icon-ig, .icon-th, .icon-tt, .icon-in { 
+           color: #9ca3af; /* Warna dasar Abu-abu Monokrom */
+           transition: color 0.4s ease; 
         }
         
-        /* Dark Mode Glass Panel - Lebih Terang Sedikit agar Batas Terlihat (Mencegah Deep Black Tenggelam) */
-        html.dark .glass-panel { 
-          background: rgba(30, 30, 32, 0.85); 
-          border: 1px solid rgba(255, 255, 255, 0.08); 
-          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        a:hover .icon-ig { color: #E4405F !important; }
+        a:hover .icon-th { color: #000000 !important; }
+        html.dark a:hover .icon-th { color: #ffffff !important; }
+        a:hover .icon-tt { color: #00f2ea !important; }
+        a:hover .icon-in { color: #0A66C2 !important; }
+        .glass-panel { 
+          background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05); transition: all 0.3s ease;
         }
-        .glass-panel:hover { border-color: rgba(0, 0, 0, 0.3); }
-        html.dark .glass-panel:hover { 
-          border-color: rgba(255, 255, 255, 0.25); 
-          background: rgba(40, 40, 42, 0.9);
+        html.dark .glass-panel { 
+          background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
         }
         
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 20px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 20px; }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
         .reveal-on-scroll { opacity: 0; animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes revealUp { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
+        
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         @keyframes blink { 0%, 100% { border-color: transparent; } 50% { border-color: currentColor; } }
         @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } } .animate-float { animation: float 6s ease-in-out infinite; }
         .animate-dashboard-enter { animation: dashboardEnter 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         @keyframes dashboardEnter { 0% { opacity: 0; transform: scale(0.96) translateY(20px); filter: blur(8px); } 100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); } }
         .animate-page-enter { animation: pageEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         @keyframes pageEnter { 0% { opacity: 0; transform: translateX(15px); } 100% { opacity: 1; transform: translateX(0); } }
-        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* Typography Rich Text Content */
+        .animate-reveal-up { opacity: 0; animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards; }
+        @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+
         .article-content h1, .article-content h2, .article-content h3 { font-weight: 800; color: #111; margin-top: 1.5em; margin-bottom: 0.5em; }
         html.dark .article-content h1, html.dark .article-content h2, html.dark .article-content h3 { color: #fff; }
         .article-content p { margin-bottom: 1em; line-height: 1.8; }
@@ -1397,7 +1560,6 @@ export default function App() {
         .article-content ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; }
         .article-content ol { list-style-type: decimal; margin-left: 1.5rem; margin-bottom: 1rem; }
         
-        /* Styling Code Snippet pada Artikel (<pre>) */
         .article-content pre { background: #f1f5f9; color: #334155; padding: 1.5rem; border-radius: 1rem; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 14px; margin: 1.5rem 0; border: 1px solid rgba(0,0,0,0.05); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
         html.dark .article-content pre { background: #0a0a0c; color: #e2e8f0; border-color: rgba(255,255,255,0.05); box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
         .article-content code { background: rgba(0,0,0,0.05); padding: 0.2rem 0.4rem; border-radius: 0.3rem; font-family: 'Consolas', monospace; font-size: 0.9em; }
@@ -1413,10 +1575,10 @@ export default function App() {
 
        <div className={`lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 px-5 flex items-center justify-between !border-x-0 !border-t-0 !rounded-none transition-transform duration-500 ease-in-out ${isMobileMenuOpen ? '-translate-y-full' : 'translate-y-0'}`}>
           <div className="font-black text-[16px] text-gray-900 dark:text-white uppercase truncate pr-4">{tText(profile.name, lang)}</div>
-          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2.5 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"><Menu size={20} /></button>
+          <button onClick={() => setIsMobileMenuOpen(true)} className="p-2.5 rounded-xl bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white transition-all active:scale-95"><Menu size={22} /></button>
         </div>
         
-        {isMobileMenuOpen && <div className="fixed inset-0 bg-black/60 z-40 lg:hidden" onClick={() => setIsMobileMenuOpen(false)} />}
+        {isMobileMenuOpen && <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[65] lg:hidden animate-fade-in" onClick={() => setIsMobileMenuOpen(false)} />}
         {renderSidebar()}
         
         <main className="flex-1 lg:pl-[280px] pt-16 lg:pt-0 min-h-screen transition-all duration-300 w-full overflow-x-hidden relative z-10">
@@ -1427,10 +1589,10 @@ export default function App() {
           {cropModalOpen && (
              <div className="fixed inset-0 bg-black/95 z-[100] flex flex-col items-center justify-center p-4">
                 <div className="relative w-full max-w-2xl h-[60vh] bg-gray-900 rounded-3xl overflow-hidden border border-white/20">
-                   <Cropper image={imageToCrop} crop={crop} zoom={zoom} aspect={cropType === 'hero' ? 16 / 9 : 1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} />
+                   <Cropper image={imageToCrop} crop={crop} zoom={zoom} aspect={cropType === 'hero' ? 4 / 3 : 1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} />
                 </div>
                 <div className="w-full max-w-2xl mt-6 flex justify-between items-center bg-gray-900 p-4 rounded-2xl border border-white/20">
-                   <input type="range" value={zoom} min={1} max={3} step={0.1} onChange={(e) => setZoom(e.target.value)} className="w-1/2 accent-white" />
+                   <input type="range" value={zoom} min={1} max={3} step={0.1} onChange={(e) => setZoom(e.target.value)} className="w-1/2 accent-blue-500" />
                    <div className="flex gap-3">
                       <button onClick={() => setCropModalOpen(false)} className="px-5 py-2.5 rounded-xl bg-gray-800 text-white font-bold">Batal</button>
                       <button onClick={handleSaveCroppedImage} className="px-5 py-2.5 rounded-xl bg-white text-gray-900 font-bold flex items-center gap-2"><Crop size={16}/> Terapkan</button>
