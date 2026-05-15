@@ -308,7 +308,7 @@ const translations = {
     backToProjects: "Kembali ke Karya",
     loadMore: "Muat Lebih Banyak",
     contactTitle: "Kontak",
-    contactSubtitle: "Hubungi saya untuk kolaborasi atau pertanyaan",
+    contactSubtitle: "Agar silaturahmi Tidak Terputus, Mari saling terhubung.",
     email: "Email",
     whatsapp: "WhatsApp",
     location: "Lokasi",
@@ -346,25 +346,25 @@ const translations = {
     gallery: "Galeri Visual",
     viewGallery: "Lihat Galeri",
     thoughtsTitle: "Blog & Tulisan",
-    thoughtsSub: "Artikel dan tutorial teknologi",
-    searchPlaceholder: "Cari artikel...",
+    thoughtsSub: "Beberapa Ide dan Hasil Sandiwara yang diabadikan.",
+    searchPlaceholder: "Cari Tulisan...",
     searchBtn: "Cari",
     all: "Semua",
     readText: "baca",
-    noArticles: "Artikel tidak ditemukan.",
+    noArticles: "Tulisan tidak ditemukan.",
     blogKnowledgeSession: "Sesi Pengetahuan",
     aboutTitle: "Tentang Saya",
-    aboutSubtitle: "Mengenal lebih dekat",
+    aboutSubtitle: "Sedikit Cerita tentang Seorang",
     philosophy: "Filosofi",
     values: "Nilai-Nilai",
     linkDesc: "Tautan penting.",
     yearsExp: "Tahun Pengalaman",
     totalWorks: "Total Karya",
     articles: "Tulisan / Artikel",
-    happyClients: "Klien Puas",
+    happyClients: "Berdampak",
     collabTitle: "Mari Berkolaborasi",
     collabDesc:
-      "Punya ide proyek atau ingin berdiskusi? Hubungi saya kapan saja.",
+      "Punya ide proyek atau ingin berdiskusi sambil Ngopi? GASSKANNMI!",
     sendEmail: "Kirim Email",
     expTitle: "Pengalaman",
     expDesc: "Rekam jejak karir profesional saya.",
@@ -412,7 +412,7 @@ const translations = {
     backToProjects: "Back to Works",
     loadMore: "Load More",
     contactTitle: "Contact",
-    contactSubtitle: "Reach out for collaboration",
+    contactSubtitle: "So that our Friendship is Not Broken, Let's Connect with each other.",
     email: "Email",
     whatsapp: "WhatsApp",
     location: "Location",
@@ -450,22 +450,22 @@ const translations = {
     gallery: "Visual Gallery",
     viewGallery: "View Gallery",
     thoughtsTitle: "Blog & Writings",
-    thoughtsSub: "Articles and tech tutorials",
-    searchPlaceholder: "Search articles...",
+    thoughtsSub: "Some Ideas and Result of The Drama that were immortalized.",
+    searchPlaceholder: "Search Ideas...",
     searchBtn: "Search",
     all: "All",
     readText: "read",
-    noArticles: "No articles found.",
+    noArticles: "No Ideas found.",
     blogKnowledgeSession: "Knowledge Session",
     aboutTitle: "About Me",
-    aboutSubtitle: "Getting to know closer",
+    aboutSubtitle: "A little story about a",
     philosophy: "Philosophy",
     values: "Values",
     linkDesc: "My important links.",
     yearsExp: "Years Experience",
     totalWorks: "Total Projects",
     articles: "Articles",
-    happyClients: "Happy Clients",
+    happyClients: "Impact",
     collabTitle: "Let's Collaborate",
     collabDesc: "Have a project idea or want to discuss? Reach out.",
     sendEmail: "Send Email",
@@ -1104,8 +1104,13 @@ export default function App() {
         <p className="text-[12px] text-gray-900 dark:text-gray-100 mt-2 font-black text-center tracking-widest uppercase bg-gray-100 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-white/10 w-fit max-w-[95%] break-words leading-tight">
           {tText(profile.role, lang)}
         </p>
+        {/* Tambahan Lokasi di Sidebar */}
+        {profile.location && (
+          <div className="flex items-center justify-center gap-1.5 mt-3 text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
+            <MapPin size={12} className="text-blue-500" /> {profile.location}
+          </div>
+        )}
       </div>
-
       <div className="flex-1 overflow-y-auto custom-scrollbar px-5 py-6 space-y-7">
         <div>
           <h3 className="text-[11px] font-black text-gray-400 dark:text-gray-500 mb-3 px-2 uppercase tracking-widest">
@@ -1296,8 +1301,23 @@ export default function App() {
             </div>
 
             <div className="relative w-[85%] sm:w-[60%] flex flex-col items-start text-left z-20 px-6 sm:px-12 py-10">
-              <div className="flex gap-4 mb-4 sm:mb-6">
-                {["instagram", "threads", "tiktok", "linkedin"].map(
+            
+           {/* --- BADGE LOKASI DENGAN EFEK RADAR BEACON --- */}
+            {profile.location && (
+              <div className="flex items-center gap-2.5 mb-5 text-[11px] font-black text-gray-700 dark:text-gray-300 tracking-widest uppercase bg-white/60 dark:bg-[#0a0a0a]/80 backdrop-blur-md px-4 py-2 rounded-full border border-gray-200 dark:border-white/10 shadow-sm w-fit select-none">
+                <div className="relative w-3 h-3 flex items-center justify-center shrink-0">
+                  <div className="radar-glow"></div>
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full relative z-10"></div>
+                </div>
+                <span className="text-gray-900 dark:text-white flex items-center gap-1.5">
+                  <MapPin size={12} className="opacity-60" />
+                  {profile.location}
+                </span>
+              </div>
+            )}
+            
+            <div className="flex gap-4 mb-4 sm:mb-6">
+              {["instagram", "threads", "tiktok", "linkedin"].map(
                   (s) =>
                     profile.socials?.[s] && (
                       <a
@@ -1714,8 +1734,7 @@ export default function App() {
               </p>
               <p className="flex items-center gap-1.5">
                 Powered by{" "}
-                <Code size={14} className="text-gray-900 dark:text-white" /> &
-                Coffee
+                <Code size={14} className="text-gray-900 dark:text-white" /> React JS By Katalyst.id
               </p>
             </div>
           </footer>
@@ -3749,9 +3768,50 @@ export default function App() {
                     </div>
 
                     <div className="p-6 bg-white/50 dark:bg-[#111111] rounded-[2rem] border border-gray-200 dark:border-white/10 space-y-4">
-                      <h4 className="font-black text-gray-800 dark:text-white mb-4 border-b border-gray-200 dark:border-white/10 pb-2">
-                        Teks Identitas Bilingual
-                      </h4>
+                      {/* --- TAMBAHAN INPUT KONTAK & LOKASI --- */}
+                    <h4 className="font-black text-gray-800 dark:text-white mb-4 border-b border-gray-200 dark:border-white/10 pb-2">
+                      Informasi Kontak & Lokasi
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                      <div>
+                        <label className="block text-[12px] font-black text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+                          <MapPin size={16} /> Lokasi (Domisili)
+                        </label>
+                        <input
+                          name="location"
+                          defaultValue={profile.location}
+                          placeholder="Contoh: Makassar, Indonesia"
+                          className="w-full px-6 py-4 rounded-2xl glass-panel font-bold text-[14px] outline-none dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[12px] font-black text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+                          <Mail size={16} /> Email Publik
+                        </label>
+                        <input
+                          name="email"
+                          type="email"
+                          defaultValue={profile.email}
+                          placeholder="email@domain.com"
+                          className="w-full px-6 py-4 rounded-2xl glass-panel font-bold text-[14px] outline-none dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[12px] font-black text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+                          <Phone size={16} /> WhatsApp
+                        </label>
+                        <input
+                          name="whatsapp"
+                          defaultValue={profile.whatsapp}
+                          placeholder="628123456789"
+                          className="w-full px-6 py-4 rounded-2xl glass-panel font-bold text-[14px] outline-none dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                        />
+                      </div>
+                    </div>
+
+                    <h4 className="font-black text-gray-800 dark:text-white mb-4 border-b border-gray-200 dark:border-white/10 pb-2">
+                      Teks Identitas Bilingual
+                    </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <label className="block text-[12px] font-black text-gray-500 uppercase tracking-widest mb-3">
@@ -4449,7 +4509,19 @@ export default function App() {
           gap: 12px;
           padding: 10px;
         }
-
+/* ANIMASI RADAR PULSE UNTUK LOKASI */
+        @keyframes radarPulse {
+          0% { transform: scale(0.8); opacity: 0.5; }
+          100% { transform: scale(2.4); opacity: 0; }
+        }
+        .radar-glow {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background-color: rgb(59, 130, 246); /* Warna Biru */
+          border-radius: 50%;
+          animation: radarPulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+        }
         .breathing-item {
           animation: breathingGlow 4s ease-in-out infinite;
         }
