@@ -58,8 +58,12 @@ import {
   Quote,
 } from "lucide-react";
 
-import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
+// --- IMPORT TIPTAP EDITOR MODERN ---
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import UnderlineExtension from "@tiptap/extension-underline";
+import LinkExtension from "@tiptap/extension-link";
+import TextAlign from "@tiptap/extension-text-align";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import Cropper from "react-easy-crop";
 
@@ -560,15 +564,72 @@ const DetailCard = ({ title, content, children, icon: Icon, delay, t }) => (
   </div>
 );
 
-const quillModules = {
-  toolbar: [
-    [{ header: [1, 2, 3, false] }],
-    ["bold", "italic", "underline", "strike", "blockquote", "code-block"],
-    [{ list: "ordered" }, { list: "bullet" }],
-    ["link", "image"],
-    ["clean"],
-  ],
-  clipboard: { matchVisual: false },
+// ============================================================================
+// KOMPONEN TIPTAP EDITOR WITH CUSTOM TAILWIND TOOLBAR
+// ============================================================================
+const TiptapEditor = ({ value, onChange }) => {
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      UnderlineExtension,
+      LinkExtension.configure({ openOnClick: false }),
+    TextAlign.configure({ types: ["heading", "paragraph"] }),
+    ],
+    content: value,
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
+  });
+
+  // Sinkronisasi data jika ada perubahan eksternal dari CMS (saat ganti item edit)
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value || "<p></p>");
+    }
+  }, [value, editor]);
+
+  if (!editor) return null;
+
+  // Driver utility untuk mempermudah toggle class aktif pada tombol
+  const btnClass = (active, activeOpts = {}) => 
+    `p-2 rounded-lg transition-all text-xs font-bold border ${
+      editor.isActive(active, activeOpts) || (activeOpts.alignment && editor.isActive({ alignment: activeOpts.alignment }))
+        ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900 border-transparent shadow-sm" 
+        : "bg-transparent text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5"
+    }`;
+
+  return (
+    <div className="w-full border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden bg-white/50 dark:bg-[#0d0d0f]">
+      {/* TOOLBAR RESPONSIVE MODEL WORD */}
+      <div className="flex flex-wrap gap-1.5 p-3 bg-gray-50 dark:bg-white/[0.02] border-b border-gray-200 dark:border-white/10">
+        <button type="button" onClick={() => editor.commands.toggleHeading({ level: 1 })} className={btnClass("heading", { level: 1 })}>H1</button>
+        <button type="button" onClick={() => editor.commands.toggleHeading({ level: 2 })} className={btnClass("heading", { level: 2 })}>H2</button>
+        <button type="button" onClick={() => editor.commands.toggleHeading({ level: 3 })} className={btnClass("heading", { level: 3 })}>H3</button>
+        <button type="button" onClick={() => editor.commands.setParagraph()} className={btnClass("paragraph")}>P</button>
+        
+        <div className="w-[1px] h-6 bg-gray-300 dark:bg-white/10 mx-1 align-middle self-center"></div>
+
+        <button type="button" onClick={() => editor.commands.toggleBold()} className={btnClass("bold")}>B</button>
+        <button type="button" onClick={() => editor.commands.toggleItalic()} className={btnClass("italic")}>I</button>
+        <button type="button" onClick={() => editor.commands.toggleUnderline()} className={btnClass("underline")}>U</button>
+        <button type="button" onClick={() => editor.commands.toggleStrike()} className={btnClass("strike")}>S</button>
+        <button type="button" onClick={() => editor.commands.toggleCodeBlock()} className={btnClass("codeBlock")}>Code</button>
+
+        <div className="w-[1px] h-6 bg-gray-300 dark:bg-white/10 mx-1 align-middle self-center"></div>
+
+        {/* TOMBOL PARAGRAF ALIGNMENT */}
+        <button type="button" onClick={() => editor.commands.setTextAlignment("left")} className={btnClass("", { alignment: "left" })}>◀ Left</button>
+        <button type="button" onClick={() => editor.commands.setTextAlignment("center")} className={btnClass("", { alignment: "center" })}>⬌ Center</button>
+        <button type="button" onClick={() => editor.commands.setTextAlignment("right")} className={btnClass("", { alignment: "right" })}>▶ Right</button>
+        <button type="button" onClick={() => editor.commands.setTextAlignment("justify")} className={btnClass("", { alignment: "justify" })}>〓 Justify</button>
+      </div>
+
+      {/* AREA KETIK UTAMA */}
+      <div className="p-5 min-h-[220px] dark:text-white prose dark:prose-invert max-w-none focus-within:outline-none tiptap-container">
+        <EditorContent editor={editor} />
+      </div>
+    </div>
+  );
 };
 
 export default function App() {
@@ -3298,25 +3359,13 @@ export default function App() {
                           <label className="block text-[13px] font-bold text-gray-700 dark:text-gray-300 p-4 border-b border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5">
                             Konten Artikel (ID)
                           </label>
-                          <ReactQuill
-                            theme="snow"
-                            value={blogContentId}
-                            onChange={setBlogContentId}
-                            modules={quillModules}
-                            className="text-gray-900 dark:text-white h-64 pb-10"
-                          />
+                         <TiptapEditor value={blogContentId} onChange={setBlogContentId} />
                         </div>
                         <div className="bg-white dark:bg-[#111111] rounded-xl overflow-hidden border border-gray-200 dark:border-white/10">
                           <label className="block text-[13px] font-bold text-gray-700 dark:text-gray-300 p-4 border-b border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5">
                             Content (EN)
                           </label>
-                          <ReactQuill
-                            theme="snow"
-                            value={blogContentEn}
-                            onChange={setBlogContentEn}
-                            modules={quillModules}
-                            className="text-gray-900 dark:text-white h-64 pb-10"
-                          />
+                         <TiptapEditor value={blogContentEn} onChange={setBlogContentEn} />
                         </div>
                       </div>
                     </>
@@ -3892,25 +3941,13 @@ export default function App() {
                           <label className="block text-[13px] font-bold text-gray-700 dark:text-gray-300 p-4 border-b border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5">
                             Konten Tentang Saya (ID)
                           </label>
-                          <ReactQuill
-                            theme="snow"
-                            value={profileAboutId}
-                            onChange={setProfileAboutId}
-                            modules={quillModules}
-                            className="text-gray-900 dark:text-white h-48 pb-10"
-                          />
+                          <TiptapEditor value={profileAboutId} onChange={setProfileAboutId} />
                         </div>
                         <div className="bg-white dark:bg-[#111111] rounded-xl overflow-hidden border border-gray-200 dark:border-white/10">
                           <label className="block text-[13px] font-bold text-gray-700 dark:text-gray-300 p-4 border-b border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5">
                             About Me Content (EN)
                           </label>
-                          <ReactQuill
-                            theme="snow"
-                            value={profileAboutEn}
-                            onChange={setProfileAboutEn}
-                            modules={quillModules}
-                            className="text-gray-900 dark:text-white h-48 pb-10"
-                          />
+                        <TiptapEditor value={profileAboutEn} onChange={setProfileAboutEn} />
                         </div>
                       </div>
                     </div>
@@ -4611,92 +4648,61 @@ export default function App() {
           animation-play-state: paused;
         }
 
-       /* --- REVISI TOTAL: PREMIUM JUSTIFY & ANTI POTONG KATA --- */
+      /* ========================================================================== */
+        /* --- SOLUSI FINISH: ANTI POTONG KATA MOBIL-LAPTOP & SINKRONISASI CMS --- */
+        /* ========================================================================== */
+        .article-content, 
+        .thoughts-content, 
+        .markdown-container, 
+        .prose,
+        [class*="content"] {
+          /* Mengembalikan hak browser untuk memindahkan kata utuh ke baris baru */
+          word-break: normal !important;
+          overflow-wrap: break-word !important;
+          white-space: normal !important;
+        }
+
         .article-content p, 
         .thoughts-content p, 
         .markdown-container p,
         .prose p,
         [class*="content"] p { 
-          text-align: justify !important;
-          text-justify: inter-word !important;
-          word-break: keep-all !important; 
-          break-word: normal !important;
+          /* Mematikan fungsi pemotongan strip (-) bawaan browser iOS & Android */
           -webkit-hyphens: none !important;
           -ms-hyphens: none !important;
           hyphens: none !important;
-          white-space: normal !important;
-          line-height: 1.85 !important;
-          margin-bottom: 1.25rem;
-        }
-
-        .article-content, .markdown-container, .thoughts-content {
+          
+          /* Mengizinkan pemutusan kata HANYA jika kata tunggal melebihi lebar layar HP */
           word-break: normal !important;
           overflow-wrap: break-word !important;
-        }
-
- .article-content p, 
-        .thoughts-content p, 
-        .markdown-container p,
-        .prose p,
-        [class*="content"] p { 
-          text-align: left !important;
           
-          /* KUNCI MUTLAK: Memaksa kata dipindah utuh ke baris bawah jika tidak muat */
-          word-break: keep-all !important; 
-          overflow-wrap: normal !important;
-          white-space: normal !important;
-          
-          /* Mematikan total tanda strip gantung (-) */
-          -webkit-hyphens: none !important;
-          -ms-hyphens: none !important;
-          hyphens: none !important;
-          
+          /* Menghitung sisa kata di ujung baris secara estetik */
           text-wrap: pretty !important;
+          
           line-height: 1.85 !important;
           font-size: 15.5px !important;
+          letter-spacing: -0.005em !important;
           margin-bottom: 1.25rem;
         }
 
-        /* Mengunci kontainer luar agar mengikuti aturan kata utuh */
-        .article-content, .markdown-container, .thoughts-content, .prose {
-          word-break: keep-all !important;
-          overflow-wrap: normal !important;
-          text-align: left !important;
-        }
+        /* Sinkronisasi Kelas Alignment dari React Quill CMS */
+        .ql-align-justify { text-align: justify !important; text-justify: inter-word !important; text-wrap: pretty !important; }
+        .ql-align-center { text-align: center !important; }
+        .ql-align-right { text-align: right !important; }
+        .ql-align-left { text-align: left !important; }
 
-        /* Tampilan Judul/Heading */
-        .article-content h1, .article-content h2, .article-content h3,
-        .thoughts-content h1, .thoughts-content h2, .thoughts-content h3,
-        .prose h1, .prose h2, .prose h3 { 
+        /* Penyesuaian Ukuran Judul Adaptif di Mobile Device */
+        .article-content h1, .thoughts-content h1, .prose h1 { font-size: clamp(1.75rem, 5vw, 2.5rem) !important; word-break: normal !important; }
+        .article-content h2, .thoughts-content h2, .prose h2 { font-size: clamp(1.35rem, 4vw, 2rem) !important; word-break: normal !important; }
+        .article-content h3, .thoughts-content h3, .prose h3 { 
           font-weight: 800; 
           margin-top: 1.75em; 
           margin-bottom: 0.6em; 
-          text-align: left !important;
-          letter-spacing: -0.02em;
+          letter-spacing: -0.02em; 
           word-break: normal !important;
         }
-        .article-content h1, .article-content h2, .article-content h3 { color: #111; }
-        html.dark .article-content h1, html.dark .article-content h2, html.dark .article-content h3 { color: #fff; }
-        .article-content strong, .article-content b { font-weight: 900; color: #111; }
-        html.dark .article-content strong, html.dark .article-content b { color: #fff; }
-
-        /* Jaminan Struktur Tabel Aman di Dalam Artikel */
-        .article-content table { 
-          width: 100%; 
-          border-collapse: collapse; 
-          margin: 2rem 0; 
-          border: 1px solid rgba(156, 163, 175, 0.3); 
-          border-radius: 12px; 
-          overflow: hidden;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .article-content th, .article-content td { 
-          border: 1px solid rgba(156, 163, 175, 0.2); 
-          padding: 14px 18px; 
-          text-align: left !important; 
-          word-break: normal !important;
-          hyphens: none !important;
-        }
+          .tiptap focus-within { outline: none !important; }
+        .ProseMirror { outline: none !important; min-height: 200px; }
         
        `,
           }}
