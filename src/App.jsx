@@ -364,7 +364,7 @@ const translations = {
     happyClients: "Berdampak",
     collabTitle: "Mari Berkolaborasi",
     collabDesc:
-      "Punya ide proyek atau ingin berdiskusi sambil Ngopi? GASSKANNMI!",
+      "Punya ide proyek atau ingin berdiskusi sambil Ngopi? GASKANMI!",
     sendEmail: "Kirim Email",
     expTitle: "Pengalaman",
     expDesc: "Rekam jejak karir profesional saya.",
