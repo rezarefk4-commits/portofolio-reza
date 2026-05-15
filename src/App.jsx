@@ -663,7 +663,7 @@ export default function App() {
   const [thoughtsSearch, setThoughtsSearch] = useState("");
   const [thoughtsFilter, setThoughtsFilter] = useState("All");
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(sessionStorage.getItem("isCmsAuth") === "true");
   const [loginPassword, setLoginPassword] = useState("");
   const [cmsTab, setCmsTab] = useState("overview");
   const [modalType, setModalType] = useState(null);
@@ -857,6 +857,7 @@ export default function App() {
   const handleLogin = (e) => {
     e.preventDefault();
     if (loginPassword === adminPassword) {
+      sessionStorage.setItem("isCmsAuth", "true");
       setIsAuthenticated(true);
       setLoginPassword("");
       showToast("Berhasil Masuk CMS");
@@ -1849,28 +1850,23 @@ export default function App() {
                 <ImageIcon size={16} /> Album Galeri
               </h4>
               {album && album.length > 0 ? (
-                <div 
-                  className="relative w-full overflow-hidden flex mt-2" 
-                  style={{ maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)' }}
-                >
-                  <div className="marquee-container gap-4 py-2">
-                    {/* Kita duplikat array album agar scrollnya tanpa jeda (seamless infinite) */}
-                    {[...album, ...album].map((img, index) => (
-                      <div
-                        key={`${img.id}-${index}`}
-                        className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 group bg-gray-50 dark:bg-black flex-shrink-0 h-48 md:h-64 shadow-sm"
-                      >
-                        <img
-                          src={img.image}
-                          className="h-full w-auto object-contain group-hover:scale-105 transition-all duration-500 px-2"
-                          alt="Gallery"
-                          loading="lazy"
-                        />
-                      </div>
-                    ))}
-                  </div>
+                <div className="flex gap-4 overflow-x-auto custom-scrollbar pb-6 pt-2 w-full snap-x">
+                  {album.map((img) => (
+                    <div
+                      key={img.id}
+                      className="relative rounded-[1.5rem] overflow-hidden border border-gray-200 dark:border-white/10 group bg-gray-50 dark:bg-[#050505] flex-shrink-0 h-48 md:h-64 shadow-sm p-1 snap-center hover:-translate-y-1 transition-transform"
+                    >
+                      <img
+                        src={img.image}
+                        className="h-full w-auto object-contain rounded-[1.2rem] group-hover:opacity-80 transition-opacity"
+                        alt="Gallery"
+                        loading="lazy"
+                      />
+                    </div>
+                  ))}
                 </div>
               ) : (
+            
                 <p className="text-gray-500 text-sm text-center py-8 font-medium">
                   Belum ada foto di album.
                 </p>
@@ -3638,8 +3634,9 @@ export default function App() {
                     </button>
                   ))}
                 </div>
-                <button
+               <button
                   onClick={() => {
+                    sessionStorage.removeItem("isCmsAuth");
                     setIsAuthenticated(false);
                     showToast("Keluar Sesi");
                   }}
