@@ -1340,7 +1340,7 @@ export default function App() {
                   <TypingText text={tText(profile.role, lang)} />
                 </span>
               </h1>
-              <p className="text-[clamp(11px,2.5vw,15px)] text-gray-600 dark:text-gray-400 font-medium mb-6 sm:mb-10 max-w-[200px] sm:max-w-md leading-relaxed z-20 relative line-clamp-3 sm:line-clamp-none">
+              <p className="text-[clamp(13px,2.5vw,15px)] text-gray-600 dark:text-gray-400 font-medium mb-6 sm:mb-10 max-w-[280px] sm:max-w-xl leading-relaxed z-20 relative text-justify" style={{ textJustify: 'inter-word', wordBreak: 'keep-all', hyphens: 'none', WebkitHyphens: 'none' }}>
                 {tText(profile.bio, lang)}
               </p>
               <div className="flex flex-row gap-2 sm:gap-4 z-20 relative">
@@ -1772,8 +1772,8 @@ export default function App() {
               <h4 className="text-[13px] sm:text-[14px] font-black text-gray-400 uppercase tracking-widest mb-4 sm:mb-6 border-b border-gray-200 dark:border-white/5 pb-4 flex items-center gap-2">
                 <User size={16} /> Deskripsi Diri
               </h4>
-              <div
-                className="article-content text-[14px] sm:text-[15.5px] text-gray-800 dark:text-gray-200 font-medium leading-relaxed w-full max-w-full break-words overflow-hidden"
+             <div
+                className="article-content text-[14px] sm:text-[15.5px] text-gray-800 dark:text-gray-200 font-medium leading-relaxed w-full max-w-full overflow-hidden"
                 dangerouslySetInnerHTML={{
                   __html:
                     tText(profile?.about, lang) ||
@@ -4483,7 +4483,7 @@ export default function App() {
             </div>
           </div>
         )}
-
+<div className="prose dark:prose-invert max-w-none text-justify"></div>
         <style
           dangerouslySetInnerHTML={{
             __html: `
@@ -4611,34 +4611,92 @@ export default function App() {
           animation-play-state: paused;
         }
 
-        .article-content h1, .article-content h2, .article-content h3 { font-weight: 800; color: #111; margin-top: 1.5em; margin-bottom: 0.5em; }
+       /* --- REVISI TOTAL: PREMIUM JUSTIFY & ANTI POTONG KATA --- */
+        .article-content p, 
+        .thoughts-content p, 
+        .markdown-container p,
+        .prose p,
+        [class*="content"] p { 
+          text-align: justify !important;
+          text-justify: inter-word !important;
+          word-break: keep-all !important; 
+          break-word: normal !important;
+          -webkit-hyphens: none !important;
+          -ms-hyphens: none !important;
+          hyphens: none !important;
+          white-space: normal !important;
+          line-height: 1.85 !important;
+          margin-bottom: 1.25rem;
+        }
+
+        .article-content, .markdown-container, .thoughts-content {
+          word-break: normal !important;
+          overflow-wrap: break-word !important;
+        }
+
+ .article-content p, 
+        .thoughts-content p, 
+        .markdown-container p,
+        .prose p,
+        [class*="content"] p { 
+          text-align: left !important;
+          
+          /* KUNCI MUTLAK: Memaksa kata dipindah utuh ke baris bawah jika tidak muat */
+          word-break: keep-all !important; 
+          overflow-wrap: normal !important;
+          white-space: normal !important;
+          
+          /* Mematikan total tanda strip gantung (-) */
+          -webkit-hyphens: none !important;
+          -ms-hyphens: none !important;
+          hyphens: none !important;
+          
+          text-wrap: pretty !important;
+          line-height: 1.85 !important;
+          font-size: 15.5px !important;
+          margin-bottom: 1.25rem;
+        }
+
+        /* Mengunci kontainer luar agar mengikuti aturan kata utuh */
+        .article-content, .markdown-container, .thoughts-content, .prose {
+          word-break: keep-all !important;
+          overflow-wrap: normal !important;
+          text-align: left !important;
+        }
+
+        /* Tampilan Judul/Heading */
+        .article-content h1, .article-content h2, .article-content h3,
+        .thoughts-content h1, .thoughts-content h2, .thoughts-content h3,
+        .prose h1, .prose h2, .prose h3 { 
+          font-weight: 800; 
+          margin-top: 1.75em; 
+          margin-bottom: 0.6em; 
+          text-align: left !important;
+          letter-spacing: -0.02em;
+          word-break: normal !important;
+        }
+        .article-content h1, .article-content h2, .article-content h3 { color: #111; }
         html.dark .article-content h1, html.dark .article-content h2, html.dark .article-content h3 { color: #fff; }
-        .article-content p { margin-bottom: 1em; line-height: 1.8; }
         .article-content strong, .article-content b { font-weight: 900; color: #111; }
         html.dark .article-content strong, html.dark .article-content b { color: #fff; }
-        
-        .article-content table { width: 100%; border-collapse: collapse; margin: 2rem 0; border: 1px solid rgba(156, 163, 175, 0.3); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .article-content th, .article-content td { border: 1px solid rgba(156, 163, 175, 0.3); padding: 12px 16px; text-align: left; }
-        .article-content th { background: rgba(0, 0, 0, 0.05); font-weight: 900; }
-        html.dark .article-content th { background: rgba(255, 255, 255, 0.1); }
-        .article-content tr:nth-child(even) { background: rgba(156, 163, 175, 0.05); }
-        .article-content img { max-width: 100%; border-radius: 1rem; margin: 1.5rem 0; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .article-content a { color: #111; text-decoration: underline; font-weight: bold; }
-        html.dark .article-content a { color: #fff; }
-        .article-content ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; }
-        .article-content ol { list-style-type: decimal; margin-left: 1.5rem; margin-bottom: 1rem; }
-        
-        .article-content pre { background: #f1f5f9; color: #334155; padding: 1.5rem; border-radius: 1rem; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 14px; margin: 1.5rem 0; border: 1px solid rgba(0,0,0,0.05); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
-        html.dark .article-content pre { background: #0a0a0c; color: #e2e8f0; border-color: rgba(255,255,255,0.05); box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
-        .article-content code { background: rgba(0,0,0,0.05); padding: 0.2rem 0.4rem; border-radius: 0.3rem; font-family: 'Consolas', monospace; font-size: 0.9em; }
-        html.dark .article-content code { background: rgba(255,255,255,0.1); }
-        .article-content pre code { background: transparent; padding: 0; }
 
-        .ql-toolbar.ql-snow { border-color: rgba(255,255,255,0.1) !important; border-top-left-radius: 0.75rem; border-top-right-radius: 0.75rem; background: rgba(255,255,255,0.05); }
-        .ql-container.ql-snow { border-color: rgba(255,255,255,0.1) !important; min-height: 250px; border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem; font-family: inherit; font-size: 15px; }
-        html.dark .ql-picker-label, html.dark .ql-picker-item { color: white !important; }
-        html.dark .ql-stroke { stroke: white !important; }
-        html.dark .ql-fill { fill: white !important; }
+        /* Jaminan Struktur Tabel Aman di Dalam Artikel */
+        .article-content table { 
+          width: 100%; 
+          border-collapse: collapse; 
+          margin: 2rem 0; 
+          border: 1px solid rgba(156, 163, 175, 0.3); 
+          border-radius: 12px; 
+          overflow: hidden;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .article-content th, .article-content td { 
+          border: 1px solid rgba(156, 163, 175, 0.2); 
+          padding: 14px 18px; 
+          text-align: left !important; 
+          word-break: normal !important;
+          hyphens: none !important;
+        }
         
        `,
           }}
