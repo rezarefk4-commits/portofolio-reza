@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@supabase/supabase-js";
+import ReactPlayer from "react-player";
 
 import {
   Home,
@@ -631,7 +632,68 @@ const TiptapEditor = ({ value, onChange }) => {
     </div>
   );
 };
+// --- HELPER DETEKSI MEDIA SUPER AKURAT ---
+const isVideo = (url) => {
+  if (!url) return false;
+  if (url instanceof File) return url.type.includes('video') || !!url.name.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/);
+  const s = String(url).split('?')[0].toLowerCase();
+  return s.endsWith('.mp4') || s.endsWith('.webm') || s.endsWith('.mov') || s.endsWith('.ogg');
+};
+const isPdf = (url) => {
+  if (!url) return false;
+  if (url instanceof File) return url.type.includes('pdf') || url.name.toLowerCase().endsWith('.pdf');
+  return String(url).split('?')[0].toLowerCase().endsWith('.pdf');
+};
+// ============================================================================
+// KOMPONEN SMART MEDIA RENDERER (ADAPTIF PORTRAIT/LANDSCAPE)
+// ============================================================================
+const SmartMedia = ({ url, className = "", isThumbnail = false }) => {
+  if (!url) return <div className={`bg-gray-200 dark:bg-[#111] ${className}`} />;
 
+  if (isVideo(url)) {
+    if (isThumbnail) {
+      return (
+        <div className={`relative bg-black w-full h-full flex items-center justify-center overflow-hidden`}>
+          <video src={url} className={`w-full h-full object-cover ${className}`} autoPlay loop muted playsInline preload="auto" />
+          <div className="absolute top-3 right-3 bg-black/60 p-2 rounded-xl backdrop-blur-md border border-white/10 z-10 shadow-lg">
+            <Video size={16} className="text-white" />
+          </div>
+        </div>
+      );
+    } else {
+      // MODE DETAIL: Membiarkan video menyesuaikan rasio asli tanpa background hitam
+      return (
+        <video
+          src={url}
+          className={`w-full sm:w-auto sm:max-w-full h-auto max-h-[85vh] mx-auto object-contain outline-none ${className}`}
+          controls
+          playsInline
+          preload="metadata"
+        />
+      );
+    }
+  }
+
+  if (isPdf(url)) {
+    return isThumbnail ? (
+      <div className={`flex items-center justify-center bg-gray-100 dark:bg-[#050505] w-full h-full absolute inset-0`}>
+        <FileText className="text-red-500 opacity-60 w-1/2 h-1/2 max-w-[50px]" />
+      </div>
+    ) : (
+      <iframe src={url} className={`w-full h-[65vh] md:h-[85vh] border-none ${className}`} title="PDF Document" />
+    );
+  }
+
+  // GAMBAR: Juga dibuat adaptif agar portrait tidak terpotong
+  return (
+    <img 
+      src={url} 
+      loading="lazy" 
+      alt="Media" 
+      className={isThumbnail ? `object-cover w-full h-full ${className}` : `w-full sm:w-auto sm:max-w-full h-auto max-h-[85vh] mx-auto object-contain ${className}`} 
+    />
+  );
+};
 export default function App() {
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [theme, setTheme] = useState("dark");
@@ -678,6 +740,7 @@ export default function App() {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   const [previewImage, setPreviewImage] = useState("");
+  const [galleryFiles, setGalleryFiles] = useState([]);
   const [profileTempImg, setProfileTempImg] = useState("");
   const [heroTempImg, setHeroTempImg] = useState("");
   const [cvFileObj, setCvFileObj] = useState("");
@@ -875,6 +938,9 @@ export default function App() {
       const parsedContent = splitText(item?.content);
       setBlogContentId(parsedContent.id);
       setBlogContentEn(parsedContent.en);
+      if (type === "project") {
+      setGalleryFiles(item?.gallery || []);
+    }
     }
   };
 
@@ -884,6 +950,7 @@ export default function App() {
     setPreviewImage("");
     setBlogContentId("");
     setBlogContentEn("");
+    setGalleryFiles([]);
   };
 
   const handleDelete = async (table, id, stateList, stateUpdater) => {
@@ -902,10 +969,10 @@ export default function App() {
   const onCropComplete = useCallback((_, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
-  const triggerCropModal = (e, type) => {
+const triggerCropModal = (e, type) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.type.includes("video") || file.type.includes("pdf")) {
+      if (isVideo(file) || isPdf(file)) {
         if (type === "preview") setPreviewImage(file);
       } else {
         setCropType(type);
@@ -951,22 +1018,26 @@ export default function App() {
     }
   };
 
-  const uploadFileToSupabase = async (file, bucketName = "portfolio") => {
+const uploadFileToSupabase = async (file, bucketName = "portfolio") => {
     if (!supabase || typeof file === "string") return file;
     try {
       const fileExt = file.name.split(".").pop();
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
       const filePath = `uploads/${fileName}`;
-      await supabase.storage.from(bucketName).upload(filePath, file);
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from(bucketName).getPublicUrl(filePath);
+      
+      const { error } = await supabase.storage.from(bucketName).upload(filePath, file, {
+        contentType: file.type || 'video/mp4',
+        cacheControl: '3600',
+        upsert: false
+      });
+      if (error) throw new Error("Gagal upload media: " + error.message);
+      
+      const { data: { publicUrl } } = supabase.storage.from(bucketName).getPublicUrl(filePath);
       return publicUrl;
     } catch (error) {
       throw error;
     }
   };
-
   const handleSaveData = async (e) => {
     e.preventDefault();
     setIsUploading(true);
@@ -986,28 +1057,40 @@ export default function App() {
     try {
       if (previewImage instanceof File)
         finalImageUrl = await uploadFileToSupabase(previewImage);
-
-      if (modalType === "project") {
+if (modalType === "project") {
         tableName = "projects";
+        
+        // LOGIKA BARU: Proses Upload Multi-Galeri
+        let finalGallery = [];
+        if (galleryFiles && galleryFiles.length > 0) {
+          for (const gItem of galleryFiles) {
+            if (gItem instanceof File) {
+              const uploadedUrl = await uploadFileToSupabase(gItem);
+              finalGallery.push({ url: uploadedUrl });
+            } else {
+              finalGallery.push(gItem); // Simpan yang sudah berbentuk link URL lama
+            }
+          }
+        }
+
         newItem = {
           ...newItem,
           title: combine("title"),
           shortDesc: combine("shortDesc"),
-          overview: combine("overview"),
-          features: combine("features"),
-          challenges: combine("challenges"),
-          goals: combine("goals"),
-          type: formData.get("type"),
-          category: formData.get("category"),
+          overview: combine("overview") || " ",
+          features: combine("features") || " ",
+          challenges: combine("challenges") || " ",
+          goals: combine("goals") || " ",
+          type: formData.get("type") || defaultProjType,
+          category: formData.get("category") || "Creative",
           image: finalImageUrl,
-          tech: (formData.get("tech") || "")
-            .split(",")
-            .map((text) => text.trim())
-            .filter(Boolean),
-          client: combine("client"),
-          year: formData.get("year"),
+          tech: (formData.get("tech") || "").split(",").map((text) => text.trim()).filter(Boolean),
+          client: combine("client") || "Personal Project",
+          year: formData.get("year") || new Date().getFullYear().toString(),
           featured: formData.get("featured") === "on",
+          gallery: finalGallery, // <--- Data banyak video/gambar masuk ke sini!
         };
+      
       } else if (modalType === "blog") {
         tableName = "blogs";
         newItem = {
@@ -1081,7 +1164,10 @@ export default function App() {
         newItem = { id: `album-${Date.now()}`, image: finalImageUrl };
       }
 
-      if (supabase) await supabase.from(tableName).upsert(newItem);
+      if (supabase) {
+        const { error } = await supabase.from(tableName).upsert(newItem);
+        if (error) throw new Error("Database Error: " + error.message);
+      }
       window.location.reload();
     } catch (err) {
       showToast(`Error: ${err.message}`);
@@ -2581,14 +2667,10 @@ export default function App() {
                 onClick={() => navigate(`/creative/${proj.id}`)}
                 className="glass-panel rounded-[2.5rem] overflow-hidden cursor-pointer group hover:-translate-y-2 transition-all flex flex-col md:flex-row w-full shadow-sm border border-gray-200 dark:border-white/5 hover:shadow-2xl hover:border-gray-400 dark:hover:border-white/20"
               >
-                <div className="w-full md:w-[40%] h-64 md:h-auto shrink-0 overflow-hidden relative">
-                  <img
-                    src={proj.image}
-                    loading="lazy"
-                    alt={tText(proj.title, lang)}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 absolute inset-0"
-                  />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500 flex items-center justify-center">
+              <div className="w-full md:w-[40%] h-64 md:h-auto shrink-0 overflow-hidden relative bg-gray-100 dark:bg-[#050505]">
+                  <SmartMedia url={proj.image} className="w-full h-full absolute inset-0 group-hover:scale-105 transition-transform duration-1000" isThumbnail={true} />
+                  
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500 flex items-center justify-center pointer-events-none">
                     <span className="bg-white/95 text-gray-900 text-xs font-bold px-5 py-2.5 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xl flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0">
                       {t.viewGallery} <ChevronRight size={14} />
                     </span>
@@ -2654,9 +2736,10 @@ export default function App() {
             {t.notFound}
           </div>
         );
-      const galleryItems = proj.gallery || [
-        { type: "image", url: proj.image, caption: proj.shortDesc },
-      ];
+    // Kalau galerinya diisi banyak file, tampilkan. Kalau kosong, tampilkan Media Utama sebagai fallback.
+      const galleryItems = (proj.gallery && proj.gallery.length > 0) 
+        ? proj.gallery 
+        : [{ url: proj.image }];
 
       return (
         <div className="max-w-6xl mx-auto pt-6 w-full animate-page-enter">
@@ -2755,23 +2838,8 @@ export default function App() {
                   key={idx}
                   className={`w-full flex flex-col gap-5 reveal-on-scroll delay-${(idx % 4) * 100}`}
                 >
-                  <div className="w-full rounded-[2.5rem] overflow-hidden glass-panel group relative border border-gray-200 dark:border-white/10 shadow-lg">
-                    {media.url.match(/\.(mp4|webm|ogg)$/i) ? (
-                      <div className="aspect-[4/3] md:aspect-video w-full relative flex items-center justify-center bg-black">
-                        <video
-                          src={media.url}
-                          controls
-                          className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-1000"
-                        />
-                      </div>
-                    ) : (
-                      <img
-                        src={media.url}
-                        loading="lazy"
-                        alt={`Gallery ${idx}`}
-                        className="w-full h-auto object-cover max-h-[80vh]"
-                      />
-                    )}
+      <div className="w-fit mx-auto rounded-[2rem] md:rounded-[2.5rem] overflow-hidden glass-panel group relative border border-gray-200 dark:border-white/10 shadow-xl bg-transparent flex justify-center items-center">
+                    <SmartMedia url={media.url} className="rounded-[2rem] md:rounded-[2.5rem]" isThumbnail={false} />
                   </div>
                   {media.caption && (
                     <div className="px-6 flex items-start gap-4">
@@ -3078,22 +3146,22 @@ export default function App() {
                       </label>
                       <div className="flex flex-col sm:flex-row items-center gap-6">
                         <div className="w-40 h-28 bg-gray-200 dark:bg-black/50 rounded-2xl overflow-hidden flex items-center justify-center border-4 border-white dark:border-white/10 shadow-inner">
-                          {previewImage instanceof File ? (
-                            <img
-                              src={URL.createObjectURL(previewImage)}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : editingItem?.image ||
-                            editingItem?.thumbnail ||
-                            editingItem?.img ? (
-                            <img
-                              src={
-                                editingItem.image ||
-                                editingItem.thumbnail ||
-                                editingItem.img
-                              }
-                              className="w-full h-full object-cover"
-                            />
+                   {previewImage instanceof File ? (
+                            isPdf(previewImage) ? (
+                              <FileText size={40} className="text-red-500" />
+                            ) : isVideo(previewImage) ? (
+                              <Video size={40} className="text-blue-500" />
+                            ) : (
+                              <img src={URL.createObjectURL(previewImage)} className="w-full h-full object-cover" />
+                            )
+                          ) : editingItem?.image || editingItem?.thumbnail || editingItem?.img ? (
+                            isPdf(editingItem.image || editingItem.thumbnail || editingItem.img) ? (
+                              <FileText size={40} className="text-red-500" />
+                            ) : isVideo(editingItem.image || editingItem.thumbnail || editingItem.img) ? (
+                              <Video size={40} className="text-blue-500" />
+                            ) : (
+                              <img src={editingItem.image || editingItem.thumbnail || editingItem.img} className="w-full h-full object-cover" />
+                            )
                           ) : (
                             <ImageIcon size={32} className="text-gray-400" />
                           )}
@@ -3103,18 +3171,71 @@ export default function App() {
                             <UploadCloud size={18} className="inline mr-2" />{" "}
                             Pilih & Crop Gambar
                             <input
-                              type="file"
-                              accept="image/*,video/mp4"
-                              onChange={(e) => triggerCropModal(e, "preview")}
-                              className="hidden"
-                            />
+                            type="file"
+                                accept="image/*,video/mp4,video/webm,application/pdf"
+                                onChange={(e) => triggerCropModal(e, "preview")}
+                                className="hidden"
+                              />
                           </label>
                           <p className="text-[11px] text-gray-500 font-bold text-center">
-                            Video MP4 tidak akan di-crop
-                          </p>
+  Video MP4 & PDF tidak akan di-crop
+</p>      
                         </div>
                       </div>
+                      {/* --- FITUR BARU: MULTI-UPLOAD GALERI (RANDOM VIDEO/GAMBAR) --- */}
+                    <div className="bg-gray-50 dark:bg-white/5 p-6 rounded-[2rem] border-dashed border border-gray-300 dark:border-white/20 shadow-inner mt-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <label className="block text-[13px] font-bold text-gray-700 dark:text-gray-300 uppercase tracking-widest">
+                          Galeri Tambahan (Multi-Media)
+                        </label>
+                        <label className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg cursor-pointer active:scale-95 text-xs transition-all shadow-md flex items-center gap-2">
+                          <Plus size={14} /> Tambah Media
+                          <input
+                            type="file"
+                            multiple
+                            accept="image/*,video/mp4,video/webm,application/pdf"
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files);
+                              setGalleryFiles((prev) => [...prev, ...files]);
+                            }}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+                      
+                      {galleryFiles.length > 0 ? (
+                        <div className="flex gap-4 overflow-x-auto custom-scrollbar pb-4 pt-2">
+                          {galleryFiles.map((file, idx) => {
+                            const isUploadFile = file instanceof File;
+                            const url = isUploadFile ? URL.createObjectURL(file) : file.url;
+                            return (
+                              <div key={idx} className="relative w-32 h-32 rounded-2xl overflow-hidden bg-black flex-shrink-0 border border-white/20 group shadow-md">
+                                <SmartMedia url={url} isThumbnail={true} className="w-full h-full" />
+                                <button
+                                  type="button"
+                                  onClick={() => setGalleryFiles((prev) => prev.filter((_, i) => i !== idx))}
+                                  className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 active:scale-95 shadow-lg z-20"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                                {isUploadFile && (
+                                  <span className="absolute bottom-2 left-2 bg-blue-500 text-white text-[9px] px-2 py-1 rounded font-black z-20 shadow-md">
+                                    NEW
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 text-sm text-center py-6 font-medium">
+                          Belum ada media galeri ditambahkan. (Bisa upload video/gambar lebih dari satu).
+                        </p>
+                      )}
                     </div>
+                    </div>
+                    
+                    
                   )}
 
                   {/* UPLOAD BEBAS (TANPA CROP) UNTUK SERTIFIKASI & ALBUM */}
@@ -4091,18 +4212,10 @@ export default function App() {
                           key={p.id}
                           className="flex flex-col sm:flex-row sm:items-center justify-between p-6 bg-white/40 dark:bg-[#111111] rounded-[2rem] border border-gray-200 dark:border-white/5 hover:-translate-y-1 transition-all duration-300 group gap-5"
                         >
-                          <div className="flex items-center gap-6">
-                            {p.image?.match(/\.(mp4|webm|ogg)$/i) ? (
-                              <div className="w-20 h-20 rounded-2xl overflow-hidden bg-black flex items-center justify-center shrink-0 border border-white/20">
-                                <Video className="text-white opacity-50" />
-                              </div>
-                            ) : (
-                              <img
-                                src={p.image}
-                                className="w-20 h-20 rounded-2xl object-cover grayscale group-hover:grayscale-0 transition-all border border-gray-200 dark:border-white/10 shrink-0"
-                                alt=""
-                              />
-                            )}
+                       <div className="flex items-center gap-6">
+                            <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0 border border-gray-200 dark:border-white/10 relative">
+                              <SmartMedia url={p.image} className="absolute inset-0 w-full h-full" isThumbnail={true} />
+                            </div>
                             <div>
                               <h4 className="font-black text-gray-900 dark:text-white text-[18px] mb-1 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
                                 {tText(p.title, lang)}
