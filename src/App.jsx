@@ -873,6 +873,7 @@ export default function App() {
       return () => clearTimeout(timer);
     }
   }, [toastMessage]);
+  
 
   const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
@@ -1229,202 +1230,87 @@ if (modalType === "project") {
     }
   };
 
-  const renderSidebar = () => (
-    <aside
-      className={`fixed inset-y-0 left-0 z-[70] w-[280px] max-w-[85vw] flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] lg:translate-x-0 glass-panel border-r-0 lg:border-r border-gray-200 dark:border-white/5 shadow-[20px_0_40px_-15px_rgba(0,0,0,0.5)] lg:shadow-none ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
-    >
-      <button
-        onClick={() => setIsMobileMenuOpen(false)}
-        className="lg:hidden absolute top-4 right-4 p-2 bg-gray-100 dark:bg-white/10 rounded-full text-gray-500 z-50"
-      >
-        <X size={18} />
-      </button>
+const renderDock = () => {
+    const dockItems = [
+      { id: 'home', path: '/home', icon: Home, label: t.home },
+      { id: 'about', path: '/about', icon: User, label: t.about },
+      { id: 'technical', path: '/technical', icon: Code, label: t.technical },
+      { id: 'creative', path: '/creative', icon: Palette, label: t.creative },
+      { id: 'thoughts', path: '/thoughts', icon: FileText, label: t.thoughts },
+      { id: 'experience', path: '/experience', icon: Briefcase, label: t.experience },
+      { id: 'education', path: '/education', icon: GraduationCap, label: t.education },
+      { id: 'certifications', path: '/certifications', icon: Award, label: t.certifications },
+      { id: 'skills', path: '/skills', icon: Lightbulb, label: t.skills },
+      { id: 'contact', path: '/contact', icon: MessageSquare, label: t.contact },
+    ];
 
-      <div className="flex flex-col items-center pt-14 lg:pt-10 pb-6 border-b border-black/5 dark:border-white/5 shrink-0 px-4 relative group w-full overflow-hidden">
-        <div className="relative">
-          <img
-            src={profile.profileImage}
-            alt="Profile"
-            onClick={handleSecretClick}
-            className="w-24 h-24 rounded-full object-cover mb-4 ring-[4px] ring-gray-100 dark:ring-gray-800 shadow-2xl cursor-pointer hover:scale-105 active:scale-95 transition-all duration-300 bg-gray-50 dark:bg-[#050505]"
-          />
-        </div>
-        <h2 className="text-[19px] font-extrabold text-gray-900 dark:text-white text-center leading-snug tracking-tight drop-shadow-sm break-words w-full px-2">
-          {tText(profile.name, lang)}
-        </h2>
-        <p className="text-[12px] text-gray-900 dark:text-gray-100 mt-2 font-black text-center tracking-widest uppercase bg-gray-100 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-white/10 w-fit max-w-[95%] break-words leading-tight">
-          {tText(profile.role, lang)}
-        </p>
-        {/* Tambahan Lokasi di Sidebar */}
-        {profile.location && (
-          <div className="flex items-center justify-center gap-1.5 mt-3 text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
-            <MapPin size={12} className="text-blue-500" /> {profile.location}
-          </div>
-        )}
-      </div>
-      <div className="flex-1 overflow-y-auto custom-scrollbar px-5 py-6 space-y-7">
-        <div>
-          <h3 className="text-[11px] font-black text-gray-400 dark:text-gray-500 mb-3 px-2 uppercase tracking-widest">
-            {t.main}
-          </h3>
-          <div className="space-y-1.5">
-            <NavItem
-              icon={Home}
-              label={t.home}
-              path="/home"
-              onNavigate={navigate}
-              isActive={currentPath === "/home"}
-              delayClass="delay-100"
-            />
-            <NavItem
-              icon={User}
-              label={t.about}
-              path="/about"
-              onNavigate={navigate}
-              isActive={currentPath === "/about"}
-              delayClass="delay-100"
-            />
-            <NavItem
-              icon={MessageSquare}
-              label={t.contact}
-              path="/contact"
-              onNavigate={navigate}
-              isActive={currentPath === "/contact"}
-              delayClass="delay-200"
-            />
-          </div>
-        </div>
-        <div>
-          <h3 className="text-[11px] font-black text-gray-400 dark:text-gray-500 mb-3 px-2 uppercase tracking-widest">
-            {t.portfolio}
-          </h3>
-          <div className="space-y-1.5">
-            <NavItem
-              icon={Code}
-              label={t.technical}
-              path="/technical"
-              onNavigate={navigate}
-              isActive={currentPath.startsWith("/technical")}
-              delayClass="delay-200"
-            />
-            <NavItem
-              icon={Palette}
-              label={t.creative}
-              path="/creative"
-              onNavigate={navigate}
-              isActive={currentPath.startsWith("/creative")}
-              delayClass="delay-300"
-            />
-            <NavItem
-              icon={FileText}
-              label={t.thoughts}
-              path="/thoughts"
-              onNavigate={navigate}
-              isActive={currentPath.startsWith("/thoughts")}
-              delayClass="delay-300"
-            />
-          </div>
-        </div>
-        <div>
-          <h3 className="text-[11px] font-black text-gray-400 dark:text-gray-500 mb-3 px-2 uppercase tracking-widest">
-            {t.professional}
-          </h3>
-          <div className="space-y-1.5">
-            <NavItem
-              icon={Briefcase}
-              label={t.experience}
-              path="/experience"
-              onNavigate={navigate}
-              isActive={currentPath === "/experience"}
-              delayClass="delay-400"
-            />
-            <NavItem
-              icon={GraduationCap}
-              label={t.education}
-              path="/education"
-              onNavigate={navigate}
-              isActive={currentPath === "/education"}
-              delayClass="delay-500"
-            />
-            <NavItem
-              icon={Award}
-              label={t.certifications}
-              path="/certifications"
-              onNavigate={navigate}
-              isActive={currentPath === "/certifications"}
-              delayClass="delay-500"
-            />
-            <NavItem
-              icon={Lightbulb}
-              label={t.skills}
-              path="/skills"
-              onNavigate={navigate}
-              isActive={currentPath === "/skills"}
-              delayClass="delay-500"
-            />
-            <NavItem
-              icon={LinkIcon}
-              label={t.links}
-              path="/links"
-              onNavigate={navigate}
-              isActive={currentPath === "/links"}
-              delayClass="delay-600"
-            />
-          </div>
-        </div>
-      </div>
+    // Kelas untuk efek Pop-up Bouncy (Melenting Mulus ala Mac OS)
+    const popupClass = "absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-[11px] font-black px-3.5 py-1.5 rounded-xl opacity-0 scale-50 translate-y-4 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] whitespace-nowrap pointer-events-none shadow-xl border border-white/10 z-[90] hidden sm:block";
 
-      <div className="px-5 py-6 border-t border-black/5 dark:border-white/5 flex flex-col items-center gap-4 shrink-0 bg-gray-50/50 dark:bg-[#050505]/50 backdrop-blur-md">
-        <div className="flex rounded-xl p-1 bg-gray-200/50 dark:bg-white/5 w-full justify-center">
-          <button
-            onClick={() => setLang("id")}
-            className={`px-6 py-2 text-xs font-bold rounded-lg transition-all flex-1 ${lang === "id" ? "bg-white dark:bg-white/10 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
-          >
-            ID
-          </button>
-          <button
-            onClick={() => setLang("en")}
-            className={`px-6 py-2 text-xs font-bold rounded-lg transition-all flex-1 ${lang === "en" ? "bg-white dark:bg-white/10 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"}`}
-          >
-            EN
-          </button>
-        </div>
-        <div className="flex justify-center gap-3 w-full pb-2">
-          {["instagram", "threads", "tiktok", "linkedin"].map(
-            (s) =>
-              profile.socials?.[s] && (
-                <a
-                  key={s}
-                  href={profile.socials[s]}
-                  target="_blank"
-                  className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center transition-all hover:scale-125 shadow-sm border border-gray-200 dark:border-white/5"
-                >
-                  <BrandIcon name={s} size={18} />
-                </a>
-              ),
-          )}
-        </div>
+    return (
+      <div className="fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-[80] glass-panel px-1.5 sm:px-3 py-2 sm:py-3 rounded-[1.5rem] sm:rounded-[2rem] border border-gray-200/50 dark:border-white/10 shadow-2xl flex items-center justify-between sm:justify-center gap-0.5 sm:gap-2 w-[97vw] sm:w-auto transition-all duration-300">
+        {dockItems.map(item => {
+          const isActive = currentPath === item.path || (item.path !== '/home' && currentPath.startsWith(item.path));
+          return (
+            <button
+              key={item.id}
+              onClick={() => navigate(item.path)}
+              className={`group relative flex items-center justify-center flex-1 sm:flex-none w-auto sm:w-11 aspect-square max-w-[44px] shrink-0 rounded-[30%] sm:rounded-[1.2rem] transition-all duration-300 ${isActive ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 shadow-md scale-110 sm:-translate-y-2' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white hover:-translate-y-1 sm:hover:-translate-y-2 hover:bg-gray-100 dark:hover:bg-white/10'}`}
+            >
+              <item.icon className="w-[50%] sm:w-[20px] h-[50%] sm:h-[20px]" strokeWidth={isActive ? 2.5 : 2} />
+              <span className={popupClass}>
+                {item.label}
+              </span>
+            </button>
+          );
+        })}
+        
+        <div className="w-[1px] h-5 sm:h-8 bg-gray-300 dark:bg-white/20 mx-0.5 sm:mx-1 shrink-0"></div>
+        
         <button
-          onClick={handleDownloadCV}
-          className="w-full py-3.5 rounded-xl bg-gray-900 hover:bg-black dark:bg-white text-white dark:text-gray-900 font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-95"
+          onClick={() => setLang(lang === "id" ? "en" : "id")}
+          className="group relative flex items-center justify-center flex-1 sm:flex-none w-auto sm:w-11 aspect-square max-w-[44px] shrink-0 rounded-[30%] sm:rounded-[1.2rem] text-gray-500 hover:text-gray-900 dark:hover:text-white hover:-translate-y-1 sm:hover:-translate-y-2 hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-300 font-black text-[9px] sm:text-[11px] uppercase"
         >
-          <Download size={18} /> {t.downloadCv}
+          {lang}
+          <span className={popupClass}>
+            Bahasa
+          </span>
         </button>
+
         <button
           onClick={toggleTheme}
-          className="w-full py-3.5 rounded-xl glass-panel hover:bg-gray-100 dark:hover:bg-white/5 text-gray-800 dark:text-gray-200 font-bold text-sm flex items-center justify-center gap-2 border-gray-200 dark:border-white/5 transition-all hover:shadow-md"
+          className="group relative flex items-center justify-center flex-1 sm:flex-none w-auto sm:w-11 aspect-square max-w-[44px] shrink-0 rounded-[30%] sm:rounded-[1.2rem] text-gray-500 hover:text-gray-900 dark:hover:text-white hover:-translate-y-1 sm:hover:-translate-y-2 hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-300"
         >
-          {theme === "light" ? (
-            <Sun size={18} className="text-orange-500" />
-          ) : (
-            <Moon size={18} className="text-yellow-400" />
-          )}{" "}
-          {theme === "light" ? t.darkMode : t.lightMode}
+          {theme === "light" ? <Sun className="w-[50%] sm:w-[20px] h-[50%] sm:h-[20px]" /> : <Moon className="w-[50%] sm:w-[20px] h-[50%] sm:h-[20px]" />}
+          <span className={popupClass}>
+            {theme === "light" ? t.darkMode : t.lightMode}
+          </span>
+        </button>
+        
+        <button
+          onClick={handleDownloadCV}
+          className="group relative flex items-center justify-center flex-1 sm:flex-none w-auto sm:w-11 aspect-square max-w-[44px] shrink-0 rounded-[30%] sm:rounded-[1.2rem] text-gray-500 hover:text-gray-900 dark:hover:text-white hover:-translate-y-1 sm:hover:-translate-y-2 hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-300"
+        >
+          <Download className="w-[50%] sm:w-[20px] h-[50%] sm:h-[20px]" />
+          <span className={popupClass}>
+            {t.downloadCv}
+          </span>
+        </button>
+
+        <div className="w-[1px] h-5 sm:h-8 bg-gray-300 dark:bg-white/20 mx-0.5 sm:mx-1 shrink-0"></div>
+
+        <button
+          onClick={handleSecretClick}
+          className="group relative flex items-center justify-center flex-1 sm:flex-none w-auto sm:w-11 aspect-square max-w-[44px] shrink-0 rounded-full border-[2px] sm:border-[3px] border-transparent hover:border-blue-500 transition-all duration-300 overflow-hidden hover:-translate-y-1 sm:hover:-translate-y-2 shadow-sm"
+        >
+          <img src={profile.profileImage} className="w-full h-full object-cover" alt="CMS" />
+          <span className={popupClass}>
+            Login CMS
+          </span>
         </button>
       </div>
-    </aside>
-  );
-
+    );
+  };
   const renderContent = () => {
     if (currentPath === "/home")
       return (
@@ -4832,29 +4718,11 @@ if (modalType === "project") {
           }}
         />
 
-        <div
-          className={`lg:hidden fixed top-0 left-0 right-0 h-16 glass-panel z-50 px-5 flex items-center justify-between !border-x-0 !border-t-0 !rounded-none transition-transform duration-500 ease-in-out ${isMobileMenuOpen ? "-translate-y-full" : "translate-y-0"}`}
-        >
-          <div className="font-black text-[16px] text-gray-900 dark:text-white uppercase truncate pr-4">
-            {tText(profile.name, lang)}
-          </div>
-          <button
-            onClick={() => setIsMobileMenuOpen(true)}
-            className="p-2.5 rounded-xl bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white transition-all active:scale-95"
-          >
-            <Menu size={22} />
-          </button>
-        </div>
+    {/* MEMANGGIL MAC OS DOCK MENU */}
+        {renderDock()}
 
-        {isMobileMenuOpen && (
-          <div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[65] lg:hidden animate-fade-in"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-        )}
-        {renderSidebar()}
-
-        <main className="flex-1 lg:pl-[280px] pt-16 lg:pt-0 min-h-screen transition-all duration-300 w-full overflow-x-hidden relative z-10">
+        {/* LAYAR KONTEN UTAMA (TanPA SIDEBAR LAGI) */}
+        <main className="flex-1 pb-32 pt-8 min-h-screen transition-all duration-300 w-full overflow-x-hidden relative z-10">
           <div
             key={currentPath}
             className="p-5 sm:p-8 md:p-12 lg:p-16 min-h-screen max-w-[1400px] mx-auto w-full"
