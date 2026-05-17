@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@supabase/supabase-js";
-import ReactPlayer from "react-player";
 
 import {
   Home,
   User,
   MessageSquare,
-  Folder,
   Mic,
   Users,
   FileText,
@@ -27,7 +25,6 @@ import {
   Edit,
   Trash2,
   Settings,
-  PlayCircle,
   Calendar,
   MapPin,
   Code,
@@ -48,16 +45,15 @@ import {
   UploadCloud,
   Check,
   Image as ImageIcon,
+  Crop,
+  Quote,
   Database,
   Monitor,
   Smartphone,
   Server,
   Zap,
-  TrendingUp,
-  BarChart3,
-  Crop,
-  Quote,
 } from "lucide-react";
+
 
 // --- IMPORT TIPTAP EDITOR MODERN ---
 import { useEditor, EditorContent } from "@tiptap/react";
@@ -551,9 +547,7 @@ const DetailCard = ({ title, content, children, icon: Icon, delay, t }) => (
     </h3>
     {content ? (
       <div className="text-gray-600 dark:text-gray-300 text-[14.5px] leading-relaxed whitespace-pre-wrap font-medium">
-        {content === "Not available" ||
-        content === "Tidak tersedia" ||
-        content === "Not available" ? (
+        {content === "Not available" || content === "Tidak tersedia" ? (
           <span className="text-gray-400 italic">{t.notAvailable}</span>
         ) : (
           content
@@ -748,9 +742,10 @@ export default function App() {
 
   const [toastMessage, setToastMessage] = useState(null);
   const [secretClickCount, setSecretClickCount] = useState(0);
-  const [requiredClicks, setRequiredClicks] = useState(5);
-  const [adminPassword, setAdminPassword] = useState("admin");
+  const requiredClicks = 5;
+  const adminPassword = "admin";
   const [isUploading, setIsUploading] = useState(false);
+
 
   const isModalOpen = modalType !== null;
   const t = translations[lang] || translations["id"];
@@ -898,7 +893,10 @@ export default function App() {
       try {
         await navigator.share(shareData);
         showToast(t.shareSuccess);
-      } catch (err) {}
+      } catch {
+        // ignore
+      }
+
     } else {
       navigator.clipboard.writeText(window.location.href);
       showToast(t.shareSuccess);
@@ -929,19 +927,20 @@ export default function App() {
     }
   };
 
-  const openModal = (type, item = null, projType = "technical") => {
+const openModal = (type, item = null, projType = "technical") => {
     setModalType(type);
     setEditingItem(item);
     setDefaultProjType(projType);
     setPreviewImage(item ? item.image || item.thumbnail || item.img || "" : "");
-    if (type === "blog") {
-      const parsedContent = splitText(item?.content);
-      setBlogContentId(parsedContent.id);
-      setBlogContentEn(parsedContent.en);
-      if (type === "project") {
-      setGalleryFiles(item?.gallery || []);
-    }
-    }
+   if (type === "blog") {
+  const parsedContent = splitText(item?.content || "");
+  setBlogContentId(parsedContent.id);
+  setBlogContentEn(parsedContent.en);
+}
+    
+        if (type === "project") {
+          setGalleryFiles(item?.gallery || []);
+        }
   };
 
   const closeModal = () => {
@@ -960,8 +959,8 @@ export default function App() {
         if (supabase) await supabase.from(table).delete().eq("id", id);
         stateUpdater(stateList.filter((x) => x.id !== id));
         showToast(t.deleted);
-      } catch (e) {
-        showToast(e.message);
+      } catch (err) {
+      showToast(err.message);
       }
     }
   };
@@ -991,7 +990,7 @@ const triggerCropModal = (e, type) => {
       setCropModalOpen(false);
       setImageToCrop(null);
       setCropType(null);
-    } catch (e) {
+    } catch {
       showToast("Gagal memotong gambar.");
     }
   };
@@ -1018,25 +1017,24 @@ const triggerCropModal = (e, type) => {
     }
   };
 
-const uploadFileToSupabase = async (file, bucketName = "portfolio") => {
+  const uploadFileToSupabase = async (file, bucketName = "portfolio") => {
     if (!supabase || typeof file === "string") return file;
-    try {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-      const filePath = `uploads/${fileName}`;
-      
-      const { error } = await supabase.storage.from(bucketName).upload(filePath, file, {
-        contentType: file.type || 'video/mp4',
-        cacheControl: '3600',
-        upsert: false
-      });
-      if (error) throw new Error("Gagal upload media: " + error.message);
-      
-      const { data: { publicUrl } } = supabase.storage.from(bucketName).getPublicUrl(filePath);
-      return publicUrl;
-    } catch (error) {
-      throw error;
-    }
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+    const filePath = `uploads/${fileName}`;
+
+    const { error } = await supabase.storage.from(bucketName).upload(filePath, file, {
+      contentType: file.type || "video/mp4",
+      cacheControl: "3600",
+      upsert: false,
+    });
+
+    if (error) throw new Error("Gagal upload media: " + error.message);
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from(bucketName).getPublicUrl(filePath);
+    return publicUrl;
   };
   const handleSaveData = async (e) => {
     e.preventDefault();
@@ -1088,9 +1086,8 @@ if (modalType === "project") {
           client: combine("client") || "Personal Project",
           year: formData.get("year") || new Date().getFullYear().toString(),
           featured: formData.get("featured") === "on",
-          gallery: finalGallery, // <--- Data banyak video/gambar masuk ke sini!
+          gallery: finalGallery,
         };
-      
       } else if (modalType === "blog") {
         tableName = "blogs";
         newItem = {
@@ -1129,7 +1126,7 @@ if (modalType === "project") {
           period: combine("period"),
           desc: combine("desc"),
         };
-      } else if (modalType === "education") {
+   } else if (modalType === "education") {
         tableName = "educations";
         newItem = {
           ...newItem,
@@ -1137,8 +1134,14 @@ if (modalType === "project") {
           institution: combine("institution"),
           period: combine("period"),
           desc: combine("desc"),
+          ipk: formData.get("ipk"),
+          focus: combine("focus"),
+          thesis_title: combine("thesis_title"),
+          impact: combine("impact"),
+          thesis_link: formData.get("thesis_link"),
         };
-      } else if (modalType === "certification") {
+      }
+      else if (modalType === "certification") {
         tableName = "certifications";
         newItem = {
           ...newItem,
@@ -2148,9 +2151,47 @@ if (modalType === "project") {
                 <h4 className="font-bold text-gray-600 dark:text-gray-400 mb-5">
                   {tText(edu.institution, lang)}
                 </h4>
-                <p className="text-[14.5px] font-medium text-gray-700 dark:text-gray-300">
-                  {tText(edu.desc, lang)}
-                </p>
+               {edu.desc && (
+                  <p className="text-[14.5px] font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {tText(edu.desc, lang)}
+                  </p>
+                )}
+                
+                {(edu.ipk || edu.focus || edu.thesis_title || edu.impact || edu.thesis_link) && (
+                  <div className="flex flex-col gap-4 mt-6 border-t border-gray-200 dark:border-white/10 pt-6">
+                    {edu.ipk && (
+                      <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
+                        <span className="font-black text-gray-500 dark:text-gray-400 text-[11px] uppercase tracking-widest w-40 shrink-0 pt-0.5">IPK</span>
+                        <span className="text-gray-800 dark:text-white text-[14.5px] font-black">{edu.ipk}</span>
+                      </div>
+                    )}
+                    {edu.focus && (
+                      <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
+                        <span className="font-black text-gray-500 dark:text-gray-400 text-[11px] uppercase tracking-widest w-40 shrink-0 pt-0.5">Fokus Ilmu</span>
+                        <span className="text-gray-800 dark:text-white text-[14.5px] font-bold">{tText(edu.focus, lang)}</span>
+                      </div>
+                    )}
+                    {edu.thesis_title && (
+                      <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
+                        <span className="font-black text-gray-500 dark:text-gray-400 text-[11px] uppercase tracking-widest w-40 shrink-0 pt-0.5">Judul Skripsi</span>
+                        <span className="text-gray-700 dark:text-gray-200 text-[14.5px] font-bold italic leading-relaxed">{tText(edu.thesis_title, lang)}</span>
+                      </div>
+                    )}
+                    {edu.impact && (
+                      <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
+                        <span className="font-black text-gray-500 dark:text-gray-400 text-[11px] uppercase tracking-widest w-40 shrink-0 pt-0.5">Manfaat Penelitian</span>
+                        <span className="text-gray-700 dark:text-gray-300 text-[14px] leading-relaxed font-medium">{tText(edu.impact, lang)}</span>
+                      </div>
+                    )}
+                    {edu.thesis_link && (
+                      <div className="mt-4">
+                        <a href={edu.thesis_link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl text-xs font-black shadow-lg hover:scale-105 transition-transform w-fit active:scale-95">
+                          <LinkIcon size={16} /> Buka / Preview Skripsi
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
             {educations.length === 0 && (
@@ -3147,21 +3188,21 @@ if (modalType === "project") {
                       <div className="flex flex-col sm:flex-row items-center gap-6">
                         <div className="w-40 h-28 bg-gray-200 dark:bg-black/50 rounded-2xl overflow-hidden flex items-center justify-center border-4 border-white dark:border-white/10 shadow-inner">
                    {previewImage instanceof File ? (
-                            isPdf(previewImage) ? (
-                              <FileText size={40} className="text-red-500" />
-                            ) : isVideo(previewImage) ? (
-                              <Video size={40} className="text-blue-500" />
-                            ) : (
-                              <img src={URL.createObjectURL(previewImage)} className="w-full h-full object-cover" />
-                            )
-                          ) : editingItem?.image || editingItem?.thumbnail || editingItem?.img ? (
-                            isPdf(editingItem.image || editingItem.thumbnail || editingItem.img) ? (
-                              <FileText size={40} className="text-red-500" />
-                            ) : isVideo(editingItem.image || editingItem.thumbnail || editingItem.img) ? (
-                              <Video size={40} className="text-blue-500" />
-                            ) : (
-                              <img src={editingItem.image || editingItem.thumbnail || editingItem.img} className="w-full h-full object-cover" />
-                            )
+                         isPdf(previewImage) ? (
+                                  <FileText size= {40} className="text-red-500"/>
+                                ) : isVideo(previewImage) ? (
+                                  <Video size= {40} className="text-blue-500"/>
+                                ) : (
+                                  <img src={URL.createObjectURL(previewImage)} className="w-full h-full object-cover" alt="Preview" />
+                                )
+                              ) : editingItem?.image || editingItem?.thumbnail || editingItem?.img ? (
+                                isPdf(editingItem.image || editingItem.thumbnail || editingItem.img) ? (
+                                  <FileText size={40} className="text-red-500"/>
+                                ) : isVideo(editingItem.image || editingItem.thumbnail || editingItem.img) ? (
+                                  <Video size={40} className="text-blue-500"/>
+                                ) : (
+                                  <img src={editingItem.image || editingItem.thumbnail || editingItem.img} className="w-full h-full object-cover" alt="Current" />
+                                )
                           ) : (
                             <ImageIcon size={32} className="text-gray-400" />
                           )}
@@ -3550,66 +3591,39 @@ if (modalType === "project") {
                     </>
                   )}
 
-                  {/* INPUT BILINGUAL - EDUCATION */}
+                {/* INPUT BILINGUAL - EDUCATION */}
                   {modalType === "education" && (
-                    <>
+                    <div className="space-y-6 w-full">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input
-                          name="degree_id"
-                          defaultValue={splitText(editingItem?.degree).id}
-                          placeholder="Gelar (ID)"
-                          required
-                          className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                        />
-                        <input
-                          name="degree_en"
-                          defaultValue={splitText(editingItem?.degree).en}
-                          placeholder="Degree (EN)"
-                          className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                        />
-                        <input
-                          name="institution_id"
-                          defaultValue={splitText(editingItem?.institution).id}
-                          placeholder="Nama Institusi (ID)"
-                          required
-                          className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                        />
-                        <input
-                          name="institution_en"
-                          defaultValue={splitText(editingItem?.institution).en}
-                          placeholder="Institution (EN)"
-                          className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                        />
-                        <input
-                          name="period_id"
-                          defaultValue={splitText(editingItem?.period).id}
-                          placeholder="Periode (ID)"
-                          required
-                          className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                        />
-                        <input
-                          name="period_en"
-                          defaultValue={splitText(editingItem?.period).en}
-                          placeholder="Period (EN)"
-                          className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                        />
-                        <textarea
-                          name="desc_id"
-                          defaultValue={splitText(editingItem?.desc).id}
-                          placeholder="Deskripsi (ID)"
-                          required
-                          rows="3"
-                          className="w-full p-4 glass-panel rounded-xl font-medium dark:text-white resize-none"
-                        />
-                        <textarea
-                          name="desc_en"
-                          defaultValue={splitText(editingItem?.desc).en}
-                          placeholder="Description (EN)"
-                          rows="3"
-                          className="w-full p-4 glass-panel rounded-xl font-medium dark:text-white resize-none"
-                        />
+                        <input name="degree_id" defaultValue={splitText(editingItem?.degree).id} placeholder="Gelar (ID)" required className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900" />
+                        <input name="degree_en" defaultValue={splitText(editingItem?.degree).en} placeholder="Degree (EN)" className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900" />
+                        <input name="institution_id" defaultValue={splitText(editingItem?.institution).id} placeholder="Nama Institusi (ID)" required className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900" />
+                        <input name="institution_en" defaultValue={splitText(editingItem?.institution).en} placeholder="Institution (EN)" className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900" />
+                        <input name="period_id" defaultValue={splitText(editingItem?.period).id} placeholder="Periode (ID)" required className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900" />
+                        <input name="period_en" defaultValue={splitText(editingItem?.period).en} placeholder="Period (EN)" className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900" />
                       </div>
-                    </>
+                      
+                      <div className="p-6 bg-white/50 dark:bg-white/5 rounded-[2rem] border border-gray-200 dark:border-white/10 space-y-4">
+                        <h4 className="font-black text-gray-800 dark:text-white mb-2 border-b border-gray-200 dark:border-white/10 pb-2">
+                          Detail Akademik & Skripsi (Opsional)
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <input name="ipk" defaultValue={editingItem?.ipk} placeholder="IPK (Misal: 3.91/4.00)" className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white" />
+                          <input name="thesis_link" defaultValue={editingItem?.thesis_link} placeholder="Link Preview Skripsi (https://...)" className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white" />
+                          <input name="focus_id" defaultValue={splitText(editingItem?.focus).id} placeholder="Fokus Ilmu (ID)" className="w-full p-4 glass-panel rounded-xl font-medium dark:text-white" />
+                          <input name="focus_en" defaultValue={splitText(editingItem?.focus).en} placeholder="Focus of Study (EN)" className="w-full p-4 glass-panel rounded-xl font-medium dark:text-white" />
+                          <textarea name="thesis_title_id" defaultValue={splitText(editingItem?.thesis_title).id} placeholder="Judul Skripsi (ID)" rows="2" className="w-full p-4 glass-panel rounded-xl font-medium dark:text-white resize-none" />
+                          <textarea name="thesis_title_en" defaultValue={splitText(editingItem?.thesis_title).en} placeholder="Thesis Title (EN)" rows="2" className="w-full p-4 glass-panel rounded-xl font-medium dark:text-white resize-none" />
+                          <textarea name="impact_id" defaultValue={splitText(editingItem?.impact).id} placeholder="Manfaat Penelitian (ID)" rows="2" className="w-full p-4 glass-panel rounded-xl font-medium dark:text-white resize-none" />
+                          <textarea name="impact_en" defaultValue={splitText(editingItem?.impact).en} placeholder="Research Impact (EN)" rows="2" className="w-full p-4 glass-panel rounded-xl font-medium dark:text-white resize-none" />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <textarea name="desc_id" defaultValue={splitText(editingItem?.desc).id} placeholder="Deskripsi Tambahan (ID)" rows="2" className="w-full p-4 glass-panel rounded-xl font-medium dark:text-white resize-none" />
+                        <textarea name="desc_en" defaultValue={splitText(editingItem?.desc).en} placeholder="Additional Description (EN)" rows="2" className="w-full p-4 glass-panel rounded-xl font-medium dark:text-white resize-none" />
+                      </div>
+                    </div>
                   )}
 
                   {/* INPUT BILINGUAL - SKILL (TOOLS / BAHASA) */}
@@ -4630,11 +4644,11 @@ if (modalType === "project") {
             </div>
           </div>
         )}
-<div className="prose dark:prose-invert max-w-none text-justify"></div>
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-        body { background-color: #050505; }
+
+       <style
+              dangerouslySetInnerHTML={{
+                __html: `
+        
 /* ========================================= */
 /* --- ANIMASI BREATHING CONSTELLATION --- */
         @keyframes breathingGlow {
@@ -4710,7 +4724,7 @@ if (modalType === "project") {
            color: #9ca3af; /* Warna dasar Abu-abu Monokrom */
            transition: color 0.4s ease; 
         }
-        
+        n
         a:hover .icon-ig { color: #E4405F !important; }
         a:hover .icon-th { color: #000000 !important; }
         html.dark a:hover .icon-th { color: #ffffff !important; }
