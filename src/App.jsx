@@ -151,9 +151,26 @@ const BrandIcon = ({ name, size = 20, className = "" }) => {
   );
 };
 
+// --- KOMPONEN ANGKA DENGAN SENSOR SCROLL ---
 const CountUp = ({ end, duration = 2000, suffix = "" }) => {
   const [count, setCount] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const countRef = React.useRef(null);
+
   useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect(); // Sensor mati setelah angka mulai berhitung
+        }
+      }, { threshold: 0.5 }
+    );
+    if (countRef.current) observer.observe(countRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) return; // Jangan berhitung kalau belum terlihat
     let start = 0;
     const increment = end / (duration / 16);
     const timer = setInterval(() => {
@@ -166,9 +183,10 @@ const CountUp = ({ end, duration = 2000, suffix = "" }) => {
       }
     }, 16);
     return () => clearInterval(timer);
-  }, [end, duration]);
+  }, [end, duration, isVisible]);
+
   return (
-    <span>
+    <span ref={countRef}>
       {count}
       {suffix}
     </span>
@@ -873,6 +891,24 @@ export default function App() {
       return () => clearTimeout(timer);
     }
   }, [toastMessage]);
+  // --- SENSOR SCROLL UNTUK EFEK DOMINO MUNCUL SATU-SATU ---
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // Tambahkan class 'is-visible' agar CSS mulai menjalankan animasi
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target); // Animasi cukup 1x saja
+        }
+      });
+    }, { threshold: 0.1 }); // Trigger saat 10% kotak masuk layar
+
+    // Ambil semua elemen yang punya animasi
+    const elements = document.querySelectorAll(".reveal-on-scroll, .animate-reveal-up");
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [currentPath, projects, blogs, experiences, educations, certifications, skills, visibleTech, visibleCreative, visibleThoughts]);
 
   const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
@@ -4751,7 +4787,8 @@ if (modalType === "project") {
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .reveal-on-scroll { opacity: 0; animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .reveal-on-scroll { opacity: 0; transform: translateY(40px); }
+        .reveal-on-scroll.is-visible { animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes revealUp { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
         
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -4763,7 +4800,8 @@ if (modalType === "project") {
         .animate-page-enter { animation: pageEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         @keyframes pageEnter { 0% { opacity: 0; transform: translateX(15px); } 100% { opacity: 1; transform: translateX(0); } }
         
-        .animate-reveal-up { opacity: 0; animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards; }
+        .animate-reveal-up { opacity: 0; transform: translateY(30px); }
+        .animate-reveal-up.is-visible { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
         /* ANIMASI SCROLL ALBUM OTOMATIS */
         @keyframes marqueeX {
