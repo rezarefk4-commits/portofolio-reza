@@ -4801,7 +4801,7 @@ if (modalType === "project") {
         @keyframes pageEnter { 0% { opacity: 0; transform: translateX(15px); } 100% { opacity: 1; transform: translateX(0); } }
         
         .animate-reveal-up { opacity: 0; transform: translateY(30px); }
-        .animate-reveal-up.is-visible { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-reveal-up.is-visible { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }git add .
         @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
         /* ANIMASI SCROLL ALBUM OTOMATIS */
         @keyframes marqueeX {
