@@ -151,26 +151,9 @@ const BrandIcon = ({ name, size = 20, className = "" }) => {
   );
 };
 
-// --- KOMPONEN ANGKA DENGAN SENSOR SCROLL ---
 const CountUp = ({ end, duration = 2000, suffix = "" }) => {
   const [count, setCount] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
-  const countRef = React.useRef(null);
-
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect(); // Sensor mati setelah angka mulai berhitung
-        }
-      }, { threshold: 0.5 }
-    );
-    if (countRef.current) observer.observe(countRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!isVisible) return; // Jangan berhitung kalau belum terlihat
     let start = 0;
     const increment = end / (duration / 16);
     const timer = setInterval(() => {
@@ -183,10 +166,9 @@ const CountUp = ({ end, duration = 2000, suffix = "" }) => {
       }
     }, 16);
     return () => clearInterval(timer);
-  }, [end, duration, isVisible]);
-
+  }, [end, duration]);
   return (
-    <span ref={countRef}>
+    <span>
       {count}
       {suffix}
     </span>
@@ -891,24 +873,6 @@ export default function App() {
       return () => clearTimeout(timer);
     }
   }, [toastMessage]);
-  // --- SENSOR SCROLL UNTUK EFEK DOMINO MUNCUL SATU-SATU ---
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          // Tambahkan class 'is-visible' agar CSS mulai menjalankan animasi
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target); // Animasi cukup 1x saja
-        }
-      });
-    }, { threshold: 0.1 }); // Trigger saat 10% kotak masuk layar
-
-    // Ambil semua elemen yang punya animasi
-    const elements = document.querySelectorAll(".reveal-on-scroll, .animate-reveal-up");
-    elements.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, [currentPath, projects, blogs, experiences, educations, certifications, skills, visibleTech, visibleCreative, visibleThoughts]);
 
   const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
@@ -2170,11 +2134,10 @@ if (modalType === "project") {
             {t.eduDesc}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {educations.map((edu, idx) => (
+            {educations.map((edu) => (
               <div
                 key={edu.id}
-                className="glass-panel p-8 md:p-10 rounded-[3rem] hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-white/5 animate-reveal-up opacity-0"
-                style={{ animationDelay: `${idx * 150}ms` }}
+                className="glass-panel p-8 md:p-10 rounded-[3rem] hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-white/5"
               >
                 <div className="w-16 h-16 bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white rounded-[1.2rem] flex items-center justify-center mb-6 shadow-sm border border-gray-200 dark:border-white/10">
                   <GraduationCap size={32} />
@@ -2265,15 +2228,14 @@ if (modalType === "project") {
                 <h4 className="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest px-2 mb-2 hidden lg:block">
                   Koleksi Lisensi
                 </h4>
-                {certifications.map((cert, idx) => (
+                {certifications.map((cert) => (
                   <button
                     key={cert.id}
-                    style={{ animationDelay: `${idx * 100}ms` }}
                     onClick={() => {
                       setSelectedCert(cert);
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
-                    className={`text-left p-4 rounded-[1.5rem] transition-all border flex gap-4 items-center group w-full animate-reveal-up opacity-0 ${activeCert?.id === cert.id ? "bg-white dark:bg-[#111111] border-gray-300 dark:border-white/20 shadow-xl lg:scale-[1.02]" : "glass-panel border-transparent hover:border-gray-200 dark:hover:border-white/10 hover:bg-white/60 dark:hover:bg-white/5"}`}
+                    className={`text-left p-4 rounded-[1.5rem] transition-all border flex gap-4 items-center group w-full ${activeCert?.id === cert.id ? "bg-white dark:bg-[#111111] border-gray-300 dark:border-white/20 shadow-xl lg:scale-[1.02]" : "glass-panel border-transparent hover:border-gray-200 dark:hover:border-white/10 hover:bg-white/60 dark:hover:bg-white/5"}`}
                   >
                     <div
                       className={`w-12 h-12 rounded-xl shrink-0 flex items-center justify-center transition-all ${activeCert?.id === cert.id ? "bg-blue-500 text-white shadow-lg shadow-blue-500/30" : "bg-gray-100 dark:bg-[#050505] border border-gray-200 dark:border-white/5 text-gray-500 group-hover:text-blue-500"}`}
@@ -2379,11 +2341,11 @@ if (modalType === "project") {
                 </h2>
               </div>
               
-<div className="flex flex-col gap-2">
-                {services.map((srv, idx) => {
+              <div className="flex flex-col gap-2">
+                {services.map((srv) => {
                   const IconComp = getIcon(srv.icon);
                   return (
-                    <div key={srv.id} className="py-8 flex flex-col sm:flex-row items-start gap-8 group transition-all hover:bg-white dark:hover:bg-white/[0.03] -mx-6 px-8 rounded-[2rem] animate-reveal-up opacity-0" style={{ animationDelay: `${idx * 150}ms` }}>
+                    <div key={srv.id} className="py-8 flex flex-col sm:flex-row items-start gap-8 group transition-all hover:bg-white dark:hover:bg-white/[0.03] -mx-6 px-8 rounded-[2rem]">
                       <div className="w-20 h-20 rounded-[1.5rem] bg-gray-50 dark:bg-[#0a0a0a] flex items-center justify-center shrink-0 border border-gray-200 dark:border-white/10 shadow-inner p-4 transition-transform group-hover:rotate-3 group-hover:scale-110">
                         {srv.img ? (
                           <img src={srv.img} className="w-full h-full object-contain" alt="" />
@@ -2417,15 +2379,14 @@ if (modalType === "project") {
                   Tech Stack & Tools
                 </h2>
 
-               <div className="tool-grid-container relative z-10">
+                <div className="tool-grid-container relative z-10">
                   {skills.map((s, idx) => {
                     // Memberikan delay acak 1-5 untuk efek constellation
                     const delayClass = `delay-${(idx % 5) + 1}`;
                     return (
                       <div 
                         key={s.id} 
-                        style={{ animationDelay: `${idx * 50}ms` }}
-                        className={`breathing-item ${delayClass} aspect-square rounded-2xl bg-white dark:bg-[#111111] border border-gray-200 dark:border-white/10 p-3.5 flex items-center justify-center shadow-sm relative group/tool animate-reveal-up opacity-0`}
+                        className={`breathing-item ${delayClass} aspect-square rounded-2xl bg-white dark:bg-[#111111] border border-gray-200 dark:border-white/10 p-3.5 flex items-center justify-center shadow-sm relative group/tool`}
                       >
                         <img 
                           src={s.img} 
@@ -2472,15 +2433,14 @@ if (modalType === "project") {
           <p className="text-gray-700 dark:text-gray-300 font-medium text-[15px] mb-12 max-w-lg mx-auto">
             Berikut adalah daftar produk digital saya, template, dan sumber daya lainnya yang bisa Anda akses.
           </p>
-         <div className="space-y-5 w-full">
-            {links.map((l, idx) => (
+          <div className="space-y-5 w-full">
+            {links.map((l) => (
               <a
                 key={l.id}
                 href={l.url}
                 target="_blank"
                 rel="noreferrer"
-                className="block w-full p-6 glass-panel rounded-[2rem] text-left hover:-translate-y-1 hover:shadow-2xl transition-all border border-gray-200 dark:border-white/5 flex justify-between items-center group animate-reveal-up opacity-0"
-                style={{ animationDelay: `${idx * 100}ms` }}
+                className="block w-full p-6 glass-panel rounded-[2rem] text-left hover:-translate-y-1 hover:shadow-2xl transition-all border border-gray-200 dark:border-white/5 flex justify-between items-center group"
               >
                 <div className="min-w-0 flex-1">
                   <h3 className="font-black dark:text-white text-lg group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
@@ -2541,13 +2501,12 @@ if (modalType === "project") {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-            {displayed.map((proj, idx) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full reveal-on-scroll delay-200">
+            {displayed.map((proj) => (
               <div
                 key={proj.id}
                 onClick={() => navigate(`/technical/${proj.id}`)}
-                className="glass-panel rounded-[2.5rem] overflow-hidden cursor-pointer group hover:-translate-y-2 transition-all flex flex-col w-full shadow-sm border border-gray-200 dark:border-white/5 hover:shadow-2xl hover:border-gray-400 dark:hover:border-white/20 animate-reveal-up opacity-0"
-                style={{ animationDelay: `${idx * 100}ms` }}
+                className="glass-panel rounded-[2.5rem] overflow-hidden cursor-pointer group hover:-translate-y-2 transition-all flex flex-col w-full shadow-sm border border-gray-200 dark:border-white/5 hover:shadow-2xl hover:border-gray-400 dark:hover:border-white/20"
               >
                 <div className="w-full h-56 overflow-hidden relative">
                   <img
@@ -2742,13 +2701,12 @@ if (modalType === "project") {
           <p className="text-gray-600 dark:text-gray-400 mb-12 text-[16px] font-medium reveal-on-scroll delay-100">
             {t.creativeSub}
           </p>
-         <div className="flex flex-col gap-8 w-full max-w-full">
-            {displayed.map((proj, idx) => (
+          <div className="flex flex-col gap-8 w-full max-w-full reveal-on-scroll delay-200">
+            {displayed.map((proj) => (
               <div
                 key={proj.id}
                 onClick={() => navigate(`/creative/${proj.id}`)}
-                className="glass-panel rounded-[2.5rem] overflow-hidden cursor-pointer group hover:-translate-y-2 transition-all flex flex-col md:flex-row w-full shadow-sm border border-gray-200 dark:border-white/5 hover:shadow-2xl hover:border-gray-400 dark:hover:border-white/20 animate-reveal-up opacity-0"
-                style={{ animationDelay: `${idx * 150}ms` }}
+                className="glass-panel rounded-[2.5rem] overflow-hidden cursor-pointer group hover:-translate-y-2 transition-all flex flex-col md:flex-row w-full shadow-sm border border-gray-200 dark:border-white/5 hover:shadow-2xl hover:border-gray-400 dark:hover:border-white/20"
               >
               <div className="w-full md:w-[40%] h-64 md:h-auto shrink-0 overflow-hidden relative bg-gray-100 dark:bg-[#050505]">
                   <SmartMedia url={proj.image} className="w-full h-full absolute inset-0 group-hover:scale-105 transition-transform duration-1000" isThumbnail={true} />
@@ -3021,8 +2979,7 @@ if (modalType === "project") {
               <div
                 key={blog.id}
                 onClick={() => navigate(`/thoughts/${blog.id}`)}
-                className="glass-panel rounded-[2.5rem] overflow-hidden cursor-pointer group hover:-translate-y-2 transition-all flex flex-col border border-gray-200 dark:border-white/5 shadow-sm hover:shadow-2xl animate-reveal-up opacity-0"
-                style={{ animationDelay: `${idx * 150}ms` }}
+                className={`glass-panel rounded-[2.5rem] overflow-hidden cursor-pointer group hover:-translate-y-2 transition-all flex flex-col border border-gray-200 dark:border-white/5 shadow-sm hover:shadow-2xl delay-${(idx % 4) * 100}`}
               >
                 <div className="h-64 overflow-hidden relative">
                   <img
@@ -4787,8 +4744,7 @@ if (modalType === "project") {
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .reveal-on-scroll { opacity: 0; transform: translateY(40px); }
-        .reveal-on-scroll.is-visible { animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .reveal-on-scroll { opacity: 0; animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes revealUp { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
         
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -4800,8 +4756,7 @@ if (modalType === "project") {
         .animate-page-enter { animation: pageEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         @keyframes pageEnter { 0% { opacity: 0; transform: translateX(15px); } 100% { opacity: 1; transform: translateX(0); } }
         
-        .animate-reveal-up { opacity: 0; transform: translateY(30px); }
-        .animate-reveal-up.is-visible { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }git add .
+        .animate-reveal-up { opacity: 0; animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards; }
         @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
         /* ANIMASI SCROLL ALBUM OTOMATIS */
         @keyframes marqueeX {
