@@ -23,8 +23,7 @@ html.dark .glass-panel {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.6); border: 2px solid transparent; background-clip: padding-box;}
 
 /* Smooth Reveal Animation */
-.reveal-on-scroll { opacity: 0; transform: translateY(40px); }
-        .reveal-on-scroll.is-visible { animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.reveal-on-scroll { opacity: 0; animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 @keyframes revealUp { 0% { opacity: 0; transform: translateY(40px) scale(0.98); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
 
 /* Apple-style Dashboard/Modal Enter Transition */
