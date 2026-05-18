@@ -694,6 +694,7 @@ export default function App() {
   const [lang, setLang] = useState("id");
   const [currentPath, setCurrentPath] = useState("/home");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openDockMenu, setOpenDockMenu] = useState(null);
 
   const [blogContentId, setBlogContentId] = useState("");
   const [blogContentEn, setBlogContentEn] = useState("");
@@ -1129,6 +1130,24 @@ if (modalType === "project") {
         };
    } else if (modalType === "education") {
         tableName = "educations";
+        
+        // Mengambil file langsung dari elemen input form masing-masing
+        const bgFile = e.target.education_bg?.files[0];
+        const logoFile = e.target.education_logo?.files[0];
+        
+        let finalBgUrl = editingItem?.image || "";
+        let finalLogoUrl = editingItem?.logo || "";
+        
+        // Proses Upload File Latar Belakang jika ada file baru
+        if (bgFile) {
+          finalBgUrl = await uploadFileToSupabase(bgFile);
+        }
+        
+        // Proses Upload File Logo Institusi jika ada file baru
+        if (logoFile) {
+          finalLogoUrl = await uploadFileToSupabase(logoFile);
+        }
+
         newItem = {
           ...newItem,
           degree: combine("degree"),
@@ -1140,6 +1159,8 @@ if (modalType === "project") {
           thesis_title: combine("thesis_title"),
           impact: combine("impact"),
           thesis_link: formData.get("thesis_link"),
+          image: finalBgUrl,    // Menyimpan URL Background Kampus
+          logo: finalLogoUrl,   // Menyimpan URL Logo Kampus
         };
       }
       else if (modalType === "certification") {
@@ -1231,86 +1252,173 @@ if (modalType === "project") {
   };
 
 const renderDock = () => {
-    const dockItems = [
-      { id: 'home', path: '/home', icon: Home, label: t.home },
-      { id: 'about', path: '/about', icon: User, label: t.about },
-      { id: 'technical', path: '/technical', icon: Code, label: t.technical },
-      { id: 'creative', path: '/creative', icon: Palette, label: t.creative },
-      { id: 'thoughts', path: '/thoughts', icon: FileText, label: t.thoughts },
-      { id: 'experience', path: '/experience', icon: Briefcase, label: t.experience },
-      { id: 'education', path: '/education', icon: GraduationCap, label: t.education },
-      { id: 'certifications', path: '/certifications', icon: Award, label: t.certifications },
-      { id: 'skills', path: '/skills', icon: Lightbulb, label: t.skills },
-      { id: 'contact', path: '/contact', icon: MessageSquare, label: t.contact },
-    ];
+  const dockItems = [
+    { id: 'home', path: '/home', icon: Home, label: t.home }, // 0
+    { id: 'about', path: '/about', icon: User, label: t.about }, // 1
+    { id: 'technical', path: '/technical', icon: Code, label: t.technical }, // 2
+    { id: 'creative', path: '/creative', icon: Palette, label: t.creative }, // 3
+    { id: 'thoughts', path: '/thoughts', icon: FileText, label: t.thoughts }, // 4
+    { id: 'experience', path: '/experience', icon: Briefcase, label: t.experience }, // 5
+    { id: 'education', path: '/education', icon: GraduationCap, label: t.education }, // 6
+    { id: 'certifications', path: '/certifications', icon: Award, label: t.certifications }, // 7
+    { id: 'skills', path: '/skills', icon: Lightbulb, label: t.skills }, // 8
+    { id: 'contact', path: '/contact', icon: MessageSquare, label: t.contact }, // 9
+  ];
 
-    // Kelas untuk efek Pop-up Bouncy (Melenting Mulus ala Mac OS)
-    const popupClass = "absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-[11px] font-black px-3.5 py-1.5 rounded-xl opacity-0 scale-50 translate-y-4 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] whitespace-nowrap pointer-events-none shadow-xl border border-white/10 z-[90] hidden sm:block";
+  // Kelas untuk efek Pop-up Bouncy Desktop
+  const popupClass = "absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-[11px] font-black px-3.5 py-1.5 rounded-xl opacity-0 scale-50 translate-y-4 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] whitespace-nowrap pointer-events-none shadow-xl border border-white/10 z-[90]";
 
-    return (
-      <div className="fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-[80] glass-panel px-1.5 sm:px-3 py-2 sm:py-3 rounded-[1.5rem] sm:rounded-[2rem] border border-gray-200/50 dark:border-white/10 shadow-2xl flex items-center justify-between sm:justify-center gap-0.5 sm:gap-2 w-[97vw] sm:w-auto transition-all duration-300">
+  // Helper Halaman Aktif Khusus Mobile
+  const isWorksActive = currentPath.startsWith('/technical') || currentPath.startsWith('/creative') || currentPath.startsWith('/thoughts');
+  const isInfoActive = currentPath.startsWith('/about') || currentPath.startsWith('/experience') || currentPath.startsWith('/education') || currentPath.startsWith('/certifications') || currentPath.startsWith('/skills');
+
+  // Fungsi klik menu di mobile
+  const handleMobileNav = (path) => {
+    navigate(path);
+    setOpenDockMenu(null); // Tutup gelembung
+  };
+
+  return (
+    <>
+      {/* ========================================= */}
+      {/* 1. VERSI DESKTOP (Eksklusif & Original Anda) */}
+      {/* ========================================= */}
+      <div className="hidden md:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] glass-panel px-3 py-3 rounded-[2rem] border border-gray-200/50 dark:border-white/10 shadow-2xl items-center gap-2 max-w-[95vw] transition-all duration-300">
         {dockItems.map(item => {
           const isActive = currentPath === item.path || (item.path !== '/home' && currentPath.startsWith(item.path));
           return (
             <button
               key={item.id}
               onClick={() => navigate(item.path)}
-              className={`group relative flex items-center justify-center flex-1 sm:flex-none w-auto sm:w-11 aspect-square max-w-[44px] shrink-0 rounded-[30%] sm:rounded-[1.2rem] transition-all duration-300 ${isActive ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 shadow-md scale-110 sm:-translate-y-2' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white hover:-translate-y-1 sm:hover:-translate-y-2 hover:bg-gray-100 dark:hover:bg-white/10'}`}
+              className={`group relative flex items-center justify-center w-11 h-11 shrink-0 rounded-[1.2rem] transition-all duration-300 ${isActive ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 shadow-lg scale-110 -translate-y-2' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white hover:-translate-y-2 hover:bg-gray-100 dark:hover:bg-white/10'}`}
             >
-              <item.icon className="w-[50%] sm:w-[20px] h-[50%] sm:h-[20px]" strokeWidth={isActive ? 2.5 : 2} />
-              <span className={popupClass}>
-                {item.label}
-              </span>
+              <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+              <span className={popupClass}>{item.label}</span>
             </button>
           );
         })}
         
-        <div className="w-[1px] h-5 sm:h-8 bg-gray-300 dark:bg-white/20 mx-0.5 sm:mx-1 shrink-0"></div>
+        <div className="w-[1px] h-8 bg-gray-300 dark:bg-white/20 mx-1 shrink-0"></div>
         
-        <button
-          onClick={() => setLang(lang === "id" ? "en" : "id")}
-          className="group relative flex items-center justify-center flex-1 sm:flex-none w-auto sm:w-11 aspect-square max-w-[44px] shrink-0 rounded-[30%] sm:rounded-[1.2rem] text-gray-500 hover:text-gray-900 dark:hover:text-white hover:-translate-y-1 sm:hover:-translate-y-2 hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-300 font-black text-[9px] sm:text-[11px] uppercase"
-        >
-          {lang}
-          <span className={popupClass}>
-            Bahasa
-          </span>
+        <button onClick={() => setLang(lang === "id" ? "en" : "id")} className="group relative flex items-center justify-center w-11 h-11 shrink-0 rounded-[1.2rem] text-gray-500 hover:text-gray-900 dark:hover:text-white hover:-translate-y-2 hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-300 font-black text-[11px] uppercase">
+          {lang} <span className={popupClass}>Bahasa</span>
         </button>
 
-        <button
-          onClick={toggleTheme}
-          className="group relative flex items-center justify-center flex-1 sm:flex-none w-auto sm:w-11 aspect-square max-w-[44px] shrink-0 rounded-[30%] sm:rounded-[1.2rem] text-gray-500 hover:text-gray-900 dark:hover:text-white hover:-translate-y-1 sm:hover:-translate-y-2 hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-300"
-        >
-          {theme === "light" ? <Sun className="w-[50%] sm:w-[20px] h-[50%] sm:h-[20px]" /> : <Moon className="w-[50%] sm:w-[20px] h-[50%] sm:h-[20px]" />}
-          <span className={popupClass}>
-            {theme === "light" ? t.darkMode : t.lightMode}
-          </span>
+        <button onClick={toggleTheme} className="group relative flex items-center justify-center w-11 h-11 shrink-0 rounded-[1.2rem] text-gray-500 hover:text-gray-900 dark:hover:text-white hover:-translate-y-2 hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-300">
+          {theme === "light" ? <Sun size={20} /> : <Moon size={20} />}
+          <span className={popupClass}>{theme === "light" ? t.darkMode : t.lightMode}</span>
         </button>
         
-        <button
-          onClick={handleDownloadCV}
-          className="group relative flex items-center justify-center flex-1 sm:flex-none w-auto sm:w-11 aspect-square max-w-[44px] shrink-0 rounded-[30%] sm:rounded-[1.2rem] text-gray-500 hover:text-gray-900 dark:hover:text-white hover:-translate-y-1 sm:hover:-translate-y-2 hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-300"
-        >
-          <Download className="w-[50%] sm:w-[20px] h-[50%] sm:h-[20px]" />
-          <span className={popupClass}>
-            {t.downloadCv}
-          </span>
+        <button onClick={handleDownloadCV} className="group relative flex items-center justify-center w-11 h-11 shrink-0 rounded-[1.2rem] text-gray-500 hover:text-gray-900 dark:hover:text-white hover:-translate-y-2 hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-300">
+          <Download size={20} />
+          <span className={popupClass}>{t.downloadCv}</span>
         </button>
 
-        <div className="w-[1px] h-5 sm:h-8 bg-gray-300 dark:bg-white/20 mx-0.5 sm:mx-1 shrink-0"></div>
+        <div className="w-[1px] h-8 bg-gray-300 dark:bg-white/20 mx-1 shrink-0"></div>
 
-        <button
-          onClick={handleSecretClick}
-          className="group relative flex items-center justify-center flex-1 sm:flex-none w-auto sm:w-11 aspect-square max-w-[44px] shrink-0 rounded-full border-[2px] sm:border-[3px] border-transparent hover:border-blue-500 transition-all duration-300 overflow-hidden hover:-translate-y-1 sm:hover:-translate-y-2 shadow-sm"
-        >
+        <button onClick={handleSecretClick} className="group relative flex items-center justify-center w-11 h-11 shrink-0 rounded-full border-[3px] border-transparent hover:border-blue-500 transition-all duration-300 overflow-hidden hover:-translate-y-2 shadow-sm">
           <img src={profile.profileImage} className="w-full h-full object-cover" alt="CMS" />
-          <span className={popupClass}>
-            Login CMS
-          </span>
+          <span className={popupClass}>Login CMS</span>
         </button>
       </div>
-    );
-  };
+
+      {/* ========================================= */}
+      {/* 2. VERSI MOBILE (Center Folders + Right Spine) */}
+      {/* ========================================= */}
+      
+      {/* Latar belakang tak kasat mata untuk menutup pop-up */}
+      {openDockMenu && (
+        <div className="md:hidden fixed inset-0 z-[85]" onClick={() => setOpenDockMenu(null)}></div>
+      )}
+
+      {/* A. DOCK TENGAH BAWAH (Diperlebar) */}
+      <div className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-[90] w-[92vw] max-w-[420px]">
+        <div className="glass-panel px-6 py-3 rounded-[2.5rem] flex justify-between items-center shadow-2xl border border-gray-200/50 dark:border-white/10 bg-white/95 dark:bg-[#111]/95 backdrop-blur-2xl w-full">
+          
+          {/* 1. Tombol HOME */}
+          <button onClick={() => handleMobileNav('/home')} className={`relative flex flex-col items-center justify-center w-12 h-12 rounded-2xl transition-all active:scale-95 ${currentPath === '/home' ? 'text-gray-900 dark:text-white' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'}`}>
+            <Home size={22} strokeWidth={currentPath === '/home' ? 2.5 : 2} />
+            <div className={`absolute bottom-1 w-1 h-1 rounded-full transition-all ${currentPath === '/home' ? 'bg-blue-500 scale-100' : 'bg-transparent scale-0'}`}></div>
+          </button>
+
+          {/* 2. Tombol KARYA (Folder Portfolio) */}
+          <div className="relative flex justify-center">
+            <button 
+              onClick={() => setOpenDockMenu(openDockMenu === 'works' ? null : 'works')} 
+              className={`relative flex flex-col items-center justify-center w-12 h-12 rounded-2xl transition-all active:scale-95 ${isWorksActive || openDockMenu === 'works' ? 'text-gray-900 dark:text-white bg-gray-100 dark:bg-white/10 shadow-inner' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'}`}
+            >
+              <Briefcase size={22} strokeWidth={isWorksActive || openDockMenu === 'works' ? 2.5 : 2} />
+              <div className={`absolute bottom-1 w-1 h-1 rounded-full transition-all ${isWorksActive ? 'bg-blue-500 scale-100' : 'bg-transparent scale-0'}`}></div>
+            </button>
+            
+            {/* Pop-up Folder Karya */}
+            <div className={`absolute bottom-[130%] left-1/2 -translate-x-1/2 glass-panel p-2 rounded-2xl flex flex-col gap-1 shadow-2xl border border-gray-200/50 dark:border-white/10 transition-all duration-300 origin-bottom ${openDockMenu === 'works' ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-75 opacity-0 pointer-events-none'}`}>
+              {[dockItems[2], dockItems[3], dockItems[4]].map(item => (
+                <button key={item.id} onClick={() => handleMobileNav(item.path)} className={`flex items-center gap-3 px-5 py-3.5 rounded-xl transition-colors whitespace-nowrap ${currentPath.startsWith(item.path) ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10'}`}>
+                  <item.icon size={18} /> <span className="text-[13px] font-bold">{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 3. Tombol INFO SAYA (Folder Info) */}
+          <div className="relative flex justify-center">
+            <button 
+              onClick={() => setOpenDockMenu(openDockMenu === 'info' ? null : 'info')} 
+              className={`relative flex flex-col items-center justify-center w-12 h-12 rounded-2xl transition-all active:scale-95 ${isInfoActive || openDockMenu === 'info' ? 'text-gray-900 dark:text-white bg-gray-100 dark:bg-white/10 shadow-inner' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'}`}
+            >
+              <User size={22} strokeWidth={isInfoActive || openDockMenu === 'info' ? 2.5 : 2} />
+              <div className={`absolute bottom-1 w-1 h-1 rounded-full transition-all ${isInfoActive ? 'bg-blue-500 scale-100' : 'bg-transparent scale-0'}`}></div>
+            </button>
+
+            {/* Pop-up Folder Info */}
+            <div className={`absolute bottom-[130%] left-1/2 -translate-x-1/2 glass-panel p-2 rounded-2xl flex flex-col gap-1 shadow-2xl border border-gray-200/50 dark:border-white/10 transition-all duration-300 origin-bottom ${openDockMenu === 'info' ? 'scale-100 opacity-100 pointer-events-auto' : 'scale-75 opacity-0 pointer-events-none'}`}>
+              {[dockItems[1], dockItems[5], dockItems[6], dockItems[7], dockItems[8]].map(item => (
+                <button key={item.id} onClick={() => handleMobileNav(item.path)} className={`flex items-center gap-3 px-5 py-3.5 rounded-xl transition-colors whitespace-nowrap ${currentPath.startsWith(item.path) ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10'}`}>
+                  <item.icon size={18} /> <span className="text-[13px] font-bold">{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 4. Tombol KONTAK */}
+          <button onClick={() => handleMobileNav('/contact')} className={`relative flex flex-col items-center justify-center w-12 h-12 rounded-2xl transition-all active:scale-95 ${currentPath === '/contact' ? 'text-gray-900 dark:text-white' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'}`}>
+            <MessageSquare size={22} strokeWidth={currentPath === '/contact' ? 2.5 : 2} />
+            <div className={`absolute bottom-1 w-1 h-1 rounded-full transition-all ${currentPath === '/contact' ? 'bg-blue-500 scale-100' : 'bg-transparent scale-0'}`}></div>
+          </button>
+
+        </div>
+      </div>
+
+      {/* B. SPINE KANAN (Utilitas & CMS Avatar) */}
+      <div className="md:hidden fixed right-2 top-1/2 -translate-y-1/2 z-[80] pointer-events-none">
+        <div className="pointer-events-auto glass-panel py-3 px-1.5 rounded-full flex flex-col items-center gap-4 shadow-xl border border-gray-200/50 dark:border-white/10 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-xl">
+          
+          <button onClick={() => setLang(lang === "id" ? "en" : "id")} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/10 text-[10px] font-black uppercase text-gray-700 dark:text-gray-200 active:scale-95 transition-transform">
+            {lang}
+          </button>
+
+          <button onClick={toggleTheme} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200 active:scale-95 transition-transform">
+            {theme === "light" ? <Sun size={14} /> : <Moon size={14} />}
+          </button>
+
+          <button onClick={handleDownloadCV} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200 active:scale-95 transition-transform">
+            <Download size={14} />
+          </button>
+
+          {/* Garis Pemisah */}
+          <div className="w-5 h-[1px] bg-gray-300 dark:bg-white/20"></div>
+
+          {/* Akses CMS Rahasia (Foto Profil) */}
+          <button onClick={handleSecretClick} className="w-10 h-10 flex items-center justify-center rounded-full border-[3px] border-transparent hover:border-blue-500 overflow-hidden active:scale-95 transition-all shadow-sm">
+             <img src={profile.profileImage} className="w-full h-full object-cover" alt="CMS" />
+          </button>
+          
+        </div>
+      </div>
+    </>
+  );
+};
   const renderContent = () => {
     if (currentPath === "/home")
       return (
@@ -1380,22 +1488,35 @@ const renderDock = () => {
               <p className="text-[clamp(13px,2.5vw,15px)] text-gray-600 dark:text-gray-400 font-medium mb-6 sm:mb-10 max-w-[280px] sm:max-w-xl leading-relaxed z-20 relative text-justify" style={{ textJustify: 'inter-word', wordBreak: 'keep-all', hyphens: 'none', WebkitHyphens: 'none' }}>
                 {tText(profile.bio, lang)}
               </p>
-              <div className="flex flex-row gap-2 sm:gap-4 z-20 relative">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 z-20 relative mt-2">
                 <button
                   onClick={() =>
                     document
                       .getElementById("portfolio-categories")
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
-                  className="px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-black transition-all hover:-translate-y-1 active:scale-95 text-[9px] sm:text-[12px] uppercase tracking-widest"
+                  className="px-5 sm:px-8 py-3 sm:py-3.5 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-black transition-all hover:-translate-y-1 active:scale-95 text-[10px] sm:text-[12px] uppercase tracking-widest shadow-lg"
                 >
                   MY WORK
                 </button>
+                
                 <button
                   onClick={() => navigate("/contact")}
-                  className="px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-full bg-white dark:bg-transparent text-gray-900 dark:text-white font-black transition-all shadow-md hover:-translate-y-1 active:scale-95 text-[9px] sm:text-[12px] uppercase border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5"
+                  className="px-5 sm:px-8 py-3 sm:py-3.5 rounded-full bg-white dark:bg-transparent text-gray-900 dark:text-white font-black transition-all shadow-md hover:-translate-y-1 active:scale-95 text-[10px] sm:text-[12px] uppercase border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5"
                 >
                   HIRE ME
+                </button>
+
+                {/* --- TOMBOL DOWNLOAD CV DENGAN EFEK GLOW --- */}
+                <button
+                  onClick={handleDownloadCV}
+                  className="group relative flex items-center gap-2 px-5 sm:px-8 py-3 sm:py-3.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black transition-all hover:-translate-y-1 active:scale-95 text-[10px] sm:text-[12px] uppercase tracking-widest overflow-hidden shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] border border-blue-400/30"
+                >
+                  {/* Efek Kilap di Dalam Tombol */}
+                  <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  
+                  <Download size={14} className="group-hover:-translate-y-1 transition-transform relative z-10" />
+                  <span className="relative z-10">UNDUH CV</span>
                 </button>
               </div>
             </div>
@@ -2005,7 +2126,7 @@ const renderDock = () => {
         </div>
       );
 
-    if (currentPath === "/education")
+if (currentPath === "/education")
       return (
         <div className="max-w-5xl mx-auto pt-6 w-full pb-20 animate-page-enter">
           <SEO title={t.eduTitle} />
@@ -2019,76 +2140,134 @@ const renderDock = () => {
           <p className="text-[16px] text-gray-600 dark:text-gray-400 font-medium mb-12 border-b border-gray-200 dark:border-white/10 pb-6">
             {t.eduDesc}
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <div className="flex flex-col gap-8 w-full">
             {educations.map((edu) => (
               <div
                 key={edu.id}
-                className="glass-panel p-8 md:p-10 rounded-[3rem] hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-white/5"
+                className="relative bg-white dark:bg-[#0a0a0a] rounded-[3rem] overflow-hidden group hover:-translate-y-1 hover:shadow-2xl transition-all duration-500 border border-gray-200 dark:border-white/5 min-h-[300px] flex flex-col w-full shadow-lg"
               >
-                <div className="w-16 h-16 bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white rounded-[1.2rem] flex items-center justify-center mb-6 shadow-sm border border-gray-200 dark:border-white/10">
-                  <GraduationCap size={32} />
-                </div>
-                <span className="text-[12px] font-bold text-gray-900 dark:text-white bg-gray-100 dark:bg-white/5 px-3.5 py-1.5 rounded-lg mb-4 inline-block shadow-sm border border-gray-200 dark:border-white/10">
-                  {tText(edu.period, lang)}
-                </span>
-                <h3 className="text-2xl font-black dark:text-white mb-2 leading-snug">
-                  {tText(edu.degree, lang)}
-                </h3>
-                <h4 className="font-bold text-gray-600 dark:text-gray-400 mb-5">
-                  {tText(edu.institution, lang)}
-                </h4>
-               {edu.desc && (
-                  <p className="text-[14.5px] font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {tText(edu.desc, lang)}
-                  </p>
-                )}
-                
-                {(edu.ipk || edu.focus || edu.thesis_title || edu.impact || edu.thesis_link) && (
-                  <div className="flex flex-col gap-4 mt-6 border-t border-gray-200 dark:border-white/10 pt-6">
-                    {edu.ipk && (
-                      <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
-                        <span className="font-black text-gray-500 dark:text-gray-400 text-[11px] uppercase tracking-widest w-40 shrink-0 pt-0.5">IPK</span>
-                        <span className="text-gray-800 dark:text-white text-[14.5px] font-black">{edu.ipk}</span>
-                      </div>
-                    )}
-                    {edu.focus && (
-                      <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
-                        <span className="font-black text-gray-500 dark:text-gray-400 text-[11px] uppercase tracking-widest w-40 shrink-0 pt-0.5">Fokus Ilmu</span>
-                        <span className="text-gray-800 dark:text-white text-[14.5px] font-bold">{tText(edu.focus, lang)}</span>
-                      </div>
-                    )}
-                    {edu.thesis_title && (
-                      <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
-                        <span className="font-black text-gray-500 dark:text-gray-400 text-[11px] uppercase tracking-widest w-40 shrink-0 pt-0.5">Judul Skripsi</span>
-                        <span className="text-gray-700 dark:text-gray-200 text-[14.5px] font-bold italic leading-relaxed">{tText(edu.thesis_title, lang)}</span>
-                      </div>
-                    )}
-                    {edu.impact && (
-                      <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
-                        <span className="font-black text-gray-500 dark:text-gray-400 text-[11px] uppercase tracking-widest w-40 shrink-0 pt-0.5">Manfaat Penelitian</span>
-                        <span className="text-gray-700 dark:text-gray-300 text-[14px] leading-relaxed font-medium">{tText(edu.impact, lang)}</span>
-                      </div>
-                    )}
-                    {edu.thesis_link && (
-                      <div className="mt-4">
-                        <a href={edu.thesis_link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl text-xs font-black shadow-lg hover:scale-105 transition-transform w-fit active:scale-95">
-                          <LinkIcon size={16} /> Buka / Preview Skripsi
-                        </a>
-                      </div>
-                    )}
+                {/* --- 1. LAYER BACKGROUND KAMPUS (HITAM PUTIH PERMANEN) --- */}
+                <div className="absolute inset-0 z-0 pointer-events-none flex justify-end overflow-hidden">
+                  <div className="w-full md:w-[60%] h-full relative">
+                    <img
+                      src={edu.image || profile.heroImage || profile.profileImage}
+                      className="absolute inset-0 w-full h-full object-cover object-center opacity-30 dark:opacity-20 grayscale"
+                      alt="Campus Background"
+                    />
+                    {/* Efek Gradient memudar dari Kiri (Solid) ke Kanan (Transparan) */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent dark:from-[#0a0a0a] dark:via-[#0a0a0a]/80 dark:to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent dark:from-[#0a0a0a] dark:via-transparent to-transparent sm:hidden"></div>
                   </div>
-                )}
+                </div>
+
+                {/* --- 2. LAYER KONTEN UTAMA --- */}
+                <div className="relative z-10 p-8 md:p-12 flex flex-col w-full h-full">
+                  
+                  {/* Bagian Header: Logo 3D (DIPERBESAR) + Judul */}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 mb-8">
+                    
+                    {/* Frame Logo 3D Effect (Size: w-32 h-32 / Desktop: w-40 h-40) */}
+                    <div className="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-white to-gray-100 dark:from-[#1a1a1a] dark:to-[#0d0d0d] rounded-[2rem] flex items-center justify-center shrink-0 border border-white dark:border-white/10 shadow-[0_15px_35px_rgba(0,0,0,0.12),inset_0_4px_4px_rgba(255,255,255,0.8)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.6),inset_0_2px_4px_rgba(255,255,255,0.05)] p-5 z-20 relative group-hover:-translate-y-2 transition-transform duration-500">
+                      {edu.logo ? (
+                         <img 
+                            src={edu.logo} 
+                            /* Drop shadow pekat langsung pada file logonya agar terkesan mengambang */
+                            className="w-full h-full object-contain drop-shadow-[0_12px_12px_rgba(0,0,0,0.3)] dark:drop-shadow-[0_12px_12px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-500" 
+                            alt="Logo" 
+                         />
+                      ) : (
+                         <GraduationCap size={56} className="text-gray-300 dark:text-gray-600 drop-shadow-md" />
+                      )}
+                    </div>
+
+                    <div className="flex-1 max-w-2xl">
+                      <span className="text-[11px] font-black text-gray-900 dark:text-white bg-gray-100 dark:bg-white/10 px-4 py-2 rounded-xl mb-3 inline-block shadow-sm border border-gray-200 dark:border-white/10 tracking-widest uppercase">
+                        {tText(edu.period, lang)}
+                      </span>
+                      <h3 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-2 leading-tight tracking-tight">
+                        {tText(edu.degree, lang)}
+                      </h3>
+                      <h4 className="text-lg md:text-xl font-bold text-blue-600 dark:text-blue-400">
+                        {tText(edu.institution, lang)}
+                      </h4>
+                    </div>
+                  </div>
+
+                  {/* Deskripsi */}
+                  {edu.desc && (
+                    <p className="text-[15.5px] font-medium text-gray-700 dark:text-gray-300 mb-8 max-w-3xl leading-relaxed">
+                      {tText(edu.desc, lang)}
+                    </p>
+                  )}
+
+                  {/* Grid Detail Skripsi / Nilai di Bawah */}
+                  {(edu.ipk || edu.focus || edu.thesis_title || edu.impact || edu.thesis_link) && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-auto border-t border-gray-200 dark:border-white/10 pt-8 relative max-w-5xl">
+                      
+                      {/* Kolom Kiri: IPK & Fokus */}
+                      <div className="flex flex-col justify-center gap-6">
+                          {edu.ipk && (
+                            <div className="flex items-center gap-5">
+                              <div className="w-14 h-14 rounded-[1.2rem] bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white flex items-center justify-center shrink-0 border border-gray-200 dark:border-white/10 shadow-sm">
+                                <Award size={24} />
+                              </div>
+                              <div>
+                                <p className="font-black text-gray-400 dark:text-gray-500 text-[11px] uppercase tracking-widest mb-0.5">IPK / Score</p>
+                                <p className="text-gray-900 dark:text-white text-[20px] font-black">{edu.ipk}</p>
+                              </div>
+                            </div>
+                          )}
+                          {edu.focus && (
+                            <div className="flex items-center gap-5">
+                              <div className="w-14 h-14 rounded-[1.2rem] bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white flex items-center justify-center shrink-0 border border-gray-200 dark:border-white/10 shadow-sm">
+                                <Target size={24} />
+                              </div>
+                              <div>
+                                <p className="font-black text-gray-400 dark:text-gray-500 text-[11px] uppercase tracking-widest mb-0.5">Fokus Ilmu</p>
+                                <p className="text-gray-900 dark:text-white text-[16px] font-bold">{tText(edu.focus, lang)}</p>
+                              </div>
+                            </div>
+                          )}
+                      </div>
+
+                      {/* Kolom Kanan: Detail Tugas Akhir / Skripsi */}
+                      <div className="flex flex-col gap-4 bg-gray-50 dark:bg-white/5 p-8 rounded-[2rem] border border-gray-200 dark:border-white/10 shadow-inner h-full justify-center">
+                          {edu.thesis_title && (
+                            <div>
+                              <p className="font-black text-gray-400 dark:text-gray-500 text-[11px] uppercase tracking-widest mb-1.5">Judul Skripsi / Tugas Akhir</p>
+                              <p className="text-gray-800 dark:text-gray-200 text-[15px] font-bold italic leading-snug">{tText(edu.thesis_title, lang)}</p>
+                            </div>
+                          )}
+                          {edu.impact && (
+                            <div className="mt-2">
+                              <p className="font-black text-gray-400 dark:text-gray-500 text-[11px] uppercase tracking-widest mb-1.5">Manfaat Penelitian</p>
+                              <p className="text-gray-700 dark:text-gray-300 text-[14px] leading-relaxed font-medium">{tText(edu.impact, lang)}</p>
+                            </div>
+                          )}
+                          {edu.thesis_link && (
+                            <div className="pt-5 mt-2 border-t border-gray-200 dark:border-white/10">
+                              <a href={edu.thesis_link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl text-xs font-black shadow-lg hover:scale-105 transition-transform w-fit active:scale-95">
+                                <LinkIcon size={14} /> Buka Preview Jurnal
+                              </a>
+                            </div>
+                          )}
+                      </div>
+
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
+            
             {educations.length === 0 && (
-              <div className="col-span-2 text-center py-10 text-gray-500">
+              <div className="w-full text-center py-16 text-gray-500 font-medium glass-panel rounded-[3rem]">
                 {t.noEdu}
               </div>
             )}
           </div>
         </div>
       );
-
     // --- HALAMAN SERTIFIKASI DETAIL - NEW MASTER/DETAIL (NO POPUP) ---
     if (currentPath === "/certifications") {
       const activeCert =
@@ -3477,9 +3656,82 @@ const renderDock = () => {
                     </>
                   )}
 
-                {/* INPUT BILINGUAL - EDUCATION */}
+               {/* INPUT BILINGUAL - EDUCATION WITH DUAL UPLOAD */}
                   {modalType === "education" && (
                     <div className="space-y-6 w-full">
+                      
+                      {/* --- AREA UPLOAD GANDA (BACKGROUND & LOGO) --- */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 dark:bg-white/5 p-6 rounded-[2.5rem] border border-gray-200 dark:border-white/10 shadow-inner">
+                        
+                        {/* 1. KOTAK UPLOAD BACKGROUND CARD */}
+                        <div className="flex flex-col gap-3">
+                          <label className="block text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+                            Gambar Latar Belakang Kampus
+                          </label>
+                          <div className="flex items-center gap-4 bg-white dark:bg-[#111] p-4 rounded-2xl border border-gray-200 dark:border-white/10">
+                            <div className="w-24 h-16 bg-gray-100 dark:bg-black rounded-xl overflow-hidden flex items-center justify-center border shrink-0">
+                              <img 
+                                id="edu-bg-preview" 
+                                src={editingItem?.image || ""} 
+                                className="w-full h-full object-cover" 
+                                alt=""
+                                onError={(e) => { e.target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%236b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>' }}
+                              />
+                            </div>
+                            <label className="px-4 py-2.5 bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-200 text-white dark:text-gray-900 font-bold rounded-xl cursor-pointer text-xs transition-all active:scale-95 flex items-center justify-center shadow-md">
+                              <UploadCloud size={14} className="mr-1.5" /> Pilih Gambar
+                              <input
+                                type="file"
+                                name="education_bg"
+                                accept="image/*"
+                                onChange={(e) => {
+                                  const file = e.target.files[0];
+                                  if (file) {
+                                    document.getElementById('edu-bg-preview').src = URL.createObjectURL(file);
+                                  }
+                                }}
+                                className="hidden"
+                              />
+                            </label>
+                          </div>
+                        </div>
+
+                        {/* 2. KOTAK UPLOAD LOGO INSTITUSI */}
+                        <div className="flex flex-col gap-3">
+                          <label className="block text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+                            Logo Sekolah / Universitas
+                          </label>
+                          <div className="flex items-center gap-4 bg-white dark:bg-[#111] p-4 rounded-2xl border border-gray-200 dark:border-white/10">
+                            <div className="w-16 h-16 bg-gray-100 dark:bg-black rounded-xl overflow-hidden flex items-center justify-center border shrink-0 p-2">
+                              <img 
+                                id="edu-logo-preview" 
+                                src={editingItem?.logo || ""} 
+                                className="w-full h-full object-contain" 
+                                alt=""
+                                onError={(e) => { e.target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%236b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M6 18.8V13.5"/></svg>' }}
+                              />
+                            </div>
+                            <label className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl cursor-pointer text-xs transition-all active:scale-95 flex items-center justify-center shadow-md">
+                              <UploadCloud size={14} className="mr-1.5" /> Pilih Logo
+                              <input
+                                type="file"
+                                name="education_logo"
+                                accept="image/*"
+                                onChange={(e) => {
+                                  const file = e.target.files[0];
+                                  if (file) {
+                                    document.getElementById('edu-logo-preview').src = URL.createObjectURL(file);
+                                  }
+                                }}
+                                className="hidden"
+                              />
+                            </label>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      {/* AREA DATA UTAMA */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input name="degree_id" defaultValue={splitText(editingItem?.degree).id} placeholder="Gelar (ID)" required className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900" />
                         <input name="degree_en" defaultValue={splitText(editingItem?.degree).en} placeholder="Degree (EN)" className="w-full p-4 glass-panel rounded-xl font-bold dark:text-white focus:ring-2 focus:ring-gray-900" />
@@ -3511,7 +3763,6 @@ const renderDock = () => {
                       </div>
                     </div>
                   )}
-
                   {/* INPUT BILINGUAL - SKILL (TOOLS / BAHASA) */}
                   {modalType === "skill" && (
                     <div className="space-y-4 w-full">
